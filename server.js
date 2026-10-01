@@ -9,7 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
-const PUBLIC = path.join(DIR, "public");
+const PUBLIC = DIR;
 
 // ---- read .env for local runs (on Render, set these in the dashboard) ----
 (function loadEnv() {
