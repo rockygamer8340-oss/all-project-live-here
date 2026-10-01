@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resume Corrector — tailor your resume to any role</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F4F5FF; --card:#FFFFFF; --ink:#1C1740; --muted:#5E5A85; --line:#E1E1F4; --soft:#EEEEFD;
+  --pink:#FF4FA3; --yellow:#FFD43B; --mint:#1FCF9A; --sky:#3B9BFF; --violet:#6D4AFF; --orange:#FF8A3D;
+  --pink-t:rgba(255,79,163,.28); --yellow-t:rgba(255,212,59,.55); --mint-t:rgba(31,207,154,.3); --sky-t:rgba(59,155,255,.28); --violet-t:rgba(109,74,255,.22);
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#131029; --card:#1D1938; --ink:#F3F1FF; --muted:#ABA6D6; --line:#312B5A; --soft:#262147;
+    --pink-t:rgba(255,79,163,.35); --yellow-t:rgba(255,212,59,.35); --mint-t:rgba(31,207,154,.3); --sky-t:rgba(59,155,255,.32); --violet-t:rgba(109,74,255,.38);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131029; --card:#1D1938; --ink:#F3F1FF; --muted:#ABA6D6; --line:#312B5A; --soft:#262147;
+  --pink-t:rgba(255,79,163,.35); --yellow-t:rgba(255,212,59,.35); --mint-t:rgba(31,207,154,.3); --sky-t:rgba(59,155,255,.32); --violet-t:rgba(109,74,255,.38);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;padding:56px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1.25fr .9fr;gap:40px;align-items:center}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.1rem;margin-bottom:28px}
+.brand .dot{width:30px;height:30px;border-radius:9px;background:conic-gradient(var(--pink),var(--yellow),var(--mint),var(--sky),var(--violet),var(--pink));display:grid;place-items:center;color:#fff;font-size:15px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.3rem,5.4vw,4.1rem);line-height:1.05;letter-spacing:-.02em;margin:0 0 20px}
+h1 .ln{display:inline;background-repeat:no-repeat;background-size:0% 42%;background-position:0 88%;animation:swipe .7s cubic-bezier(.6,.1,.2,1) forwards;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:0 .08em}
+h1 .l1{background-image:linear-gradient(var(--yellow-t),var(--yellow-t));animation-delay:.2s}
+h1 .l2{background-image:linear-gradient(var(--pink-t),var(--pink-t));animation-delay:.75s}
+h1 .l3{background-image:linear-gradient(var(--mint-t),var(--mint-t));animation-delay:1.3s}
+@keyframes swipe{to{background-size:100% 42%}}
+.lede{font-size:1.15rem;color:var(--muted);max-width:52ch;margin:0 0 26px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.btn{border:0;cursor:pointer;border-radius:14px;padding:13px 22px;font-weight:700;font-size:1rem;display:inline-flex;align-items:center;gap:8px;transition:transform .15s ease, box-shadow .15s ease}
+.btn:active{transform:translateY(1px)}
+.btn-main{background:var(--violet);color:#fff;box-shadow:0 5px 0 #4428c9}
+.btn-main:hover{box-shadow:0 7px 0 #4428c9;transform:translateY(-2px)}
+.btn-main:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn-ghost{background:var(--card);border:2px solid var(--line)}
+.btn-ghost:hover{border-color:var(--violet)}
+.btn-sm{padding:8px 14px;font-size:.9rem;border-radius:10px}
+
+/* marked-up sheet illustration */
+.sheet{position:relative;background:#fff;color:#1c1740;border-radius:18px;padding:26px 24px;box-shadow:0 30px 60px -20px rgba(60,30,160,.35);transform:rotate(2.5deg);max-width:380px;margin-left:auto}
+.sheet .n{height:14px;width:55%;background:#1c1740;border-radius:4px;margin-bottom:8px}
+.sheet .s{height:8px;width:38%;background:#c9c7e2;border-radius:4px;margin-bottom:18px}
+.sheet .row{height:8px;background:#e4e3f3;border-radius:4px;margin:9px 0}
+.sheet .hl-y{background:linear-gradient(90deg,#ffe066 0,#ffd43b 100%)}
+.sheet .hl-p{background:#ffb3d7}
+.sheet .hl-m{background:#9ff0d4}
+.sheet .strike{position:relative;background:#e4e3f3}
+.sheet .strike::after{content:"";position:absolute;left:-4px;right:-4px;top:3px;height:2px;background:#ff4fa3;transform:rotate(-2deg)}
+.sheet .note{position:absolute;font-family:var(--display);font-weight:700;font-size:.82rem;padding:6px 11px;border-radius:10px;color:#fff;white-space:nowrap;box-shadow:0 6px 14px rgba(0,0,0,.15)}
+.note.a{background:var(--pink);top:62px;right:-26px;transform:rotate(-5deg)}
+.note.b{background:var(--mint);color:#08372a;bottom:70px;left:-34px;transform:rotate(4deg)}
+.note.c{background:var(--sky);bottom:-14px;right:22px;transform:rotate(-3deg)}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.45;z-index:-1}
+
+/* ---------- Steps ---------- */
+main{padding-bottom:80px}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:10px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:24px;position:relative}
+.panel.full{grid-column:1/-1}
+.panel-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.num{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.2rem;color:#fff}
+.n1{background:var(--pink)} .n2{background:var(--sky)} .n3{background:var(--orange)}
+.panel h2{font-family:var(--display);font-size:1.35rem;margin:0;line-height:1.2}
+.panel .sub{margin:2px 0 0;color:var(--muted);font-size:.93rem}
+label.f{display:block;font-weight:600;font-size:.92rem;margin:14px 0 6px}
+.hint{font-weight:400;color:var(--muted)}
+select,input[type=text],textarea{width:100%;background:var(--soft);border:2px solid transparent;border-radius:12px;padding:11px 13px;transition:border-color .15s}
+select:focus,input[type=text]:focus,textarea:focus{border-color:var(--violet);outline:none}
+textarea{resize:vertical;min-height:110px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--line);background:transparent;border-radius:999px;padding:6px 13px;font-size:.88rem;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--pink)}
+.chip.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.tagbox{display:flex;flex-wrap:wrap;gap:7px;background:var(--soft);border-radius:12px;padding:8px;border:2px solid transparent;min-height:50px;align-items:center}
+.tagbox:focus-within{border-color:var(--violet)}
+.tagbox input{flex:1;min-width:140px;background:transparent;border:0;padding:5px;outline:none}
+.tag{background:var(--sky);color:#fff;border-radius:8px;padding:4px 6px 4px 10px;font-size:.86rem;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.tag button{background:rgba(255,255,255,.25);border:0;border-radius:6px;width:20px;height:20px;cursor:pointer;color:#fff;line-height:1}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.custom-wrap{display:none}
+.custom-wrap.show{display:block}
+.inline-status{font-size:.88rem;color:var(--muted);margin-top:8px;min-height:1.2em}
+
+/* upload */
+.tabs{display:inline-flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
+.tabs button{border:0;background:transparent;padding:8px 16px;border-radius:9px;font-weight:600;cursor:pointer;color:var(--muted)}
+.tabs button[aria-selected=true]{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.drop{border:3px dashed var(--line);border-radius:18px;padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .15s, background .15s}
+.drop:hover,.drop.over{border-color:var(--orange);background:rgba(255,138,61,.07)}
+.drop .ic{font-size:2.4rem;line-height:1}
+.drop strong{display:block;font-family:var(--display);font-size:1.15rem;margin:8px 0 4px}
+.drop span{color:var(--muted);font-size:.92rem}
+.file-pill{display:none;align-items:center;gap:10px;background:var(--mint-t);border-radius:12px;padding:10px 14px;margin-top:12px;font-weight:600}
+.file-pill.show{display:flex}
+.file-pill button{margin-left:auto}
+.go-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:26px}
+.go-row .btn-main{font-size:1.1rem;padding:16px 30px}
+.warn{background:var(--yellow-t);border-radius:12px;padding:12px 14px;font-size:.93rem;margin-top:14px;display:none}
+.warn.show{display:block}
+
+/* ---------- Mode switch ---------- */
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0 24px}
+.mode{display:flex;gap:14px;align-items:center;text-align:left;cursor:pointer;background:var(--card);border:3px solid var(--line);border-radius:20px;padding:16px 18px;transition:border-color .15s, transform .15s}
+.mode:hover{transform:translateY(-2px)}
+.mode .mi{font-size:1.8rem;width:52px;height:52px;flex:none;border-radius:14px;display:grid;place-items:center}
+.mode[data-mode=correct] .mi{background:var(--pink-t)}
+.mode[data-mode=make] .mi{background:var(--mint-t)}
+.mode b{display:block;font-family:var(--display);font-size:1.15rem}
+.mode span{color:var(--muted);font-size:.9rem}
+.mode[aria-pressed=true][data-mode=correct]{border-color:var(--pink)}
+.mode[aria-pressed=true][data-mode=make]{border-color:var(--mint)}
+.maker-only{display:none}
+body.make .maker-only{display:block}
+body.make .correct-only{display:none}
+/* maker form */
+.fs{border:0;padding:0;margin:0 0 22px}
+.fs legend{font-family:var(--display);font-weight:700;font-size:1.1rem;padding:0;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.fs legend i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rep{background:var(--soft);border-radius:16px;padding:6px 16px 16px;margin-top:12px;position:relative}
+.rep input[type=text],.rep textarea{background:var(--card)}
+.rep .rm{position:absolute;top:10px;right:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;font-weight:700;font-size:.85rem;padding:4px 8px;border-radius:8px}
+.rep .rm:hover{color:var(--pink)}
+.add-btn{margin-top:12px}
+.swatches{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sw{width:32px;height:32px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line);cursor:pointer}
+.sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink)}
+@media (max-width:640px){.modes,.three{grid-template-columns:1fr}}
+
+/* ---------- Loading ---------- */
+.loading{display:none;margin-top:30px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:28px;text-align:center}
+.loading.show{display:block}
+.marker-bar{height:14px;border-radius:8px;background:var(--soft);overflow:hidden;max-width:420px;margin:16px auto}
+.marker-bar i{display:block;height:100%;width:40%;border-radius:8px;background:linear-gradient(90deg,var(--pink),var(--yellow),var(--mint),var(--sky),var(--violet));animation:slide 1.6s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+.loading p{margin:0;color:var(--muted)}
+.loading .phase{font-family:var(--display);font-weight:700;font-size:1.2rem;color:var(--ink)}
+
+/* ---------- Results ---------- */
+#results{display:none;margin-top:36px}
+#results.show{display:block}
+.res-top{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:24px;margin-bottom:20px}
+.scores{display:flex;gap:18px;align-items:center}
+.ring{--p:0;--c:var(--mint);width:108px;height:108px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--soft) 0);display:grid;place-items:center;position:relative}
+.ring::before{content:"";position:absolute;inset:11px;background:var(--card);border-radius:50%}
+.ring b{position:relative;font-family:var(--display);font-size:1.7rem;font-weight:800}
+.ring-lbl{text-align:center;font-size:.85rem;color:var(--muted);margin-top:6px;font-weight:600}
+.arrow{font-size:1.6rem;color:var(--muted)}
+.res-top h2{font-family:var(--display);margin:0 0 6px;font-size:1.5rem}
+.res-top p{margin:0;color:var(--muted)}
+.rtabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.rtabs button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:10px 18px;font-weight:700;cursor:pointer}
+.rtabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rpane{display:none}
+.rpane.show{display:block}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.toast{font-size:.9rem;color:var(--muted);align-self:center}
+
+/* paper resume (always light, like a real page) */
+.paper-scroll{overflow-x:auto}
+.paper{background:#fff;color:#1d1b2e;border-radius:6px;padding:48px 52px;max-width:820px;margin:0 auto;box-shadow:0 20px 50px -18px rgba(40,20,120,.35);font-family:var(--body);font-size:15px;line-height:1.5;min-width:300px}
+.paper h3.nm{font-family:var(--display);font-size:2rem;margin:0;line-height:1.1;color:#1d1b2e}
+.paper{--acc:#6D4AFF}
+.paper .ttl{color:var(--acc);font-weight:700;margin:4px 0 6px}
+.paper .ct{color:#555;font-size:.9rem}
+.paper h4{font-family:var(--display);font-size:1.02rem;margin:24px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--acc);color:#1d1b2e}
+.paper .job{margin-bottom:12px}
+.paper .jh{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:700}
+.paper .jh span{font-weight:500;color:#666;font-size:.9rem}
+.paper .co{color:#444;font-style:italic;font-size:.93rem}
+.paper ul{margin:5px 0 0;padding-left:20px}
+.paper li{margin:3px 0}
+.paper .sk{display:flex;flex-wrap:wrap;gap:6px}
+.paper .sk span{background:color-mix(in srgb,var(--acc) 13%,#fff);color:color-mix(in srgb,var(--acc) 75%,#000);border-radius:6px;padding:3px 9px;font-size:.87rem;font-weight:600}
+.paper .ph{background:#fff3b0;border-radius:3px;padding:0 3px}
+.paper .hl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.paper .hl div{background:color-mix(in srgb,var(--acc) 9%,#fff);border-left:4px solid var(--acc);border-radius:8px;padding:9px 12px;font-size:.9rem;font-weight:600}
+.paper .sg-t{font-size:.8rem;font-weight:700;margin:10px 0 6px;opacity:.85}
+.paper .tl .job{position:relative;padding-left:18px;border-left:2px solid color-mix(in srgb,var(--acc) 30%,#fff);margin-left:4px;padding-bottom:4px}
+.paper .tl .job::before{content:"";position:absolute;left:-7px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--acc);border:2px solid #fff}
+/* sidebar template */
+.paper.tpl-side{display:grid;grid-template-columns:240px 1fr;padding:0;overflow:hidden;min-width:680px}
+.paper .pside{background:var(--acc);color:#fff;padding:36px 22px}
+.paper .pmain{padding:36px 34px}
+.paper .avatar{width:86px;height:86px;border-radius:50%;background:rgba(255,255,255,.16);border:3px solid rgba(255,255,255,.55);display:grid;place-items:center;font-family:var(--display);font-size:2rem;font-weight:800;margin:0 auto 20px;color:#fff}
+.paper .pside h4{color:#fff;border-bottom-color:rgba(255,255,255,.45);margin-top:22px}
+.paper .pside .sk span{background:rgba(255,255,255,.18);color:#fff}
+.paper .pside ul{padding-left:18px;font-size:.9rem}
+.paper .ci{display:flex;gap:9px;font-size:.87rem;margin:7px 0;word-break:break-word;align-items:flex-start}
+.paper .ci i{font-style:normal;opacity:.85;width:16px;flex:none;text-align:center}
+/* banner template */
+.paper.tpl-banner{padding:0;overflow:hidden;min-width:660px}
+.paper .bnr{background:var(--acc);color:#fff;padding:40px 46px 30px;position:relative}
+.paper .bnr::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.12)}
+.paper .bnr h3.nm{color:#fff;font-size:2.3rem}
+.paper .bnr .ttl{color:rgba(255,255,255,.92);font-size:1.1rem}
+.paper .cp{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.paper .cp span{background:rgba(255,255,255,.18);border-radius:999px;padding:4px 12px;font-size:.84rem}
+.paper .pbody{display:grid;grid-template-columns:1fr 210px;gap:30px;padding:8px 46px 40px}
+.paper .pbody aside h4{font-size:.95rem}
+
+
+/* change cards */
+.changes{display:grid;gap:14px}
+.chg{background:var(--card);border:2px solid var(--line);border-left-width:8px;border-radius:16px;padding:18px 20px}
+.chg.t-rewritten{border-left-color:var(--sky)}
+.chg.t-added{border-left-color:var(--mint)}
+.chg.t-removed{border-left-color:var(--pink)}
+.chg.t-reordered{border-left-color:var(--yellow)}
+.chg-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+.badge{font-size:.78rem;font-weight:700;border-radius:999px;padding:3px 10px;color:#fff}
+.b-rewritten{background:var(--sky)} .b-added{background:var(--mint);color:#07362a} .b-removed{background:var(--pink)} .b-reordered{background:var(--yellow);color:#3b2d00}
+.chg-h strong{font-family:var(--display);font-size:1.05rem}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.ba div{border-radius:12px;padding:10px 12px;font-size:.93rem}
+.ba .bf{background:var(--pink-t)}
+.ba .af{background:var(--mint-t)}
+.ba small{display:block;font-weight:700;font-size:.78rem;margin-bottom:3px;opacity:.8}
+.why{margin:0;font-size:.97rem}
+.why b{color:var(--violet)}
+:root[data-theme="dark"] .why b{color:#a996ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .why b{color:#a996ff}}
+
+.gapgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.gapcard{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:22px}
+.gapcard h3{font-family:var(--display);margin:0 0 12px;font-size:1.2rem}
+.gapcard ul{margin:0;padding-left:20px}
+.gapcard li{margin:6px 0}
+.miss{display:flex;flex-wrap:wrap;gap:8px}
+.miss span{background:var(--orange);color:#fff;border-radius:8px;padding:5px 11px;font-weight:600;font-size:.9rem}
+
+.errbox{display:none;margin-top:20px;background:var(--pink-t);border-radius:14px;padding:14px 16px;font-weight:500}
+.errbox.show{display:block}
+footer{text-align:center;color:var(--muted);font-size:.88rem;padding:30px 20px 40px}
+
+@media (max-width:860px){
+  .hero .wrap,.steps,.gapgrid{grid-template-columns:1fr}
+  .sheet{margin:10px auto 0;max-width:320px}
+  .note.a{right:-8px}.note.b{left:-8px}
+  .res-top{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .two,.ba{grid-template-columns:1fr}
+  .paper{padding:28px 22px}
+  .ring{width:88px;height:88px}
+  .hero{padding-top:32px}
+}
+/* chat fallback */
+.fallback{display:none;margin-top:24px;background:var(--card);border:3px solid var(--sky);border-radius:22px;padding:24px}
+.fallback.show{display:block}
+.fallback h2{font-family:var(--display);margin:0 0 6px;font-size:1.35rem}
+.fallback > p{margin:0 0 16px;color:var(--muted)}
+.fb-steps{display:grid;gap:14px}
+.fb-step{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start}
+.fb-step .num{width:36px;height:36px;font-size:1rem;background:var(--sky)}
+.fb-step b{display:block;margin-bottom:6px}
+.fb-step .btn{margin:0 8px 6px 0}
+.plain{display:none;width:100%;min-height:260px;margin-bottom:14px;font-size:.9rem}
+.plain.show{display:block}
+.tpls{display:inline-flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px}
+.tpls button{border:0;background:transparent;padding:7px 12px;border-radius:9px;font-weight:600;cursor:pointer;color:var(--muted);font-size:.88rem}
+.tpls button[aria-pressed=true]{background:var(--card);color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.08)}
+@media print{
+  body *{visibility:hidden !important}
+  #paper,#paper *{visibility:visible !important}
+  #paper{position:absolute;left:0;top:0;box-shadow:none;max-width:none;width:100%;padding:0;margin:0}
+  #paper .ph{background:none}
+}
+@media (prefers-reduced-motion:reduce){
+  h1 .ln{animation:none;background-size:100% 42%}
+  .marker-bar i{animation-duration:4s}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="blob" style="width:320px;height:320px;background:var(--pink);top:-80px;right:10%"></div>
+  <div class="blob" style="width:280px;height:280px;background:var(--sky);bottom:-120px;left:-60px"></div>
+  <div class="wrap">
+    <div>
+      <div class="brand"><span class="dot">✎</span> Resume Corrector</div>
+      <h1><span class="ln l1">Make your resume</span><br><span class="ln l2">fit the job</span> <span class="ln l3">you want.</span></h1>
+      <p class="lede">Pick the role, paste what the company is asking for, and upload your resume. You get a corrected version plus a plain-language reason for every change.</p>
+      <div class="cta-row">
+        <a class="btn btn-main" href="#start">Start correcting</a>
+        <a class="btn btn-ghost" href="#how">How it works</a>
+      </div>
+    </div>
+    <div aria-hidden="true">
+      <div class="sheet">
+        <div class="n"></div><div class="s"></div>
+        <div class="row hl-y" style="width:92%"></div>
+        <div class="row" style="width:80%"></div>
+        <div class="row strike" style="width:70%"></div>
+        <div class="row hl-p" style="width:86%"></div>
+        <div class="row" style="width:60%"></div>
+        <div class="row hl-m" style="width:78%"></div>
+        <div class="row" style="width:88%"></div>
+        <div class="row hl-y" style="width:52%"></div>
+        <span class="note a">Stronger verb</span>
+        <span class="note b">Matches job keyword</span>
+        <span class="note c">Removed filler</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="start">
+  <div class="modes" role="group" aria-label="What do you want to do?">
+    <button class="mode" data-mode="correct" aria-pressed="true" type="button"><span class="mi">✏️</span><div><b>Correct my resume</b><span>Upload your resume and fix it for a job</span></div></button>
+    <button class="mode" data-mode="make" aria-pressed="false" type="button"><span class="mi">🧩</span><div><b>Make a new resume</b><span>No resume yet? Fill a simple form, we write it</span></div></button>
+  </div>
+  <div class="steps" id="how">
+
+    <!-- Column 1: Role -->
+    <section class="panel">
+      <div class="panel-head"><span class="num n1">1</span><div><h2>Your target role</h2><p class="sub">Which job do you want to get?</p></div></div>
+      <label class="f" for="role">Choose a role <span class="hint">(200+ roles, grouped by field)</span></label>
+      <select id="role"></select>
+      <div class="custom-wrap" id="customWrap">
+        <label class="f" for="customRole">Type your role</label>
+        <input type="text" id="customRole" placeholder="e.g. Drone Pilot, Yoga Instructor, Tea Taster">
+      </div>
+      <label class="f">Popular picks</label>
+      <div class="chips" id="quickRoles"></div>
+      <div class="two">
+        <div>
+          <label class="f" for="level">Experience level</label>
+          <select id="level">
+            <option>Fresher / student</option>
+            <option>1–3 years</option>
+            <option selected>3–6 years</option>
+            <option>6–10 years</option>
+            <option>10+ years / senior</option>
+          </select>
+        </div>
+        <div>
+          <label class="f" for="tone">Resume style</label>
+          <select id="tone">
+            <option>Professional</option>
+            <option>Modern & confident</option>
+            <option>Simple & clear</option>
+            <option>Academic</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 2: Company requirements -->
+    <section class="panel">
+      <div class="panel-head"><span class="num n2">2</span><div><h2>Company requirements</h2><p class="sub">What is the company looking for?<span id="reqNote"></span></p></div></div>
+      <label class="f">Required skills <span class="hint">(press Enter after each)</span></label>
+      <div class="tagbox" id="tagbox"><input type="text" id="skillInput" placeholder="e.g. Excel, Communication, Python"></div>
+      <div class="two">
+        <div>
+          <label class="f" for="qual">Qualification</label>
+          <input type="text" id="qual" placeholder="e.g. B.Ed, MBA in HR, B.Tech">
+        </div>
+        <div>
+          <label class="f" for="company">Company name <span class="hint">(optional)</span></label>
+          <input type="text" id="company" placeholder="e.g. Infosys, DPS School">
+        </div>
+      </div>
+      <label class="f" for="jd">Job description or other requirements <span class="hint">(paste the job post here)</span></label>
+      <textarea id="jd" placeholder="Paste the full job description, responsibilities, certifications, languages, location…"></textarea>
+      <button class="btn btn-ghost btn-sm" id="suggestBtn" type="button" style="margin-top:10px">✨ Fill typical requirements for this role</button>
+      <div class="inline-status" id="suggestStatus"></div>
+    </section>
+
+    <!-- Step 3: Resume -->
+    <section class="panel full">
+      <div class="correct-only">
+      <div class="panel-head"><span class="num n3">3</span><div><h2>Your current resume</h2><p class="sub">Upload a file or paste the text. You can edit what we read before correcting.</p></div></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="upload">Upload file</button>
+        <button role="tab" aria-selected="false" data-tab="paste">Paste text</button>
+      </div>
+      <div id="tab-upload">
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload resume file">
+          <div class="ic">📄</div>
+          <strong>Drop your resume here or click to browse</strong>
+          <span>PDF, Word (.docx) or text file</span>
+        </div>
+        <input type="file" id="file" accept=".pdf,.docx,.txt,.md,.rtf" hidden>
+        <div class="file-pill" id="filePill"><span>✅</span><span id="fileName"></span><button class="btn btn-ghost btn-sm" id="clearFile" type="button">Remove</button></div>
+      </div>
+      <label class="f" for="resumeText" id="resumeLabel">Resume text</label>
+      <textarea id="resumeText" style="min-height:200px" placeholder="Your resume text will appear here after upload, or paste it directly."></textarea>
+      <div class="warn" id="warn"></div>
+      </div>
+
+      <div class="maker-only" id="maker">
+        <div class="panel-head"><span class="num n3">3</span><div><h2>Your details</h2><p class="sub">Write in simple words — even rough notes are fine. We turn them into a polished resume.</p></div></div>
+
+        <div class="rep" style="margin:0 0 22px;background:var(--violet-t)">
+          <label class="f" for="mBoost">How much should Claude improve your details?</label>
+          <select id="mBoost">
+            <option value="polish">Polish only — keep my details, just write them better</option>
+            <option value="enhance" selected>Enhance — rewrite and add details typical for my role</option>
+            <option value="max">Maximum — rich, detailed and impressive</option>
+          </select>
+          <p class="toast" style="margin:8px 0 0">Claude never invents companies, degrees, certificates or numbers. Anything it adds from your role is listed in "How we wrote it" so you can check it's true for you.</p>
+        </div>
+
+        <fieldset class="fs"><legend><i style="background:var(--pink)"></i>Personal details</legend>
+          <div class="three">
+            <div><label class="f" for="mName">Full name</label><input type="text" id="mName" placeholder="Priya Sharma"></div>
+            <div><label class="f" for="mEmail">Email</label><input type="text" id="mEmail" placeholder="priya@email.com"></div>
+            <div><label class="f" for="mPhone">Phone</label><input type="text" id="mPhone" placeholder="+91 98765 43210"></div>
+            <div><label class="f" for="mCity">City</label><input type="text" id="mCity" placeholder="Dehradun, Uttarakhand"></div>
+            <div><label class="f" for="mLink">LinkedIn / portfolio <span class="hint">(optional)</span></label><input type="text" id="mLink" placeholder="linkedin.com/in/priya"></div>
+            <div><label class="f" for="mGoal">Career goal <span class="hint">(optional)</span></label><input type="text" id="mGoal" placeholder="Grow into a senior HR role"></div>
+          </div>
+        </fieldset>
+
+        <fieldset class="fs"><legend><i style="background:var(--sky)"></i>Work experience</legend>
+          <p class="sub" style="margin:0">Fresher? Skip this and add internships or projects instead.</p>
+          <div id="expList"></div>
+          <button class="btn btn-ghost btn-sm add-btn" type="button" id="addExp">+ Add a job or internship</button>
+        </fieldset>
+
+        <fieldset class="fs"><legend><i style="background:var(--violet)"></i>Education</legend>
+          <div id="eduList"></div>
+          <button class="btn btn-ghost btn-sm add-btn" type="button" id="addEdu">+ Add education</button>
+        </fieldset>
+
+        <fieldset class="fs"><legend><i style="background:var(--orange)"></i>Projects <span class="hint" style="font-family:var(--body);font-weight:400;font-size:.9rem">(optional)</span></legend>
+          <div id="projList"></div>
+          <button class="btn btn-ghost btn-sm add-btn" type="button" id="addProj">+ Add a project</button>
+        </fieldset>
+
+        <fieldset class="fs"><legend><i style="background:var(--mint)"></i>Skills and more</legend>
+          <label class="f">Your skills <span class="hint">(press Enter after each)</span></label>
+          <div class="tagbox" id="mTagbox"><input type="text" id="mSkillInput" placeholder="e.g. MS Excel, Teamwork, Canva"></div>
+          <div class="two">
+            <div><label class="f" for="mCerts">Certifications <span class="hint">(one per line)</span></label><textarea id="mCerts" style="min-height:80px" placeholder="Google Data Analytics Certificate, 2024"></textarea></div>
+            <div><label class="f" for="mLangs">Languages</label><textarea id="mLangs" style="min-height:80px" placeholder="English, Hindi"></textarea></div>
+            <div><label class="f" for="mAch">Achievements / awards</label><textarea id="mAch" style="min-height:80px" placeholder="Best Employee of the Month, March 2025"></textarea></div>
+            <div><label class="f" for="mHob">Hobbies / volunteering <span class="hint">(optional)</span></label><textarea id="mHob" style="min-height:80px" placeholder="NSS volunteer, reading"></textarea></div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="go-row">
+        <button class="btn btn-main" id="goBtn" type="button">Correct my resume</button>
+        <span class="toast" id="goHint">Needs a role and your resume.</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="loading" id="loading" aria-live="polite">
+    <p class="phase" id="phase">Reading your resume…</p>
+    <div class="marker-bar"><i></i></div>
+    <p>This usually takes 20–60 seconds.</p>
+    <button class="btn btn-ghost btn-sm" id="stopBtn" type="button" style="margin-top:14px">Stop</button>
+  </div>
+  <div class="errbox" id="err" role="alert"></div>
+
+  <section class="fallback" id="fallback" aria-live="polite">
+    <h2>Claude can't be reached from this view — use Claude chat instead</h2>
+    <p>Some views (like a phone's link viewer) block the page from using Claude. You can still get the same result in 3 steps.</p>
+    <div class="fb-steps">
+      <div class="fb-step"><span class="num">1</span><div><b>Copy your request</b>
+        <button class="btn btn-main btn-sm" id="fbCopy" type="button">Copy request</button>
+        <span class="toast" id="fbCopyMsg"></span>
+        <textarea class="plain" id="fbPrompt" readonly aria-label="Request to paste into Claude"></textarea></div></div>
+      <div class="fb-step"><span class="num">2</span><div><b>Paste it into a new Claude chat and send it</b>
+        <a class="btn btn-ghost btn-sm" href="https://claude.ai/new" target="_blank" rel="noopener">Open Claude chat</a>
+        <span class="toast">Or open the Claude app and start a new chat.</span></div></div>
+      <div class="fb-step"><span class="num">3</span><div><b>Copy Claude's whole reply and paste it here</b>
+        <textarea id="fbReply" placeholder="Paste Claude's reply here (it starts with { )"></textarea>
+        <div style="margin-top:10px"><button class="btn btn-main btn-sm" id="fbShow" type="button">Show my resume</button> <span class="toast" id="fbMsg"></span></div></div></div>
+    </div>
+  </section>
+
+  <section id="results" aria-live="polite">
+    <div class="res-top">
+      <div class="scores">
+        <div class="rb"><div class="ring" id="ringBefore" style="--c:var(--pink)"><b id="sBefore">0</b></div><div class="ring-lbl">Before</div></div>
+        <div class="arrow rb">➜</div>
+        <div><div class="ring" id="ringAfter" style="--c:var(--mint)"><b id="sAfter">0</b></div><div class="ring-lbl" id="afterLbl">After</div></div>
+      </div>
+      <div>
+        <h2 id="resTitle">Your resume is ready</h2>
+        <p id="resSummary"></p>
+      </div>
+    </div>
+
+    <div class="rtabs" role="tablist">
+      <button role="tab" aria-selected="true" data-r="resume">📄 Corrected resume</button>
+      <button role="tab" aria-selected="false" data-r="why" id="whyTab">💡 Why we changed it</button>
+      <button role="tab" aria-selected="false" data-r="gaps">🎯 Skill gaps & tips</button>
+    </div>
+
+    <div class="rpane show" id="p-resume">
+      <div class="toolbar" style="align-items:center">
+        <span class="toast">Design:</span>
+        <div class="tpls" id="tpls">
+          <button type="button" data-t="side" aria-pressed="true">Modern sidebar</button>
+          <button type="button" data-t="banner" aria-pressed="false">Bold banner</button>
+          <button type="button" data-t="classic" aria-pressed="false">Classic</button>
+        </div>
+        <span class="toast">Colour:</span>
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <div class="toolbar" style="align-items:center">
+        <button class="btn btn-main btn-sm" id="dlDoc" type="button">⬇ Word (.doc)</button>
+        <button class="btn btn-ghost btn-sm" id="dlPdf" type="button">⬇ PDF (print)</button>
+        <button class="btn btn-ghost btn-sm" id="dlHtml" type="button">⬇ Web page (.html)</button>
+        <button class="btn btn-ghost btn-sm" id="dlTxt" type="button">⬇ Text (.txt)</button>
+        <button class="btn btn-ghost btn-sm" id="copyBtn" type="button">Copy text</button>
+        <button class="btn btn-ghost btn-sm" id="plainBtn" type="button">Show plain text</button>
+      </div>
+      <p class="toast" id="dlMsg" style="margin:0 0 10px;min-height:1.2em"></p>
+      <textarea class="plain" id="plainText" readonly aria-label="Resume as plain text"></textarea>
+      <p class="toast" style="margin:0 0 14px">Yellow <span style="background:#fff3b0;color:#1d1b2e;padding:0 4px;border-radius:3px">[brackets]</span> mark numbers or details only you know — fill them in before sending.</p>
+      <div class="paper-scroll"><article class="paper" id="paper"></article></div>
+    </div>
+    <div class="rpane" id="p-why"><div class="changes" id="changes"></div></div>
+    <div class="rpane" id="p-gaps">
+      <div class="gapgrid">
+        <div class="gapcard"><h3>Skills the job asks for that your resume doesn't show</h3><div class="miss" id="missing"></div><p class="toast" style="margin-top:12px">We didn't add these to your resume. If you have them, add them honestly with an example.</p></div>
+        <div class="gapcard"><h3>Tips before you apply</h3><ul id="tips"></ul></div>
+      </div>
+    </div>
+    <div class="go-row"><button class="btn btn-ghost" id="againBtn" type="button">Edit details and try again</button></div>
+  </section>
+</main>
+
+<footer>Your resume is only sent to Claude to create the corrected version. Always check facts before applying.</footer>
+
+<script>
+/* Rishu AI server bridge: when this page is not running inside Claude,
+   send AI requests to this site's own /api/ai (the API key stays on the server). */
+(function(){
+  if (window.claude && window.claude.use) return;
+  function parseLoose(t){
+    var s=String(t||"").trim().replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"");
+    try{return JSON.parse(s)}catch(_){}
+    var a=s.indexOf("{"),b=s.lastIndexOf("}");
+    if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch(_){}}
+    throw {code:"invalid_json",text:t};
+  }
+  async function call(input,opts,json){
+    opts=opts||{};
+    var turns = typeof input==="string" ? [{role:"user",content:input}] : input;
+    var r;
+    try{
+      r = await fetch("/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},signal:opts.signal,body:JSON.stringify({turns:turns,images:[],json:!!json})});
+    }catch(e){ throw {code: e && e.name==="AbortError" ? "cancelled" : "upstream_error"}; }
+    var data = await r.json().catch(function(){return {error:"upstream_error"}});
+    if(!r.ok || data.error) throw {code:data.error||"upstream_error",message:data.message};
+    if(opts.onText) opts.onText({text:data.text,delta:data.text});
+    return {text:data.text,truncated:!!data.truncated};
+  }
+  var sample = function(input,opts){ return call(input,opts,false); };
+  sample.json = async function(input,opts){ var r = await call(input,opts,true); return parseLoose(r.text); };
+  sample.limits = async function(){ return {maxPromptBytes:65536,images:null}; };
+  var healthy = fetch("/api/health").then(function(r){return r.json()}).then(function(h){return !!(h&&h.ok)}).catch(function(){return false});
+  window.claude = { use: async function(name){ if(name!=="sample") return null; return (await healthy) ? sample : null; } };
+})();
+</script>
+
+<script>
+/* ---------------- Roles ---------------- */
+const ROLES = {
+  "Human Resources": ["HR Executive","HR Manager","HR Generalist","HR Business Partner","Talent Acquisition Specialist","Recruiter","Payroll Executive","Training & Development Manager","Compensation & Benefits Analyst","HR Intern"],
+  "Education": ["Primary Teacher","Secondary School Teacher","PGT Teacher","TGT Teacher","Pre-primary / Nursery Teacher","Special Education Teacher","College Lecturer","Assistant Professor","Online Tutor","Academic Coordinator","School Principal","Librarian","Counsellor"],
+  "Software & IT": ["Software Engineer","Frontend Developer","Backend Developer","Full Stack Developer","Web Developer","Mobile App Developer","Java Developer","Python Developer","DevOps Engineer","Cloud Engineer","QA / Test Engineer","Automation Tester","System Administrator","Network Engineer","IT Support Engineer","Cybersecurity Analyst","Database Administrator","Technical Support","Game Developer","Embedded Systems Engineer"],
+  "Data & AI": ["Data Analyst","Data Scientist","Data Engineer","Machine Learning Engineer","AI Engineer","Business Intelligence Analyst","Statistician","MIS Executive"],
+  "Business & Management": ["Business Analyst","Project Manager","Product Manager","Operations Manager","Management Trainee","Consultant","Strategy Analyst","Program Manager","Office Manager","Administrative Assistant","Executive Assistant","Receptionist","Front Office Executive"],
+  "Finance & Accounting": ["Accountant","Chartered Accountant","Financial Analyst","Investment Banker","Auditor","Tax Consultant","Bank PO / Clerk","Relationship Manager (Banking)","Credit Analyst","Insurance Advisor","Billing Executive","Accounts Executive"],
+  "Sales & Marketing": ["Sales Executive","Business Development Executive","Area Sales Manager","Inside Sales Representative","Marketing Manager","Digital Marketing Executive","SEO Specialist","Social Media Manager","Content Marketer","Brand Manager","Market Research Analyst","Telecaller","Retail Sales Associate","Real Estate Agent"],
+  "Design & Creative": ["Graphic Designer","UI/UX Designer","Product Designer","Video Editor","Animator","Photographer","Interior Designer","Fashion Designer","Architect","Illustrator","Motion Graphics Designer"],
+  "Writing & Media": ["Content Writer","Copywriter","Technical Writer","Journalist","Editor","News Anchor","Translator","Public Relations Executive","Radio Jockey"],
+  "Healthcare": ["Doctor (MBBS)","Staff Nurse","Pharmacist","Medical Lab Technician","Physiotherapist","Dentist","Radiologist","Medical Representative","Hospital Administrator","Dietitian / Nutritionist","Medical Coder","Psychologist","Healthcare Assistant"],
+  "Engineering": ["Civil Engineer","Mechanical Engineer","Electrical Engineer","Electronics Engineer","Chemical Engineer","Site Engineer","Quality Engineer","Production Engineer","Maintenance Engineer","Design Engineer (CAD)","Safety Officer","Surveyor"],
+  "Customer Service": ["Customer Support Executive","Call Center Agent","Customer Success Manager","Help Desk Executive","Client Servicing Executive"],
+  "Hospitality & Travel": ["Hotel Manager","Chef / Cook","Waiter / Steward","Housekeeping Supervisor","Travel Consultant","Tour Guide","Cabin Crew / Flight Attendant","Event Manager"],
+  "Operations & Logistics": ["Supply Chain Manager","Logistics Coordinator","Warehouse Supervisor","Procurement Executive","Inventory Controller","Store Manager","Purchase Manager","Delivery Executive","Driver"],
+  "Legal & Government": ["Lawyer / Advocate","Legal Associate","Company Secretary","Compliance Officer","Paralegal","Government Job (Clerk / Officer)","Police / Defence Services"],
+  "Skilled Trades": ["Electrician","Plumber","Technician","Fitter","Welder","Beautician","Hair Stylist","Tailor","Security Guard"],
+  "Science & Research": ["Research Scientist","Research Assistant","Lab Assistant","Biotechnologist","Environmental Scientist","Agriculture Officer"],
+  "Other": ["Fitness Trainer","Sports Coach","Social Worker","NGO Coordinator","Freelancer","Internship (any field)"]
+};
+const QUICK = ["HR Executive","Secondary School Teacher","Software Engineer","Data Analyst","Accountant","Sales Executive","Staff Nurse","Graphic Designer","Customer Support Executive","Digital Marketing Executive"];
+const CUSTOM = "__custom__";
+
+const $ = s => document.querySelector(s);
+const roleSel = $("#role");
+(function buildRoles(){
+  const ph = new Option("Select your role…",""); ph.disabled = true; ph.selected = true; roleSel.add(ph);
+  for (const [grp, list] of Object.entries(ROLES)){
+    const og = document.createElement("optgroup"); og.label = grp;
+    list.forEach(r => og.appendChild(new Option(r, r)));
+    roleSel.appendChild(og);
+  }
+  const og = document.createElement("optgroup"); og.label = "Not in the list?";
+  og.appendChild(new Option("✏️ Custom role — type your own", CUSTOM));
+  roleSel.appendChild(og);
+  const qr = $("#quickRoles");
+  QUICK.forEach(r => {
+    const b = document.createElement("button"); b.type="button"; b.className="chip"; b.textContent=r;
+    b.onclick = () => { roleSel.value = r; onRole(); };
+    qr.appendChild(b);
+  });
+  const c = document.createElement("button"); c.type="button"; c.className="chip"; c.textContent="+ Custom";
+  c.onclick = () => { roleSel.value = CUSTOM; onRole(); $("#customRole").focus(); };
+  qr.appendChild(c);
+})();
+function onRole(){
+  const v = roleSel.value;
+  $("#customWrap").classList.toggle("show", v === CUSTOM);
+  document.querySelectorAll("#quickRoles .chip").forEach(ch => {
+    ch.classList.toggle("on", ch.textContent === v || (v === CUSTOM && ch.textContent === "+ Custom"));
+  });
+  updateGo();
+}
+roleSel.addEventListener("change", onRole);
+$("#customRole").addEventListener("input", updateGo);
+function getRole(){
+  return roleSel.value === CUSTOM ? $("#customRole").value.trim() : roleSel.value;
+}
+
+/* ---------------- Skill tags ---------------- */
+let skills = [];
+const skillInput = $("#skillInput");
+function renderTags(){
+  document.querySelectorAll("#tagbox .tag").forEach(t => t.remove());
+  skills.forEach((s,i) => {
+    const t = document.createElement("span"); t.className="tag";
+    const txt = document.createElement("span"); txt.textContent = s;
+    const x = document.createElement("button"); x.type="button"; x.textContent="×"; x.setAttribute("aria-label","Remove "+s);
+    x.onclick = () => { skills.splice(i,1); renderTags(); };
+    t.append(txt,x);
+    $("#tagbox").insertBefore(t, skillInput);
+  });
+}
+function addSkills(str){
+  str.split(/[,;\n]/).map(s=>s.trim()).filter(Boolean).forEach(s=>{
+    if (!skills.some(k=>k.toLowerCase()===s.toLowerCase())) skills.push(s.slice(0,60));
+  });
+  renderTags();
+}
+skillInput.addEventListener("keydown", e => {
+  if ((e.key==="Enter" || e.key===",") && skillInput.value.trim()){ e.preventDefault(); addSkills(skillInput.value); skillInput.value=""; }
+  else if (e.key==="Backspace" && !skillInput.value && skills.length){ skills.pop(); renderTags(); }
+});
+skillInput.addEventListener("blur", () => { if (skillInput.value.trim()){ addSkills(skillInput.value); skillInput.value=""; } });
+$("#tagbox").addEventListener("click", e => { if (e.target.id==="tagbox") skillInput.focus(); });
+
+/* ---------------- Resume input ---------------- */
+const resumeText = $("#resumeText");
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", x===b));
+  const up = b.dataset.tab==="upload";
+  $("#tab-upload").style.display = up ? "" : "none";
+  $("#resumeLabel").textContent = up ? "Resume text (read from your file)" : "Paste your resume";
+  if (!up) resumeText.focus();
+});
+["input","change","paste","keyup"].forEach(ev => resumeText.addEventListener(ev, () => setTimeout(updateGo, 0)));
+
+const drop = $("#drop"), fileIn = $("#file");
+drop.onclick = () => fileIn.click();
+drop.onkeydown = e => { if (e.key==="Enter"||e.key===" "){ e.preventDefault(); fileIn.click(); } };
+["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) readFile(f); });
+fileIn.onchange = () => { if (fileIn.files[0]) readFile(fileIn.files[0]); };
+$("#clearFile").onclick = () => { fileIn.value=""; $("#filePill").classList.remove("show"); resumeText.value=""; showWarn(""); updateGo(); };
+
+function loadScript(src){
+  return new Promise((res,rej)=>{
+    if (document.querySelector(`script[src="${src}"]`)) return res();
+    const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("load"));
+    document.head.appendChild(s);
+  });
+}
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+const PDFW  = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const MAMMOTH = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js";
+
+function showWarn(msg){ const w=$("#warn"); w.textContent=msg; w.classList.toggle("show", !!msg); }
+
+async function readFile(f){
+  showWarn("");
+  $("#fileName").textContent = "Reading " + f.name + "…";
+  $("#filePill").classList.add("show");
+  const ext = (f.name.split(".").pop()||"").toLowerCase();
+  try{
+    let text = "";
+    if (ext === "pdf"){
+      await loadScript(PDFJS); await loadScript(PDFW);
+      pdfjsLib.GlobalWorkerOptions.workerSrc = PDFW;
+      const pdf = await pdfjsLib.getDocument({data: await f.arrayBuffer()}).promise;
+      for (let p=1; p<=pdf.numPages; p++){
+        const tc = await (await pdf.getPage(p)).getTextContent();
+        text += tc.items.map(it => it.str + (it.hasEOL ? "\n" : " ")).join("") + "\n\n";
+      }
+    } else if (ext === "docx"){
+      await loadScript(MAMMOTH);
+      const r = await mammoth.extractRawText({arrayBuffer: await f.arrayBuffer()});
+      text = r.value;
+    } else if (ext === "doc"){
+      throw new Error("olddoc");
+    } else {
+      text = await f.text();
+    }
+    text = text.replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+    resumeText.value = text;
+    $("#fileName").textContent = f.name + " — " + text.split(/\s+/).filter(Boolean).length + " words read";
+    if (text.length < 80) showWarn("We could read very little text from this file. If it's a scanned image, please paste your resume text instead.");
+  }catch(e){
+    $("#fileName").textContent = f.name;
+    showWarn(e.message==="olddoc"
+      ? "Old .doc files can't be read here. Save it as .docx or PDF, or paste the text below."
+      : "This file couldn't be read. Try a PDF or .docx, or paste your resume text below.");
+  }
+  updateGo();
+}
+
+/* ---------------- Claude runtime ---------------- */
+let sample = null;
+const ERR = {
+  not_granted:"Correcting needs permission to use Claude. Reload the page and choose Allow to try again.",
+  rate_limited:"Too many requests right now. Wait a minute, then try again.",
+  prompt_too_large:"Your resume and job description are too long. Shorten the job description and try again.",
+  invalid_json:"The corrected resume came back incomplete. Try again, or shorten the job description.",
+  refused:"This request couldn't be completed. Check the resume text and try again.",
+  session_expired:"Your session expired. Reload the page and try again.",
+  sampling_disabled:"AI features are turned off for this account.",
+};
+ERR.no_ai = "Claude couldn't be reached from this page. Please try again in a minute.";
+const errText = code => ERR[code] || "Something went wrong while correcting. Please try again.";
+async function ensureSample(){
+  if (sample) return true;
+  try{ if (window.claude && window.claude.use) sample = await window.claude.use("sample"); }catch(e){ sample = null; }
+  if (sample) $("#suggestBtn").style.display = "";
+  return !!sample;
+}
+
+(async () => {
+  try{ sample = window.claude ? await window.claude.use("sample") : null; }catch(e){ sample = null; }
+  if (!sample) $("#suggestBtn").style.display = "none";
+  updateGo();
+})();
+
+let MODE = "correct";
+function updateGo(){
+  if (MODE === "make"){
+    const hasName = !!$("#mName").value.trim();
+    const ok = !!getRole() && hasName;
+    $("#goBtn").disabled = !ok;
+    $("#goHint").textContent = !getRole() ? "Choose your role in step 1." : !hasName ? "Add your name in step 3." :
+      (sample ? "Ready when you are." : "Claude isn't available here, so we'll build a basic version from your details.");
+    return;
+  }
+  const ok = !!getRole() && resumeText.value.trim().length > 40;
+  $("#goBtn").disabled = !ok;
+  $("#goHint").textContent = ok ? "Ready when you are." :
+    (!getRole() ? "Choose your role in step 1." : "Add your resume in step 3 (upload or paste).");
+}
+function setMode(m){
+  MODE = m;
+  document.body.classList.toggle("make", m === "make");
+  document.querySelectorAll(".mode").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+  $("#goBtn").textContent = m === "make" ? "Make my resume" : "Correct my resume";
+  $("#reqNote").textContent = m === "make" ? " Optional, but it helps tailor your resume." : "";
+  $("#err").classList.remove("show");
+  updateGo();
+}
+document.querySelectorAll(".mode").forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+/* ---------------- Maker: repeatable blocks ---------------- */
+const REP = {
+  exp: {list:"#expList", fields:[["title","Job title","Sales Executive"],["company","Company","ABC Pvt Ltd"],["location","Location","Dehradun"],["dates","Dates","Jun 2022 – Present"]],
+        notes:["What did you do? Rough notes are fine","Handled 40 customers daily\nMet monthly target 3 times\nTrained 2 new joiners"]},
+  edu: {list:"#eduList", fields:[["degree","Degree / class","B.Com"],["school","College / school","DAV PG College"],["year","Year","2021"],["details","Marks / CGPA (optional)","78%"]]},
+  proj:{list:"#projList", fields:[["name","Project name","Inventory tracker in Excel"]],
+        notes:["What did you build or do?","Made a sheet to track stock for 200 items\nReduced counting time"]}
+};
+function addRep(kind, focus){
+  const cfg = REP[kind];
+  const d = document.createElement("div"); d.className = "rep"; d.dataset.kind = kind;
+  const grid = document.createElement("div"); grid.className = cfg.fields.length > 1 ? "two" : "";
+  cfg.fields.forEach(([k,l,phd]) => {
+    const w = document.createElement("div");
+    const id = kind + "-" + k + "-" + Math.random().toString(36).slice(2,8);
+    w.innerHTML = `<label class="f" for="${id}"></label><input type="text" id="${id}" data-k="${k}">`;
+    w.querySelector("label").textContent = l; w.querySelector("input").placeholder = "e.g. " + phd;
+    grid.appendChild(w);
+  });
+  d.appendChild(grid);
+  if (cfg.notes){
+    const id = kind + "-notes-" + Math.random().toString(36).slice(2,8);
+    const w = document.createElement("div");
+    w.innerHTML = `<label class="f" for="${id}"></label><textarea id="${id}" data-k="notes" style="min-height:90px"></textarea>`;
+    w.querySelector("label").textContent = cfg.notes[0]; w.querySelector("textarea").placeholder = cfg.notes[1];
+    d.appendChild(w);
+  }
+  const rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remove";
+  rm.onclick = () => d.remove();
+  d.appendChild(rm);
+  $(cfg.list).appendChild(d);
+  if (focus) d.querySelector("input").focus();
+}
+$("#addExp").onclick = () => addRep("exp", true);
+$("#addEdu").onclick = () => addRep("edu", true);
+$("#addProj").onclick = () => addRep("proj", true);
+addRep("exp"); addRep("edu");
+$("#mName").addEventListener("input", updateGo);
+
+function readRep(kind){
+  return [...document.querySelectorAll(`${REP[kind].list} .rep`)].map(d => {
+    const o = {}; d.querySelectorAll("[data-k]").forEach(el => o[el.dataset.k] = el.value.trim()); return o;
+  }).filter(o => Object.values(o).some(Boolean));
+}
+/* maker skills */
+let mSkills = [];
+const mIn = $("#mSkillInput");
+function renderMTags(){
+  document.querySelectorAll("#mTagbox .tag").forEach(t => t.remove());
+  mSkills.forEach((sk,i) => {
+    const t = document.createElement("span"); t.className = "tag"; t.style.background = "var(--mint)"; t.style.color = "#06362a";
+    const tx = document.createElement("span"); tx.textContent = sk;
+    const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.style.color = "#06362a"; x.setAttribute("aria-label","Remove "+sk);
+    x.onclick = () => { mSkills.splice(i,1); renderMTags(); };
+    t.append(tx,x); $("#mTagbox").insertBefore(t, mIn);
+  });
+}
+function addMSkills(v){ v.split(/[,;\n]/).map(x=>x.trim()).filter(Boolean).forEach(x=>{ if(!mSkills.some(k=>k.toLowerCase()===x.toLowerCase())) mSkills.push(x.slice(0,60)); }); renderMTags(); }
+mIn.addEventListener("keydown", e => {
+  if ((e.key==="Enter"||e.key===",") && mIn.value.trim()){ e.preventDefault(); addMSkills(mIn.value); mIn.value=""; }
+  else if (e.key==="Backspace" && !mIn.value && mSkills.length){ mSkills.pop(); renderMTags(); }
+});
+mIn.addEventListener("blur", () => { if (mIn.value.trim()){ addMSkills(mIn.value); mIn.value=""; } });
+$("#mTagbox").addEventListener("click", e => { if (e.target.id==="mTagbox") mIn.focus(); });
+
+const lines = v => str(v).split(/\n|,(?![^()]*\))/).map(x=>x.replace(/^[-•*\s]+/,"").trim()).filter(Boolean);
+function makerData(){
+  return {
+    name:$("#mName").value.trim(), email:$("#mEmail").value.trim(), phone:$("#mPhone").value.trim(),
+    city:$("#mCity").value.trim(), link:$("#mLink").value.trim(), goal:$("#mGoal").value.trim(),
+    experience:readRep("exp"), education:readRep("edu"), projects:readRep("proj"), skills:[...mSkills],
+    certifications:$("#mCerts").value.trim(), languages:$("#mLangs").value.trim(),
+    achievements:$("#mAch").value.trim(), hobbies:$("#mHob").value.trim()
+  };
+}
+/* basic resume without AI */
+function basicResume(D, role){
+  const extra = [];
+
+  if (D.achievements) extra.push({title:"Achievements", items:D.achievements.split("\n").map(x=>x.trim()).filter(Boolean)});
+
+  return {
+    name:D.name, title:role, contact:[D.email,D.phone,D.city,D.link].filter(Boolean).join(" | "),
+    summary:D.goal ? `${role} candidate. ${D.goal}.` : "",
+    skills:D.skills,
+    experience:D.experience.map(e=>({role:e.title,company:e.company,location:e.location,dates:e.dates,bullets:str(e.notes).split("\n").map(x=>x.replace(/^[-•*\s]+/,"").trim()).filter(Boolean)})),
+    education:D.education.map(e=>({degree:e.degree,school:e.school,year:e.year,details:e.details})),
+    projects:D.projects.map(p=>({name:p.name,bullets:str(p.notes).split("\n").map(x=>x.replace(/^[-•*\s]+/,"").trim()).filter(Boolean)})),
+    certifications:D.certifications.split("\n").map(x=>x.trim()).filter(Boolean),
+    languages:lines(D.languages), interests:lines(D.hobbies),
+    extra_sections:extra
+  };
+}
+
+/* suggest typical requirements */
+$("#suggestBtn").onclick = async () => {
+  const role = getRole();
+  if (!(await ensureSample())){ $("#suggestStatus").textContent = ERR.no_ai; return; }
+  if (!role){ $("#suggestStatus").textContent = "Choose a role first."; return; }
+  const btn = $("#suggestBtn"); btn.disabled = true;
+  $("#suggestStatus").textContent = "Thinking…";
+  try{
+    const r = await sample.json(
+      `List what employers typically ask for in a "${role}" job at the "${$("#level").value}" level. Reply with only JSON: {"skills":["8-10 short skill names"],"qualification":"most common qualification, short","requirements":"3-5 short lines of typical responsibilities/requirements, separated by newlines"}`,
+      {modelTier:"quick"});
+    if (Array.isArray(r.skills)) addSkills(r.skills.map(String).join(","));
+    if (r.qualification && !$("#qual").value) $("#qual").value = String(r.qualification);
+    if (r.requirements && !$("#jd").value.trim()) $("#jd").value = String(r.requirements);
+    $("#suggestStatus").textContent = "Added typical requirements. Edit them to match your real job post.";
+  }catch(e){
+    $("#suggestStatus").textContent = errText(e && e.code);
+  }finally{ btn.disabled = false; }
+};
+
+/* ---------------- Correct resume ---------------- */
+let ctl = null, lastResult = null;
+$("#stopBtn").onclick = () => ctl && ctl.abort();
+$("#againBtn").onclick = () => document.getElementById("start").scrollIntoView();
+
+const PHASES = ["Reading your resume…","Matching it to the job…","Rewriting bullet points…","Writing reasons for each change…"];
+
+$("#goBtn").onclick = () => MODE === "make" ? makeResume() : correctResume();
+
+const RESUME_SCHEMA = `"resume":{"name":"","title":"headline for target role","contact":"email | phone | city | link (only what exists)","summary":"",
+"highlights":["3-4 short key strengths, max 8 words each"],
+"skill_groups":[{"group":"e.g. Technical / Tools / Soft skills","items":[""]}],
+"experience":[{"role":"","company":"","location":"","dates":"","bullets":[""]}],
+"education":[{"degree":"","school":"","year":"","details":""}],
+"projects":[{"name":"","bullets":[""]}],"certifications":[""],"languages":[""],"interests":[""],
+"extra_sections":[{"title":"e.g. Achievements","items":[""]}]}`;
+
+function makePrompt(D, role, jd){
+  const lvl = $("#mBoost").value;
+  const LEVEL = {
+    polish: `ENHANCEMENT LEVEL: POLISH ONLY. Use only what the candidate wrote. Rephrase for clarity and impact, but add no new duties or skills.`,
+    enhance: `ENHANCEMENT LEVEL: ENHANCE. Rewrite everything professionally AND enrich it: for each job add 1-2 bullets describing duties that are standard for that exact job title and consistent with the notes; for each project add a line on purpose or tools only if the notes imply them; group skills and add 2-4 skills clearly implied by the candidate's jobs, studies and notes. 3-5 bullets per job.`,
+    max: `ENHANCEMENT LEVEL: MAXIMUM. Make the resume rich, detailed and impressive: a strong 3-4 sentence summary, 4 highlights, 4-6 bullets per job and 2-4 per project describing responsibilities and impact typical for that exact job title and consistent with the notes, and well-organised skill groups including skills clearly implied by the candidate's jobs, studies and notes.`
+  }[lvl] || "";
+  return `You are an expert resume writer and ATS (applicant tracking system) specialist. Create a brand-new, stylish, informative resume from the candidate's details below, targeted at their chosen role.
+
+TARGET ROLE: ${role}
+EXPERIENCE LEVEL: ${$("#level").value}
+PREFERRED STYLE: ${$("#tone").value}
+COMPANY: ${$("#company").value.trim() || "not given"}
+REQUIRED SKILLS (from job post, may be empty): ${skills.join(", ") || "not given"}
+REQUIRED QUALIFICATION: ${$("#qual").value.trim() || "not given"}
+JOB DESCRIPTION: ${jd || "not given"}
+
+CANDIDATE'S DETAILS (JSON; notes may be rough, informal or in Hinglish):
+${JSON.stringify(D).slice(0, 30000)}
+
+${LEVEL}
+
+HARD RULES (all levels)
+- Never invent employers, job titles, dates, degrees, colleges, certifications, awards, or specific tools/software the candidate didn't mention.
+- Never invent numbers. Where a number would make a bullet stronger, add a placeholder in square brackets, e.g. "[add number]" or "[X%]".
+- Bullets start with strong action verbs and stay under 26 words.
+- Write a professional summary for the target role and 3-4 "highlights" (short key strengths) supported by the details.
+- Put languages in "languages" and hobbies/volunteering in "interests"; achievements go in extra_sections titled "Achievements".
+- Freshers: lead with education and projects. Experienced: lead with experience.
+- In "changes", explain 6-10 key writing choices in simple, friendly English: "rewritten" when you polished a note (before = their note, after = your text), "added" for new content, "reordered" for order. For EVERY duty or skill you added that the candidate did not write, use type "added" and start the reason with "Check this is true for you:".
+- Put required job skills the candidate did not mention (and that you did not infer) into "missing_skills".
+- score_before = 0. score_after = estimated 0-100 match with the requirements (or with typical ${role} requirements if none given).
+- Write in English unless the details are clearly in another language.
+
+Reply with only JSON in exactly this shape:
+{"score_before":0,"score_after":0,"summary":"one or two sentences about the resume",
+${RESUME_SCHEMA},
+"changes":[{"type":"added|rewritten|reordered","section":"","before":"","after":"","reason":""}],
+"missing_skills":[""],"tips":["3-5 practical tips"]}
+Use empty arrays for sections with no details.`;
+}
+
+async function makeResume(){
+  const role = getRole();
+  const D = makerData();
+  $("#err").classList.remove("show");
+  await ensureSample();
+  if (!sample){
+    lastResult = {score_before:0, score_after:0, summary:"Built directly from your details. Open this page in Claude to get AI-polished wording and keyword matching.",
+      resume:basicResume(D, role), changes:[], missing_skills:[], tips:["Start each bullet with an action verb like Managed, Built, Taught or Improved.","Add numbers wherever you can: how many, how much, how often.","Keep it to one page if you have under 5 years of experience."]};
+    lastResult.summary = "Built directly from your details. For polished wording, use the Claude chat steps below.";
+    renderResults(lastResult, role);
+    openFallback(true);
+    return;
+  }
+  $("#results").classList.remove("show");
+  $("#loading").classList.add("show");
+  $("#goBtn").disabled = true;
+  $("#loading").scrollIntoView({block:"center"});
+  $("#phase").textContent = "Organising your details…";
+  const jd = $("#jd").value.trim().slice(0, 12000);
+  const prompt = makePrompt(D, role, jd);
+  ctl = new AbortController();
+  try{
+    const r = await askJSON(prompt, {signal: ctl.signal, onText: () => { $("#phase").textContent = "Writing your resume…"; }});
+    if (!r || !r.resume) throw {code:"invalid_json"};
+    lastResult = r;
+    renderResults(r, role);
+  }catch(e){
+    if (!(e && e.code === "cancelled")) showErr(e, "making your resume");
+  }finally{
+    $("#loading").classList.remove("show");
+    updateGo();
+  }
+}
+
+/* Robust JSON reader: used when sample.json rejects but text came back */
+function parseLoose(t){
+  t = str(t).replace(/```(?:json)?/gi, "").trim();
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a < 0 || b <= a) return null;
+  try { return JSON.parse(t.slice(a, b + 1)); } catch(e) { return null; }
+}
+async function askJSON(prompt, opts){
+  try {
+    return await sample.json(prompt, opts);
+  } catch(e) {
+    if (e && e.code === "invalid_json" && e.text){
+      const r = parseLoose(e.text);
+      if (r) return r;
+    }
+    throw e;
+  }
+}
+function showErr(e, what){
+  const code = e && e.code ? e.code : "unknown";
+  const box = $("#err");
+  box.textContent = (ERR[code] || `Something went wrong while ${what}. Please try again.`) + `  (Error: ${code})`;
+  box.classList.add("show");
+  box.scrollIntoView({block:"center"});
+}
+
+async function correctResume(){
+  const role = getRole();
+  const resume = resumeText.value.trim().slice(0, 20000);
+  const jd = $("#jd").value.trim().slice(0, 8000);
+  $("#err").classList.remove("show");
+
+  $("#goHint").textContent = "Connecting to Claude…";
+  if (!(await ensureSample())){
+    updateGo();
+    openFallback();
+    return;
+  }
+  $("#fallback").classList.remove("show");
+
+  $("#results").classList.remove("show");
+  $("#loading").classList.add("show");
+  $("#goBtn").disabled = true;
+  $("#loading").scrollIntoView({block:"center"});
+  let pi = 0; $("#phase").textContent = PHASES[0];
+  const timer = setInterval(() => { pi = Math.min(pi+1, 2); $("#phase").textContent = PHASES[pi]; }, 9000);
+
+  const context = `TARGET ROLE: ${role}
+EXPERIENCE LEVEL: ${$("#level").value}
+PREFERRED STYLE: ${$("#tone").value}
+COMPANY: ${$("#company").value.trim() || "not given"}
+REQUIRED SKILLS: ${skills.join(", ") || "not given"}
+REQUIRED QUALIFICATION: ${$("#qual").value.trim() || "not given"}
+JOB DESCRIPTION / OTHER REQUIREMENTS:
+${jd || "not given"}`;
+
+  /* Call 1: the corrected resume (kept compact so it is never cut off) */
+  const prompt1 = `You are an expert resume writer and ATS specialist. Correct and rewrite the candidate's resume so it targets the role and requirements below.
+
+${context}
+
+CANDIDATE'S CURRENT RESUME:
+"""
+${resume}
+"""
+
+RULES
+- Keep every fact true. Never invent employers, job titles, dates, degrees, certifications, tools or numbers.
+- Where a number would help but isn't in the resume, add a placeholder in square brackets, e.g. "[add number]".
+- Rephrase, reorder, shorten, fix grammar, cut irrelevant content, and use the job's keywords only where they truthfully fit.
+- Bullets under 25 words; at most 5 bullets per job; at most 15 skills.
+- 2-3 sentence professional summary for the target role.
+- Required skills with no evidence in the resume go in "missing_skills", not in the resume.
+- Scores 0-100 = how well the resume matches the requirements before and after.
+- Write in the same language as the original resume.
+
+Reply with only this JSON (no other text):
+{"score_before":0,"score_after":0,"summary":"one sentence on the overall improvement",
+${RESUME_SCHEMA},
+"missing_skills":[""],"tips":["3 short practical tips"]}
+Use empty arrays for sections the resume doesn't have.`;
+
+  ctl = new AbortController();
+  let r;
+  try{
+    r = await askJSON(prompt1, {signal: ctl.signal, onText: () => { clearInterval(timer); $("#phase").textContent = "Writing your corrected resume…"; }});
+    if (!r || typeof r !== "object" || !r.resume) throw {code:"invalid_json"};
+    r.changes = null;
+    lastResult = r;
+    renderResults(r, role);
+    $("#changes").innerHTML = `<p class="toast">Writing the reasons for each change…</p>`;
+  }catch(e){
+    clearInterval(timer);
+    $("#loading").classList.remove("show");
+    updateGo();
+    if (!(e && e.code === "cancelled")) showErr(e, "correcting");
+    return;
+  }
+  clearInterval(timer);
+  $("#loading").classList.remove("show");
+  updateGo();
+
+  /* Call 2: explain the changes (runs after the resume is already shown) */
+  const newText = resumeText_(r.resume).slice(0, 15000);
+  const prompt2 = `A resume was rewritten for a job. Compare the ORIGINAL and the NEW version and explain the 6-10 most important changes in simple, friendly English a first-time job seeker understands. Each reason must say how the change helps for this role and company.
+
+${context}
+
+ORIGINAL RESUME:
+"""
+${resume.slice(0, 15000)}
+"""
+
+NEW RESUME:
+"""
+${newText}
+"""
+
+Reply with only this JSON (no other text). Keep "before" and "after" under 25 words each (use empty string when not applicable) and "reason" under 40 words:
+{"changes":[{"type":"rewritten|added|removed|reordered","section":"","before":"","after":"","reason":""}]}`;
+  try{
+    const c = await askJSON(prompt2, {signal: ctl.signal});
+    lastResult.changes = Array.isArray(c) ? c : (c && c.changes) || [];
+  }catch(e){
+    lastResult.changes = [];
+    if (e && e.code === "cancelled") return;
+  }
+  renderChanges(lastResult.changes);
+}
+
+/* ---------------- Render results ---------------- */
+const arr = v => Array.isArray(v) ? v.filter(x => x !== null && x !== undefined && x !== "") : [];
+const str = v => (v === null || v === undefined) ? "" : String(v);
+function esc(s){ return str(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+const ph = s => esc(s).replace(/\[([^\]]{1,80})\]/g, '<mark class="ph">[$1]</mark>');
+
+let TPL = "side";
+function skillGroups(R){
+  const g = arr(R.skill_groups).map(x => ({group:str(x.group), items:arr(x.items).map(str)})).filter(x => x.items.length);
+  if (g.length) return g;
+  const flat = arr(R.skills).map(str);
+  return flat.length ? [{group:"", items:flat}] : [];
+}
+function resumeHTML(R, forWord, tpl){
+  tpl = tpl || TPL;
+  const H = forWord ? s => esc(s) : ph;
+  const A = forWord ? ACC : "var(--acc)";
+  const contacts = str(R.contact).split("|").map(x=>x.trim()).filter(Boolean);
+  const icon = c => /@/.test(c) ? "✉" : /\+?\d[\d\s-]{6,}/.test(c) ? "☏" : /(linkedin|github|http|www\.|\.com|\.in)/i.test(c) ? "↗" : "⌂";
+  const sec = (t, body) => body ? `<h4>${esc(t)}</h4>${body}` : "";
+  const list = xs => xs.length ? `<ul>${xs.map(x=>`<li>${H(x)}</li>`).join("")}</ul>` : "";
+  const sg = skillGroups(R);
+  const skillsB = sg.length ? sg.map(g => (g.group ? `<div class="sg-t">${esc(g.group)}</div>` : "") +
+      (forWord ? `<p style="margin:0 0 4pt">${g.items.map(esc).join(" • ")}</p>` : `<div class="sk">${g.items.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`)).join("") : "";
+  const hl = arr(R.highlights);
+  const hlB = hl.length ? (forWord ? list(hl) : `<div class="hl">${hl.map(x=>`<div>${H(x)}</div>`).join("")}</div>`) : "";
+  const jobs = xs => xs.map(j => {
+    const co = [j.company, j.location].map(str).filter(Boolean).join(", ");
+    return `<div class="job"><div class="jh">${esc(j.role || j.name || j.degree)}<span>${esc(j.dates || j.year || "")}</span></div>${co?`<div class="co">${esc(co)}</div>`:""}${list(arr(j.bullets))}</div>`;
+  }).join("");
+  const expB = arr(R.experience).length ? `<div class="tl">${jobs(arr(R.experience))}</div>` : "";
+  const projB = arr(R.projects).length ? `<div class="tl">${arr(R.projects).map(p=>`<div class="job"><div class="jh">${esc(p.name)}</div>${list(arr(p.bullets))}</div>`).join("")}</div>` : "";
+  const eduB = arr(R.education).length ? `<div class="tl">${arr(R.education).map(e=>`<div class="job"><div class="jh">${esc(e.degree)}<span>${esc(e.year)}</span></div>${e.school?`<div class="co">${esc(e.school)}</div>`:""}${e.details?`<div>${H(e.details)}</div>`:""}</div>`).join("")}</div>` : "";
+  const certB = list(arr(R.certifications));
+  const langB = arr(R.languages).length ? `<p style="margin:0">${arr(R.languages).map(esc).join(", ")}</p>` : "";
+  const intB = arr(R.interests).length ? `<p style="margin:0">${arr(R.interests).map(esc).join(", ")}</p>` : "";
+  const extraB = arr(R.extra_sections).map(s => sec(str(s.title), list(arr(s.items)))).join("");
+  const isFresher = !arr(R.experience).length || /fresher|student/i.test($("#level").value);
+  const mainFlow = (isFresher
+      ? [["Education",eduB],["Projects",projB],["Work Experience",expB]]
+      : [["Work Experience",expB],["Projects",projB],["Education",eduB]])
+    .map(([t,b]) => sec(t,b)).join("");
+  const name = esc(R.name) || "Your Name";
+  const summ = R.summary ? sec("Profile", `<p style="margin:0">${H(R.summary)}</p>`) : "";
+  const hlS = sec("Key Strengths", hlB);
+
+  if (tpl === "side"){
+    const initials = str(R.name).split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join("") || "CV";
+    const side = (forWord ? "" : `<div class="avatar">${esc(initials)}</div>`) +
+      sec("Contact", contacts.map(c => forWord ? `<p style="margin:0 0 3pt">${esc(c)}</p>` : `<div class="ci"><i>${icon(c)}</i><span>${esc(c)}</span></div>`).join("")) +
+      sec("Skills", skillsB) + sec("Certifications", certB) + sec("Languages", langB) + sec("Interests", intB);
+    const main = `<h3 class="nm">${name}</h3>${R.title?`<div class="ttl">${esc(R.title)}</div>`:""}` + summ + hlS + mainFlow + extraB;
+    if (forWord) return `<table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr><td width="32%" valign="top" bgcolor="${A}" style="background:${A};color:#ffffff;padding:16pt">${side.replace(/<h4>/g,'<h4 style="color:#ffffff;border-bottom:1pt solid #ffffff">')}</td><td valign="top" style="padding:16pt">${main}</td></tr></table>`;
+    return `<div class="pside">${side}</div><div class="pmain">${main}</div>`;
+  }
+  if (tpl === "banner"){
+    const head = `<h3 class="nm">${name}</h3>${R.title?`<div class="ttl">${esc(R.title)}</div>`:""}` +
+      (contacts.length ? (forWord ? `<p style="margin:4pt 0 0">${contacts.map(esc).join("  |  ")}</p>` : `<div class="cp">${contacts.map(c=>`<span>${icon(c)} ${esc(c)}</span>`).join("")}</div>`) : "");
+    const mainCol = summ + hlS + mainFlow + extraB;
+    const sideCol = sec("Skills", skillsB) + sec("Certifications", certB) + sec("Languages", langB) + sec("Interests", intB);
+    if (forWord) return `<table width="100%" cellspacing="0" cellpadding="0"><tr><td bgcolor="${A}" style="background:${A};color:#ffffff;padding:18pt">${head.replace('class="nm"','class="nm" style="color:#ffffff"').replace('class="ttl"','class="ttl" style="color:#ffffff"')}</td></tr></table><table width="100%"><tr><td valign="top" width="68%" style="padding-right:14pt">${mainCol}</td><td valign="top">${sideCol}</td></tr></table>`;
+    return `<div class="bnr">${head}</div><div class="pbody"><div>${mainCol}</div><aside>${sideCol}</aside></div>`;
+  }
+  /* classic */
+  return `<h3 class="nm">${name}</h3>${R.title?`<div class="ttl">${esc(R.title)}</div>`:""}${contacts.length?`<div class="ct">${contacts.map(esc).join("  |  ")}</div>`:""}` +
+    summ + hlS + sec("Skills", skillsB) + mainFlow + sec("Certifications", certB) + sec("Languages", langB) + extraB + sec("Interests", intB);
+}
+function paintPaper(){
+  if (!lastResult) return;
+  const el = $("#paper");
+  el.className = "paper tpl-" + TPL;
+  el.innerHTML = resumeHTML(lastResult.resume, false, TPL);
+}
+document.querySelectorAll("#tpls button").forEach(b => b.onclick = () => {
+  TPL = b.dataset.t;
+  document.querySelectorAll("#tpls button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  paintPaper();
+});
+
+function resumeText_(R){
+  const L = [];
+  L.push(str(R.name) || "Your Name");
+  if (R.title) L.push(str(R.title));
+  if (R.contact) L.push(str(R.contact));
+  const sec = t => { L.push("", t.toUpperCase(), "-".repeat(t.length)); };
+  if (R.summary){ sec("Professional Summary"); L.push(str(R.summary)); }
+  if (arr(R.highlights).length){ sec("Key Strengths"); arr(R.highlights).forEach(x=>L.push("• "+x)); }
+  const sgs = skillGroups(R);
+  if (sgs.length){ sec("Skills"); sgs.forEach(g => L.push((g.group ? g.group + ": " : "") + g.items.join(", "))); }
+  if (arr(R.experience).length){ sec("Work Experience"); arr(R.experience).forEach(j=>{ L.push(`${str(j.role)}${j.dates?" | "+str(j.dates):""}`); const co=[j.company,j.location].map(str).filter(Boolean).join(", "); if(co) L.push(co); arr(j.bullets).forEach(b=>L.push("• "+b)); L.push(""); }); }
+  if (arr(R.projects).length){ sec("Projects"); arr(R.projects).forEach(p=>{ L.push(str(p.name)); arr(p.bullets).forEach(b=>L.push("• "+b)); L.push(""); }); }
+  if (arr(R.education).length){ sec("Education"); arr(R.education).forEach(e=>{ L.push(`${str(e.degree)}${e.year?" | "+str(e.year):""}`); if(e.school) L.push(str(e.school)); if(e.details) L.push(str(e.details)); }); }
+  if (arr(R.certifications).length){ sec("Certifications"); arr(R.certifications).forEach(c=>L.push("• "+c)); }
+  if (arr(R.languages).length){ sec("Languages"); L.push(arr(R.languages).join(", ")); }
+  arr(R.extra_sections).forEach(s=>{ if(arr(s.items).length){ sec(str(s.title)); arr(s.items).forEach(x=>L.push("• "+x)); } });
+  if (arr(R.interests).length){ sec("Interests"); L.push(arr(R.interests).join(", ")); }
+  return L.join("\n").replace(/\n{3,}/g,"\n\n").trim();
+}
+
+function setRing(id, lbl, v){
+  v = Math.max(0, Math.min(100, Math.round(Number(v)||0)));
+  const el = $(id); let cur = 0;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce){ el.style.setProperty("--p", v); $(lbl).textContent = v; return; }
+  const step = () => { cur = Math.min(v, cur + 2); el.style.setProperty("--p", cur); $(lbl).textContent = cur; if (cur < v) requestAnimationFrame(step); };
+  step();
+}
+
+function renderResults(r, role){
+  const made = MODE === "make";
+  document.querySelectorAll(".rb").forEach(el => el.style.display = made ? "none" : "");
+  $("#afterLbl").textContent = made ? "Role match" : "After";
+  $("#whyTab").textContent = made ? "💡 How we wrote it" : "💡 Why we changed it";
+  if (!made) setRing("#ringBefore","#sBefore", r.score_before);
+  setRing("#ringAfter","#sAfter", r.score_after);
+  $("#resTitle").textContent = (made ? "New resume for " : "Corrected for ") + role;
+  $("#resSummary").textContent = str(r.summary);
+  lastResult = r;
+  paintPaper();
+
+  renderChanges(r.changes);
+
+  const miss = arr(r.missing_skills);
+  $("#missing").innerHTML = miss.length ? miss.map(s=>`<span>${esc(s)}</span>`).join("") : `<p style="margin:0">Great — your resume shows evidence for every skill listed.</p>`;
+  $("#tips").innerHTML = arr(r.tips).map(t=>`<li>${esc(t)}</li>`).join("");
+
+  selectRTab("resume");
+  $("#results").classList.add("show");
+  $("#results").scrollIntoView();
+}
+
+function renderChanges(changes){
+  const labels = {rewritten:"Rewritten", added:"Added", removed:"Removed", reordered:"Moved"};
+  const box = $("#changes"); box.innerHTML = "";
+  const ch = arr(changes);
+  if (!ch.length) box.innerHTML = `<p>${MODE === "make" ? "This basic version uses your details as written. Open the page in Claude for polished wording with reasons." : "The explanations couldn\u2019t be loaded this time. Your corrected resume is still ready in the first tab."}</p>`;
+  ch.forEach(c => {
+    const t = labels[c.type] ? c.type : "rewritten";
+    const d = document.createElement("div"); d.className = "chg t-" + t;
+    let ba = "";
+    if (c.before || c.after){
+      ba = `<div class="ba">${c.before?`<div class="bf"><small>${MODE === "make" ? "You wrote" : "Before"}</small>${esc(c.before)}</div>`:`<div class="bf"><small>Before</small><em>${MODE === "make" ? "Not in your details" : "Not in your resume"}</em></div>`}${c.after?`<div class="af"><small>After</small>${ph(c.after)}</div>`:`<div class="af"><small>After</small><em>Removed</em></div>`}</div>`;
+    }
+    d.innerHTML = `<div class="chg-h"><span class="badge b-${t}">${labels[t]}</span><strong>${esc(c.section)}</strong></div>${ba}<p class="why"><b>Why:</b> ${esc(c.reason)}</p>`;
+    box.appendChild(d);
+  });
+}
+
+function selectRTab(k){
+  document.querySelectorAll(".rtabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.r===k));
+  ["resume","why","gaps"].forEach(x => $("#p-"+x).classList.toggle("show", x===k));
+}
+document.querySelectorAll(".rtabs button").forEach(b => b.onclick = () => selectRTab(b.dataset.r));
+
+/* ---------------- Accent colours ---------------- */
+let ACC = "#6D4AFF";
+[["#6D4AFF","Violet"],["#E0317F","Pink"],["#0FA37F","Green"],["#1F7AE0","Blue"],["#E26A12","Orange"],["#1C1740","Ink"]].forEach(([c,n]) => {
+  const b = document.createElement("button"); b.type = "button"; b.className = "sw"; b.style.background = c;
+  b.setAttribute("aria-label", n + " colour"); b.setAttribute("aria-pressed", c === ACC);
+  b.onclick = () => { ACC = c; $("#paper").style.setProperty("--acc", c); document.querySelectorAll(".sw").forEach(x => x.setAttribute("aria-pressed", x === b)); };
+  $("#swatches").appendChild(b);
+});
+
+/* ---------------- Claude chat fallback ---------------- */
+function chatPrompt(){
+  const role = getRole();
+  if (MODE === "make") return makePrompt(makerData(), role, $("#jd").value.trim().slice(0,8000));
+  const ctx = `TARGET ROLE: ${role}
+EXPERIENCE LEVEL: ${$("#level").value}
+PREFERRED STYLE: ${$("#tone").value}
+COMPANY: ${$("#company").value.trim() || "not given"}
+REQUIRED SKILLS: ${skills.join(", ") || "not given"}
+REQUIRED QUALIFICATION: ${$("#qual").value.trim() || "not given"}
+JOB DESCRIPTION: ${$("#jd").value.trim().slice(0,8000) || "not given"}`;
+  const made = MODE === "make";
+  const input = made
+    ? `CANDIDATE'S DETAILS (rough notes, may be informal):\n${JSON.stringify(makerData())}`
+    : `CANDIDATE'S CURRENT RESUME:\n"""\n${resumeText.value.trim().slice(0,20000)}\n"""`;
+  return `You are an expert resume writer and ATS specialist. ${made ? "Create a brand-new, polished resume from the candidate's details" : "Correct and rewrite the candidate's resume"} so it targets the role and requirements below.
+
+${ctx}
+
+${input}
+
+RULES
+- Keep every fact true. Never invent employers, titles, dates, degrees, certifications, tools or numbers. Where a number would help but isn't given, write a placeholder like "[add number]".
+- Strong action verbs, bullets under 25 words, max 5 bullets per job, max 15 skills, 2-3 sentence summary for the target role.
+- Use the job's keywords only where they truthfully fit. Required skills with no evidence go in "missing_skills", not in the resume.
+- In "changes", explain the 6-10 most important ${made ? "writing choices (before = what the candidate wrote)" : "changes"} in simple, friendly English, saying how each helps for this role.
+- Scores 0-100 = match with the requirements ${made ? "(score_before = 0)" : "before and after"}.
+
+Reply with ONLY this JSON inside one code block, nothing else:
+{"score_before":0,"score_after":0,"summary":"",${RESUME_SCHEMA},"changes":[{"type":"rewritten|added|removed|reordered","section":"","before":"","after":"","reason":""}],"missing_skills":[""],"tips":[""]}`;
+}
+function openFallback(quiet){
+  $("#fbPrompt").value = chatPrompt();
+  $("#fbPrompt").classList.remove("show");
+  $("#fbCopyMsg").textContent = ""; $("#fbMsg").textContent = "";
+  $("#fallback").classList.add("show");
+  if (!quiet) $("#fallback").scrollIntoView({block:"start"});
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); return true; }catch(e){}
+  const ta = document.createElement("textarea"); ta.value = t; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  let ok = false; try{ ok = document.execCommand("copy"); }catch(e){}
+  ta.remove(); return ok;
+}
+$("#fbCopy").onclick = async () => {
+  const t = chatPrompt(); $("#fbPrompt").value = t;
+  if (await copyText(t)) $("#fbCopyMsg").textContent = "Copied! Now paste it into Claude chat.";
+  else { $("#fbPrompt").classList.add("show"); $("#fbPrompt").focus(); $("#fbPrompt").select(); $("#fbCopyMsg").textContent = "Copy blocked here — the request is shown below. Press and hold, Select all, Copy."; }
+};
+$("#fbShow").onclick = () => {
+  const r = parseLoose($("#fbReply").value);
+  if (!r || !r.resume){ $("#fbMsg").textContent = "That doesn't look like Claude's full reply. Copy everything Claude wrote, starting from the { and ending at the last }."; return; }
+  if (!Array.isArray(r.changes)) r.changes = [];
+  lastResult = r;
+  $("#fbMsg").textContent = "";
+  renderResults(r, getRole() || "your role");
+};
+
+/* ---------------- Download / copy ---------------- */
+let downloads = null;
+(async () => { try{ downloads = window.claude ? await window.claude.use("downloads") : null; }catch(e){ downloads = null; } })();
+
+function fname(ext){ const n = str(lastResult?.resume?.name).trim() || "Resume"; return (n + " - " + (getRole()||"Resume")).replace(/[\\/:*?"<>|]/g,"") + ext; }
+async function save(filename, data, mime){
+  const m = $("#dlMsg"); m.textContent = "Preparing download…";
+  if (downloads){
+    try{ await downloads.save({filename, data}); m.textContent = "Downloaded: " + filename; return; }
+    catch(e){ if (e && e.code === "cancelled"){ m.textContent = ""; return; } }
+  }
+  /* fallback: normal browser download */
+  try{
+    const blob = data instanceof Blob ? data : new Blob([data], {type: mime || "text/plain"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = filename; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    m.textContent = "If no file appeared, this view blocks downloads: use \u201cPDF (print)\u201d, \u201cCopy text\u201d, or open the page in the Claude app or on a computer.";
+  }catch(e){
+    m.textContent = "Downloads are blocked in this view. Use \u201cCopy text\u201d or \u201cShow plain text\u201d instead.";
+  }
+}
+function wordHTML(){
+  const body = resumeHTML(lastResult.resume, true);
+  return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Resume</title>
+<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1d1b2e;max-width:800px;margin:30px auto;padding:0 20px}h3{font-size:22pt;margin:0}.ttl{color:${ACC};font-weight:bold}.ct{color:#555;font-size:10pt}h4{font-size:12pt;border-bottom:1.5pt solid ${ACC};margin:14pt 0 4pt;padding-bottom:2pt}.jh{font-weight:bold}.jh span{font-weight:normal;color:#666;float:right}.co{font-style:italic;color:#444}ul{margin:2pt 0}</style></head><body>${body}</body></html>`;
+}
+$("#dlHtml").onclick = () => { if (lastResult) save(fname(".html"), wordHTML(), "text/html"); };
+$("#dlPdf").onclick = () => {
+  if (!lastResult) return;
+  $("#dlMsg").textContent = "In the print window, choose \u201cSave as PDF\u201d as the printer.";
+  try{ window.print(); }catch(e){ $("#dlMsg").textContent = "Printing is blocked in this view. Try Word or Web page download, or open the page on a computer."; }
+};
+$("#plainBtn").onclick = () => {
+  if (!lastResult) return;
+  const t = $("#plainText"); t.value = resumeText_(lastResult.resume);
+  const on = t.classList.toggle("show");
+  $("#plainBtn").textContent = on ? "Hide plain text" : "Show plain text";
+  if (on){ t.focus(); t.select(); }
+};
+$("#dlDoc").onclick = () => {
+  if (!lastResult) return;
+  const body = resumeHTML(lastResult.resume, true);
+  const doc = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Resume</title>
+<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1d1b2e}h3{font-size:22pt;margin:0}.ttl{color:${ACC};font-weight:bold}.ct{color:#555;font-size:10pt}h4{font-size:12pt;border-bottom:1.5pt solid ${ACC};margin:14pt 0 4pt;padding-bottom:2pt}.jh{font-weight:bold}.jh span{font-weight:normal;color:#666;float:right}.co{font-style:italic;color:#444}ul{margin:2pt 0}</style></head><body>${body}</body></html>`;
+  save(fname(".doc"), new Blob(["\ufeff", wordHTML()], {type:"application/msword"}), "application/msword");
+};
+$("#dlTxt").onclick = () => { if (lastResult) save(fname(".txt"), resumeText_(lastResult.resume), "text/plain"); };
+$("#copyBtn").onclick = async () => {
+  if (!lastResult) return;
+  if (await copyText(resumeText_(lastResult.resume))) $("#dlMsg").textContent = "Copied to clipboard.";
+  else { $("#dlMsg").textContent = "Copy is blocked here — the text is shown below. Press and hold, Select all, Copy."; if (!$("#plainText").classList.contains("show")) $("#plainBtn").click(); }
+};
+
+updateGo();
+</script>
+</body>
+</html>

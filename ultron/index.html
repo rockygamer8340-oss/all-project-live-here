@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ultron Assistant</title>
+<meta name="description" content="Ultron — AI virtual assistant by Rishu Raj. Voice and text commands in English and Hinglish.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one centred console column — orb + status on top, conversation log, command bar pinned under it */
+:root{
+  color-scheme:dark;
+  --bg:#0C0C0C;
+  --panel:#141416;
+  --line:rgba(215,226,234,.14);
+  --fg:#D7E2EA;
+  --muted:#8B98A3;
+  --accent:#C21BB3;
+  --accent-2:#BE4C00;
+  --ok:#3DDC84;
+  --user:#23182B;
+  --display:'Kanit',system-ui,sans-serif;
+  --body:'Kanit',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:300;font-size:16px;line-height:1.55}
+.wrap{max-width:780px;margin:0 auto;padding-inline:16px;padding-block:28px 24px;display:flex;flex-direction:column;gap:22px;min-height:100%}
+header{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.orb{position:relative;width:96px;height:96px;flex:none}
+.orb i{position:absolute;inset:0;border-radius:50%}
+.orb .core{inset:22px;background:radial-gradient(circle at 35% 30%,#ffd9f7,var(--accent) 45%,#3a0636 100%);box-shadow:0 0 30px rgba(194,27,179,.55)}
+.orb .r1{border:1.5px solid rgba(194,27,179,.55);animation:ring 3.2s ease-out infinite}
+.orb .r2{border:1.5px solid rgba(190,76,0,.45);animation:ring 3.2s ease-out 1.6s infinite}
+@keyframes ring{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.05);opacity:0}}
+.orb[data-state="listening"] .core{animation:pulse .7s ease-in-out infinite alternate;background:radial-gradient(circle at 35% 30%,#dfffe9,var(--ok) 45%,#063a1c 100%);box-shadow:0 0 34px rgba(61,220,132,.55)}
+.orb[data-state="speaking"] .core{animation:pulse .35s ease-in-out infinite alternate}
+.orb[data-state="thinking"] .r1,.orb[data-state="thinking"] .r2{animation-duration:1.1s}
+@keyframes pulse{from{transform:scale(.9)}to{transform:scale(1.08)}}
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(2.4rem,7vw,3.6rem);line-height:.95;letter-spacing:-.02em;text-transform:uppercase;background:linear-gradient(180deg,#646973,#BBCCD7);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:6px 0 0;color:var(--muted);font-size:.95rem}
+.status{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-family:var(--mono);font-size:.78rem;letter-spacing:.04em;color:var(--fg);padding:5px 12px;border:1px solid var(--line);border-radius:999px}
+.status b{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.log{flex:1;display:flex;flex-direction:column;gap:12px;min-height:280px}
+.msg{max-width:88%;padding:11px 15px;border-radius:18px;min-width:0;overflow-wrap:anywhere}
+.msg.bot{align-self:flex-start;background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.user{align-self:flex-end;background:var(--user);border:1px solid rgba(194,27,179,.35);border-bottom-right-radius:6px}
+.msg time{display:block;font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-bottom:2px}
+.msg p{margin:0}
+.msg p+p{margin-top:6px}
+.act{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:9px 16px;border-radius:999px;text-decoration:none;color:#fff;font-weight:500;font-size:.9rem;letter-spacing:.04em;background:linear-gradient(123deg,#18011F 7%,#B600A8 40%,#7621B0 75%,#BE4C00 100%);outline:1.5px solid rgba(255,255,255,.8);outline-offset:-3px}
+.act:hover{filter:brightness(1.12)}
+.act svg{width:16px;height:16px}
+.notes{margin:6px 0 0;padding-left:1.2em}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font:inherit;font-size:.86rem;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chips button:hover{border-color:var(--accent)}
+form{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -12px 24px var(--bg);display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 18px}
+form:focus-within{border-color:rgba(194,27,179,.7)}
+#cmd{flex:1;min-width:0;background:transparent;border:0;color:var(--fg);font:inherit;font-weight:400;font-size:1rem;padding:10px 0;outline:none}
+#cmd::placeholder{color:var(--muted)}
+.ib{width:46px;height:46px;flex:none;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;color:#fff;background:#2A2A2E}
+.ib svg{width:20px;height:20px}
+.ib.send{background:linear-gradient(135deg,#B600A8,#7621B0)}
+.ib[aria-pressed="true"]{background:var(--ok);color:#06200f}
+.ib:focus-visible,.chips button:focus-visible,.act:focus-visible,.toggle input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.bar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.toggle input{accent-color:var(--accent);width:16px;height:16px}
+details{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:.9rem}
+summary{cursor:pointer;color:var(--fg);font-weight:400}
+details ul{margin:10px 0 0;padding-left:1.2em;columns:2;column-gap:28px}
+@media (max-width:520px){details ul{columns:1}.msg{max-width:94%}}
+@media (prefers-reduced-motion:reduce){.orb i{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="orb" id="orb" data-state="idle" aria-hidden="true"><i class="r1"></i><i class="r2"></i><i class="core"></i></div>
+    <div>
+      <h1>Ultron</h1>
+      <p class="sub">AI virtual assistant by Rishu Raj. Type or speak a command, in English or Hinglish.</p>
+      <span class="status" id="status"><b></b><span id="statusText">Online · ready</span></span>
+    </div>
+  </header>
+
+  <div class="log" id="log" aria-live="polite"></div>
+
+  <div class="chips" id="chips">
+    <button type="button">play arijit singh songs</button>
+    <button type="button">youtube kholo</button>
+    <button type="button">what's the time</button>
+    <button type="button">note buy milk tomorrow</button>
+    <button type="button">google python decorators</button>
+    <button type="button">tell me a joke</button>
+    <button type="button">calculate 245 * 18</button>
+    <button type="button">help</button>
+  </div>
+
+  <form id="form" autocomplete="off">
+    <label for="cmd" style="position:absolute;left:-9999px">Command</label>
+    <input id="cmd" placeholder="Try: open github, play lo-fi, who is APJ Abdul Kalam">
+    <button type="button" class="ib" id="mic" aria-pressed="false" aria-label="Speak a command">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+    </button>
+    <button type="submit" class="ib send" aria-label="Send command">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2-7z"/></svg>
+    </button>
+  </form>
+
+  <div class="bar">
+    <label class="toggle"><input type="checkbox" id="voiceOut" checked> Speak replies aloud</label>
+    <span>Notes stay in this browser only</span>
+  </div>
+
+  <details>
+    <summary>Desktop-only commands</summary>
+    <p style="margin:8px 0 0">The Python desktop version of Ultron also controls the computer itself. These need that version, since a web page can't reach your system:</p>
+    <ul>
+      <li>Open and close installed apps</li>
+      <li>Screenshots</li>
+      <li>Volume and brightness</li>
+      <li>Lock, restart, shut down</li>
+      <li>Type text and press keys</li>
+      <li>WhatsApp and email messages</li>
+      <li>CPU, memory and battery status</li>
+      <li>Wake word and standby</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+(function(){
+  var NAME='Ultron';
+  var log=document.getElementById('log'), form=document.getElementById('form'), input=document.getElementById('cmd');
+  var orb=document.getElementById('orb'), statusText=document.getElementById('statusText');
+  var micBtn=document.getElementById('mic'), voiceOut=document.getElementById('voiceOut');
+
+  var WEBSITES={youtube:'https://www.youtube.com',google:'https://www.google.com',gmail:'https://mail.google.com',github:'https://github.com',chatgpt:'https://chat.openai.com','chat gpt':'https://chat.openai.com',claude:'https://claude.ai',whatsapp:'https://web.whatsapp.com',instagram:'https://www.instagram.com',facebook:'https://www.facebook.com',twitter:'https://x.com',x:'https://x.com',linkedin:'https://www.linkedin.com',reddit:'https://www.reddit.com',amazon:'https://www.amazon.in',flipkart:'https://www.flipkart.com',netflix:'https://www.netflix.com',spotify:'https://open.spotify.com','stack overflow':'https://stackoverflow.com',stackoverflow:'https://stackoverflow.com',wikipedia:'https://www.wikipedia.org',drive:'https://drive.google.com',maps:'https://maps.google.com',leetcode:'https://leetcode.com',hackerrank:'https://www.hackerrank.com'};
+
+  var SMALL_TALK=[
+    [/\b(hello|hi|hey|namaste)\b/,["Hey, good to hear you.","Hi! What are we doing today?"]],
+    [/how are you|kaise ho|how r u/,["Running at full power. How about you?","I'm great, no bugs today. How are you feeling?"]],
+    [/what.*your name|who are you/,["I'm Ultron, Rishu's personal assistant."]],
+    [/thank(s| you)|shukriya|dhanyavad/,["Anytime.","That's what I'm here for."]],
+    [/i.?m (sad|tired|bored|stressed)/,["That happens. Want me to play some music on YouTube? Just say: play lo-fi."]],
+    [/good (morning|afternoon|evening|night)/,["Good {0} to you too."]],
+    [/who made you|who created you|who built you/,["Rishu Raj built me, in Python first and now on the web too."]],
+    [/tell me a joke|joke sunao|\bjoke\b/,["Why do programmers prefer dark mode? Because light attracts bugs.","There are 10 kinds of people: those who understand binary, and those who don't.","I would tell you a UDP joke, but you might not get it."]]
+  ];
+
+  var SYNONYMS=[
+    [/^(.+?)\s+(?:kholo|khol do|khol|open karo|open kar do|chalu karo|start karo)$/,'open $1'],
+    [/^(.+?)\s+(?:bajao|bajao na|chalao|chala do|play karo|play kar do)$/,'play $1'],
+    [/^(.+?)\s+(?:dhundo|dhoondo|khojo|search karo|search kar do)$/,'search $1'],
+    [/\bkitne baje\b|\bkya time\b|\btime kya hai\b|\bwhat(?:'s| is) the clock\b/,'what is the time'],
+    [/\baaj ki tarikh\b|\bdate kya hai\b|\baaj kya date\b/,'what is the date'],
+    [/\b(?:put on|listen to|stream)\b/,'play'],
+    [/\b(?:launch|fire up|bring up|pull up|navigate to|take me to|visit|go to)\b/,'open'],
+    [/\b(?:look for|lookup|find)\b/,'search']
+  ];
+
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+  function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function now(){return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+  function setState(s,t){orb.setAttribute('data-state',s);statusText.textContent=t;}
+
+  function add(role,html){
+    var d=document.createElement('div');d.className='msg '+role;
+    d.innerHTML='<time>'+(role==='bot'?NAME:'You')+' · '+now()+'</time>'+html;
+    log.appendChild(d);d.scrollIntoView({block:'end',behavior:'smooth'});return d;
+  }
+  var ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+  function link(url,label){return '<a class="act" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+' '+ICON+'</a>';}
+
+  function speak(text){
+    if(!voiceOut.checked||!('speechSynthesis' in window))return;
+    try{
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));
+      u.rate=1.02;u.lang=/[ऀ-ॿ]/.test(text)?'hi-IN':'en-IN';
+      u.onstart=function(){setState('speaking','Speaking…');};
+      u.onend=u.onerror=function(){setState('idle','Online · ready');};
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function reply(text,extra){add('bot','<p>'+esc(text)+'</p>'+(extra||''));speak(text);}
+
+  function loadNotes(){try{return JSON.parse(localStorage.getItem('ultron_notes')||'[]');}catch(e){return [];}}
+  function saveNotes(n){try{localStorage.setItem('ultron_notes',JSON.stringify(n));}catch(e){}}
+
+  function normalize(t){
+    t=t.toLowerCase().trim().replace(/[?!.]+$/,'').replace(/^(hey |ok |okay )?ultron[, ]*/,'');
+    for(var i=0;i<SYNONYMS.length;i++){t=t.replace(SYNONYMS[i][0],SYNONYMS[i][1]);}
+    return t.trim();
+  }
+
+  function calc(expr){
+    var e=expr.replace(/\bplus\b/g,'+').replace(/\bminus\b/g,'-').replace(/\b(times|into|multiplied by|x)\b/g,'*').replace(/\b(divided by|by)\b/g,'/').replace(/\s+/g,'');
+    if(!/^[\d+\-*/().%]+$/.test(e)||!/\d/.test(e)||!/[+\-*/%]/.test(e))return null;
+    try{var v=Function('"use strict";return ('+e+')')();return (typeof v==='number'&&isFinite(v))?Math.round(v*1e8)/1e8:null;}catch(err){return null;}
+  }
+
+  function wiki(q){
+    var url='https://en.wikipedia.org/wiki/'+encodeURIComponent(q.replace(/ /g,'_'));
+    setState('thinking','Looking it up…');
+    var done=false;
+    var fallback=function(){if(done)return;done=true;setState('idle','Online · ready');reply('Here is what Wikipedia has on '+q+'.',link(url,'Open Wikipedia'));};
+    try{
+      fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(q)).then(function(r){return r.ok?r.json():null;}).then(function(j){
+        if(done)return;
+        if(j&&j.extract){done=true;setState('idle','Online · ready');var s=j.extract.split(/(?<=\.)\s/).slice(0,2).join(' ');reply(s,link(j.content_urls&&j.content_urls.desktop?j.content_urls.desktop.page:url,'Read more'));}
+        else fallback();
+      }).catch(fallback);
+      setTimeout(fallback,6000);
+    }catch(e){fallback();}
+  }
+
+  var DESKTOP=/\b(screenshot|screen ?capture|volume|mute|unmute|brightness|shut ?down|restart|reboot|lock (the )?(screen|pc|computer)|battery|cpu|memory usage|system status|press enter|whatsapp .+ saying|message \w+ saying|check (my )?(email|mail|whatsapp)|^type |^close |^quit |^kill )/;
+
+  function handle(raw){
+    var t=normalize(raw), m;
+    if(!t){return;}
+
+    m=t.match(/^(?:take |make |add )?(?:a )?note (?:that |this |down )?(.+)/);
+    if(m){var n=loadNotes();n.push({text:m[1],at:new Date().toLocaleString()});saveNotes(n);return reply('Noted: '+m[1]+'.');}
+    if(/\b(read|show)( my)? notes\b/.test(t)){
+      var ns=loadNotes();
+      if(!ns.length)return reply('You have no notes yet. Say: note call mom at 7.');
+      add('bot','<p>You have '+ns.length+' note'+(ns.length>1?'s':'')+':</p><ol class="notes">'+ns.map(function(x){return '<li>'+esc(x.text)+'</li>';}).join('')+'</ol>');
+      return speak('You have '+ns.length+' notes. '+ns.map(function(x){return x.text;}).join('. '));
+    }
+    if(/\b(clear|delete)( all)?( my)? notes\b/.test(t)){saveNotes([]);return reply('All notes cleared.');}
+
+    if(/^(good ?bye|bye|exit|quit|go to sleep|sleep now|standby)$/.test(t))return reply('Going quiet. Type anything to wake me up.');
+    if(DESKTOP.test(t))return reply('That one controls your computer, so it runs in my desktop version. On the web I can open sites, play and search YouTube, google, read Wikipedia, tell the time, take notes and do maths.');
+
+    m=t.match(/open youtube.*?(?:and )?search(?: for)? (.+)/)||t.match(/search (?:for )?(.+?) (?:on|in) youtube/)||t.match(/youtube search (.+)/);
+    if(m){var yq=m[1];return reply('Searching YouTube for '+yq+'.',link('https://www.youtube.com/results?search_query='+encodeURIComponent(yq),'Open results on YouTube'));}
+    m=t.match(/^(?:google for|google|search for|search|look up)\s+(.+)/);
+    if(m){return reply('Here are Google results for '+m[1]+'.',link('https://www.google.com/search?q='+encodeURIComponent(m[1]),'Open Google'));}
+    m=t.match(/open youtube.*?(?:and )?play (.+)/)||t.match(/\bplay (.+?) on youtube\b/)||t.match(/\bplay (.+)/);
+    if(m){var pq=m[1];return reply('Playing '+pq+' on YouTube. Tap below to start it.',link('https://www.youtube.com/results?search_query='+encodeURIComponent(pq),'Play on YouTube'));}
+
+    if(/\b(what.?s the time|what is the time|what time is it|current time|tell me the time)\b/.test(t))return reply('It is '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'.');
+    if(/\b(what.?s the date|what is the date|today.?s date|which day is it|tell me the date)\b/.test(t))return reply('Today is '+new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'.');
+
+    m=t.match(/^(?:calculate|compute|what is|what's|kitna hai)?\s*([\d\s+\-*/().%x]+(?:\s*(?:plus|minus|times|into|divided by|multiplied by)\s*[\d.]+)*)\s*(?:kitna hai)?$/);
+    if(m){var v=calc(m[1]);if(v!==null)return reply(m[1].trim()+' = '+v+'.');}
+
+    m=t.match(/\bopen\s+(.+)/);
+    if(m){
+      var target=m[1].replace(/\b(website|site|app|the)\b/g,'').trim();
+      if(WEBSITES[target])return reply('Opening '+target+'.',link(WEBSITES[target],'Open '+target.charAt(0).toUpperCase()+target.slice(1)));
+      var keys=Object.keys(WEBSITES);for(var i=0;i<keys.length;i++){if(target.indexOf(keys[i])>-1)return reply('Opening '+keys[i]+'.',link(WEBSITES[keys[i]],'Open '+keys[i]));}
+      return reply("I don't have "+target+" saved, so here's a search for it.",link('https://www.google.com/search?q='+encodeURIComponent(target),'Search '+target));
+    }
+
+    if(/\b(help|what can you do|your commands)\b/.test(t))return reply('I can open websites, play and search YouTube, google things, read Wikipedia, tell the time and date, take and read notes, do quick maths, and chat a little. I understand Hinglish too, like "youtube kholo" or "gaana bajao".');
+
+    for(var k=0;k<SMALL_TALK.length;k++){
+      var sm=t.match(SMALL_TALK[k][0]);
+      if(sm)return reply(pick(SMALL_TALK[k][1]).replace('{0}',sm[1]||''));
+    }
+
+    m=t.match(/\b(?:wikipedia|who is|who was|what is|what are|tell me about)\s+(?!your\b|you\b|yourself\b)(.+)/);
+    if(m)return wiki(m[1]);
+
+    reply("I didn't catch a command there. I'll search Google for it.",link('https://www.google.com/search?q='+encodeURIComponent(raw),'Search Google'));
+  }
+
+  function run(text){
+    text=(text||'').trim();if(!text)return;
+    add('user','<p>'+esc(text)+'</p>');
+    setState('thinking','Working…');
+    setTimeout(function(){handle(text);if(orb.getAttribute('data-state')==='thinking'&&!/Looking/.test(statusText.textContent))setState('idle','Online · ready');},250);
+  }
+
+  form.addEventListener('submit',function(e){e.preventDefault();run(input.value);input.value='';});
+  document.getElementById('chips').addEventListener('click',function(e){if(e.target.tagName==='BUTTON')run(e.target.textContent);});
+
+  // Voice input
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, rec=null, listening=false;
+  micBtn.addEventListener('click',function(){
+    if(!SR){return reply('Voice input needs Chrome or Edge. You can type the command instead.');}
+    if(listening){try{rec.stop();}catch(e){}return;}
+    rec=new SR();rec.lang='en-IN';rec.interimResults=false;rec.maxAlternatives=1;
+    rec.onstart=function(){listening=true;micBtn.setAttribute('aria-pressed','true');setState('listening','Listening… speak now');};
+    rec.onresult=function(e){var said=e.results[0][0].transcript;run(said);};
+    rec.onerror=function(e){
+      if(e.error==='not-allowed'||e.error==='service-not-allowed')reply('This page is not allowed to use the microphone here. Type the command, or open the GitHub version of Ultron in Chrome to use voice.');
+      else if(e.error==='no-speech')reply("I didn't hear anything. Tap the mic and try again.");
+    };
+    rec.onend=function(){listening=false;micBtn.setAttribute('aria-pressed','false');if(orb.getAttribute('data-state')==='listening')setState('idle','Online · ready');};
+    try{rec.start();}catch(e){reply('Voice input could not start here. Type the command instead.');}
+  });
+
+  var h=new Date().getHours(), part=h<12?'morning':h<17?'afternoon':'evening';
+  add('bot','<p>Good '+part+'! Ultron is online. Tap a suggestion below, type a command, or press the mic and speak.</p>');
+})();
+</script>
+</body>
+</html>

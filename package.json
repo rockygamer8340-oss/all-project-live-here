@@ -1,0 +1,9 @@
+{
+  "name": "rishu-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Rishu Raj portfolio and all six projects on one small Node server",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="API Hub: search 99 free APIs, no-key ones first, and copy any endpoint in one tap.">
+<meta name="theme-color" content="#000000">
+<script>
+// Firebase web app config for API Hub (project api-hub-fa81a).
+// These values are public by design; security comes from Firebase Auth rules and authorized domains.
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB-jhJCePjufkztgWmtHMcdmQ91vHd2WeM",
+  authDomain: "api-hub-fa81a.firebaseapp.com",
+  projectId: "api-hub-fa81a",
+  storageBucket: "api-hub-fa81a.firebasestorage.app",
+  messagingSenderId: "366660667434",
+  appId: "1:366660667434:web:91800bb0dec2958322db53",
+};
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<title>API Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:wght@300;400;500;600&family=Readex+Pro:wght@300;400;500;600;700&display=swap">
+<style>*,:after,:before{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgba(59,130,246,.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/*! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com*/*,:after,:before{box-sizing:border-box;border:0 solid #e5e7eb}:after,:before{--tw-content:""}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;-o-tab-size:4;tab-size:4;font-family:ui-sans-serif,system-ui,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0}fieldset,legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.invisible{visibility:hidden}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0}.bottom-0{bottom:0}.bottom-16{bottom:4rem}.bottom-20{bottom:5rem}.bottom-5{bottom:1.25rem}.bottom-6{bottom:1.5rem}.left-0{left:0}.left-1\/2{left:50%}.left-4{left:1rem}.left-6{left:1.5rem}.left-\[18\%\]{left:18%}.right-0{right:0}.right-4{right:1rem}.right-6{right:1.5rem}.top-0{top:0}.top-4{top:1rem}.top-\[14\%\]{top:14%}.top-\[18\%\]{top:18%}.top-\[38\%\]{top:38%}.top-\[46\%\]{top:46%}.top-\[58\%\]{top:58%}.top-\[68px\]{top:68px}.z-0{z-index:0}.z-10{z-index:10}.z-20{z-index:20}.z-50{z-index:50}.z-\[60\]{z-index:60}.-mx-4{margin-left:-1rem;margin-right:-1rem}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:.25rem}.mb-1\.5{margin-bottom:.375rem}.mb-10{margin-bottom:2.5rem}.mb-5{margin-bottom:1.25rem}.ml-1{margin-left:.25rem}.mr-1{margin-right:.25rem}.mr-2{margin-right:.5rem}.mt-0\.5{margin-top:.125rem}.mt-1{margin-top:.25rem}.mt-12{margin-top:3rem}.mt-14{margin-top:3.5rem}.mt-2{margin-top:.5rem}.mt-20{margin-top:5rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.inline-block{display:inline-block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-12{height:3rem}.h-4{height:1rem}.h-48{height:12rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-7{height:1.75rem}.h-full{height:100%}.h-px{height:1px}.h-screen{height:100vh}.min-h-\[11rem\]{min-height:11rem}.min-h-\[640px\]{min-height:640px}.min-h-screen{min-height:100vh}.w-12{width:3rem}.w-24{width:6rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-7{width:1.75rem}.w-full{width:100%}.min-w-0{min-width:0}.max-w-2xl{max-width:42rem}.max-w-\[1400px\]{max-width:1400px}.max-w-\[240px\]{max-width:240px}.max-w-\[260px\]{max-width:260px}.max-w-\[70ch\]{max-width:70ch}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%}.-translate-x-1\/2,.rotate-\[-20deg\]{transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.rotate-\[-20deg\]{--tw-rotate:-20deg}.rotate-\[20deg\]{--tw-rotate:20deg;transform:translate(var(--tw-translate-x),var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.resize{resize:both}.scroll-mt-4{scroll-margin-top:1rem}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}.grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:.25rem}.gap-1\.5{gap:.375rem}.gap-2{gap:.5rem}.gap-3{gap:.75rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-x-6{-moz-column-gap:1.5rem;column-gap:1.5rem}.gap-y-2{row-gap:.5rem}.overflow-hidden{overflow:hidden}.overflow-x-clip{overflow-x:clip}.whitespace-nowrap{white-space:nowrap}.rounded-\[1\.5rem\]{border-radius:1.5rem}.rounded-\[1\.75rem\]{border-radius:1.75rem}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:.75rem}.border{border-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-white\/10{border-color:hsla(0,0%,100%,.1)}.border-white\/25{border-color:hsla(0,0%,100%,.25)}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0/var(--tw-bg-opacity,1))}.bg-black\/45{background-color:rgba(0,0,0,.45)}.bg-neutral-800{--tw-bg-opacity:1;background-color:rgb(38 38 38/var(--tw-bg-opacity,1))}.bg-neutral-900\/90{background-color:hsla(0,0%,9%,.9)}.bg-neutral-900\/95{background-color:hsla(0,0%,9%,.95)}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255/var(--tw-bg-opacity,1))}.bg-white\/10{background-color:hsla(0,0%,100%,.1)}.bg-white\/20{background-color:hsla(0,0%,100%,.2)}.bg-white\/40{background-color:hsla(0,0%,100%,.4)}.bg-white\/5{background-color:hsla(0,0%,100%,.05)}.bg-gradient-to-b{background-image:linear-gradient(to bottom,var(--tw-gradient-stops))}.from-transparent{--tw-gradient-from:transparent var(--tw-gradient-from-position);--tw-gradient-to:transparent var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from),var(--tw-gradient-to)}.to-black{--tw-gradient-to:#000 var(--tw-gradient-to-position)}.object-cover{-o-object-fit:cover;object-fit:cover}.object-top{-o-object-position:top;object-position:top}.p-1{padding:.25rem}.p-10{padding:2.5rem}.p-5{padding:1.25rem}.px-1\.5{padding-left:.375rem;padding-right:.375rem}.px-2{padding-left:.5rem;padding-right:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:.125rem;padding-bottom:.125rem}.py-1{padding-top:.25rem;padding-bottom:.25rem}.py-1\.5{padding-top:.375rem;padding-bottom:.375rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.py-2\.5{padding-top:.625rem;padding-bottom:.625rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.pb-1{padding-bottom:.25rem}.pb-12{padding-bottom:3rem}.pb-20{padding-bottom:5rem}.pb-3{padding-bottom:.75rem}.pl-3{padding-left:.75rem}.pl-4{padding-left:1rem}.pl-5{padding-left:1.25rem}.pr-1{padding-right:.25rem}.pr-2{padding-right:.5rem}.pr-3{padding-right:.75rem}.pr-6{padding-right:1.5rem}.pt-1{padding-top:.25rem}.pt-2{padding-top:.5rem}.pt-28{padding-top:7rem}.pt-4{padding-top:1rem}.pt-8{padding-top:2rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-body{font-family:Barlow,ui-sans-serif,system-ui,sans-serif}.font-heading{font-family:"Instrument Serif",Georgia,serif}.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-\[10\.5px\]{font-size:10.5px}.text-\[11px\]{font-size:11px}.text-\[12px\]{font-size:12px}.text-\[14vw\]{font-size:14vw}.text-\[15px\]{font-size:15px}.text-\[16vw\]{font-size:16vw}.text-base{font-size:1rem;line-height:1.5rem}.text-sm{font-size:.875rem;line-height:1.25rem}.text-xs{font-size:.75rem;line-height:1rem}.font-light{font-weight:300}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.lowercase{text-transform:lowercase}.normal-case{text-transform:none}.italic{font-style:italic}.tabular-nums{--tw-numeric-spacing:tabular-nums;font-variant-numeric:var(--tw-ordinal) var(--tw-slashed-zero) var(--tw-numeric-figure) var(--tw-numeric-spacing) var(--tw-numeric-fraction)}.leading-\[0\.8\]{line-height:.8}.leading-relaxed{line-height:1.625}.leading-snug{line-height:1.375}.leading-tight{line-height:1.25}.tracking-\[-4px\]{letter-spacing:-4px}.tracking-\[0\.12em\]{letter-spacing:.12em}.tracking-\[0\.14em\]{letter-spacing:.14em}.tracking-tight{letter-spacing:-.025em}.text-black{--tw-text-opacity:1;color:rgb(0 0 0/var(--tw-text-opacity,1))}.text-neutral-300{--tw-text-opacity:1;color:rgb(212 212 212/var(--tw-text-opacity,1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.text-white\/50{color:hsla(0,0%,100%,.5)}.text-white\/60{color:hsla(0,0%,100%,.6)}.text-white\/70{color:hsla(0,0%,100%,.7)}.text-white\/80{color:hsla(0,0%,100%,.8)}.text-white\/90{color:hsla(0,0%,100%,.9)}.underline-offset-4{text-underline-offset:4px}.opacity-50{opacity:.5}.opacity-60{opacity:.6}.shadow-lg{--tw-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color),0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow,0 0 #0000),var(--tw-ring-shadow,0 0 #0000),var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.ring-1{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow,0 0 #0000)}.ring-white\/10{--tw-ring-color:hsla(0,0%,100%,.1)}.ring-white\/15{--tw-ring-color:hsla(0,0%,100%,.15)}.ring-white\/20{--tw-ring-color:hsla(0,0%,100%,.2)}.ring-white\/40{--tw-ring-color:hsla(0,0%,100%,.4)}.blur{--tw-blur:blur(8px)}.blur,.filter{filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur{--tw-backdrop-blur:blur(8px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,-webkit-backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter;transition-property:color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,filter,backdrop-filter,-webkit-backdrop-filter;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.transition-colors{transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;transition-timing-function:cubic-bezier(.4,0,.2,1);transition-duration:.15s}.focus-within\:ring-white\/50:focus-within{--tw-ring-color:hsla(0,0%,100%,.5)}.hover\:bg-neutral-200:hover{--tw-bg-opacity:1;background-color:rgb(229 229 229/var(--tw-bg-opacity,1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255/var(--tw-text-opacity,1))}.hover\:underline:hover{text-decoration-line:underline}.focus\:border-white\/70:focus{border-color:hsla(0,0%,100%,.7)}.focus\:ring-white\/60:focus{--tw-ring-color:hsla(0,0%,100%,.6)}.disabled\:opacity-60:disabled{opacity:.6}@media (min-width:640px){.sm\:block{display:block}.sm\:hidden{display:none}.sm\:p-6{padding:1.5rem}.sm\:px-8{padding-left:2rem;padding-right:2rem}}@media (min-width:768px){.md\:absolute{position:absolute}.md\:bottom-20{bottom:5rem}.md\:bottom-24{bottom:6rem}.md\:left-0{left:0}.md\:left-10{left:2.5rem}.md\:left-20{left:5rem}.md\:left-\[28\%\]{left:28%}.md\:right-10{right:2.5rem}.md\:right-20{right:5rem}.md\:right-24{right:6rem}.md\:top-\[58\%\]{top:58%}.md\:top-\[80px\]{top:80px}.md\:-mx-10{margin-left:-2.5rem;margin-right:-2.5rem}.md\:-mt-2{margin-top:-.5rem}.md\:mt-0{margin-top:0}.md\:block{display:block}.md\:flex{display:flex}.md\:min-h-\[15rem\]{min-height:15rem}.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.md\:grid-cols-\[1fr_2fr\]{grid-template-columns:1fr 2fr}.md\:p-6{padding:1.5rem}.md\:px-10{padding-left:2.5rem;padding-right:2.5rem}.md\:pt-6{padding-top:1.5rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-6xl{font-size:3.75rem;line-height:1}.md\:text-7xl{font-size:4.5rem;line-height:1}.md\:text-\[13vw\]{font-size:13vw}.md\:text-\[9vw\]{font-size:9vw}.md\:text-base{font-size:1rem;line-height:1.5rem}.md\:text-lg{font-size:1.125rem;line-height:1.75rem}.md\:text-sm{font-size:.875rem;line-height:1.25rem}}@media (min-width:1024px){.lg\:px-16{padding-left:4rem;padding-right:4rem}.lg\:text-\[5\.5rem\]{font-size:5.5rem}}@media (min-width:1280px){.xl\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>window.Motion = window.Motion || window.FramerMotion;</script>
+<style>
+/* Layout: cinematic two-act page. Act 1 = hero with search over looping space video; Act 2 = catalog over a sticky second video. One dark look by design. */
+:root{ --ink:#000; --fg:#ffffff; color-scheme:dark }
+html,body{background:#000;color:#fff}
+body{margin:0;font-family:'Barlow',ui-sans-serif,system-ui,sans-serif}
+.liquid-glass{background:rgba(255,255,255,0.01);background-blend-mode:luminosity;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border:none;box-shadow:inset 0 1px 1px rgba(255,255,255,0.1);position:relative;overflow:hidden}
+.liquid-glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0.15) 20%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.15) 80%,rgba(255,255,255,0.45) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.liquid-glass-strong{background:rgba(255,255,255,0.01);background-blend-mode:luminosity;backdrop-filter:blur(50px);-webkit-backdrop-filter:blur(50px);border:none;box-shadow:4px 4px 4px rgba(0,0,0,0.05),inset 0 1px 1px rgba(255,255,255,0.15);position:relative;overflow:hidden}
+.liquid-glass-strong::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.2) 20%,rgba(255,255,255,0) 40%,rgba(255,255,255,0) 60%,rgba(255,255,255,0.2) 80%,rgba(255,255,255,0.5) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.liquid-glass > *, .liquid-glass-strong > *{position:relative}
+.hero-title{letter-spacing:-0.04em;line-height:0.95}
+.dash{font-family:'Readex Pro',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+html,body,#root{height:100%}
+.readable{background:rgba(0,0,0,0.38);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.solid{background:rgba(8,8,10,0.78);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.scroll-x{overflow-x:auto;scrollbar-width:none}.scroll-x::-webkit-scrollbar{display:none}
+input::placeholder{color:rgba(255,255,255,.45)}
+:focus-visible{outline:2px solid #fff;outline-offset:2px}
+label input:focus-visible{outline:none}
+label:has(> input[type=search]:focus-visible){box-shadow:inset 0 1px 1px rgba(255,255,255,.15),0 0 0 2px rgba(255,255,255,.55)}
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+
+</head><body>
+<div id="root"></div>
+
+<script>
+(function(){
+const R = window.React, RD = window.ReactDOM;
+const { useState, useEffect, useRef, useMemo } = R;
+const html = window.htm.bind(R.createElement);
+
+/* Motion, with a plain fallback if the library fails to load */
+const motion = (window.Motion && window.Motion.motion) || new Proxy({}, { get: (_, tag) =>
+  R.forwardRef(({ initial, animate, transition, whileHover, whileTap, ...p }, ref) => R.createElement(tag, { ...p, ref })) });
+
+const APIS = [
+// ---------- Anime ----------
+["Jikan","Anime","n","Unofficial MyAnimeList API: anime, manga, characters, rankings and seasons.","https://api.jikan.moe/v4","https://api.jikan.moe/v4/anime?q=naruto&limit=5","https://docs.api.jikan.moe/","anime manga myanimelist mal otaku"],
+["AniList GraphQL","Anime","n","Rich anime and manga database with a GraphQL endpoint. POST your query.","https://graphql.anilist.co","https://graphql.anilist.co","https://docs.anilist.co/","anime manga graphql otaku"],
+["Kitsu","Anime","n","Anime and manga catalog with JSON:API filters and streaming links.","https://kitsu.io/api/edge","https://kitsu.io/api/edge/anime?filter[text]=one%20piece","https://kitsu.docs.apiary.io/","anime manga otaku"],
+["Waifu.pics","Anime","n","Random SFW anime images and reaction GIFs by category.","https://api.waifu.pics","https://api.waifu.pics/sfw/waifu","https://waifu.pics/docs","anime images gif waifu"],
+["nekos.best","Anime","n","High quality anime images and GIFs with artist source.","https://nekos.best/api/v2","https://nekos.best/api/v2/neko","https://docs.nekos.best/","anime images gif neko"],
+["trace.moe","Anime","n","Find which anime scene a screenshot comes from.","https://api.trace.moe","https://api.trace.moe/search?url=https://images.plurk.com/32B15UXxymfSMwKGTObY5e.jpg","https://soruly.github.io/trace.moe-api/","anime search image screenshot"],
+["Animechan","Anime","n","Random anime quotes by anime or character.","https://api.animechan.io/v1","https://api.animechan.io/v1/quotes/random","https://animechan.io/docs","anime quotes"],
+["Digimon API","Anime","n","List of every Digimon with image and level.","https://digimon-api.vercel.app/api","https://digimon-api.vercel.app/api/digimon/name/agumon","https://digimon-api.vercel.app/","anime digimon"],
+["Studio Ghibli","Anime","n","Films, people and locations from Studio Ghibli.","https://ghibliapi.vercel.app","https://ghibliapi.vercel.app/films","https://ghibliapi.vercel.app/","anime ghibli movies film"],
+// ---------- Games ----------
+["PokéAPI","Games","n","Every Pokémon, move, ability and type. The classic starter API.","https://pokeapi.co/api/v2","https://pokeapi.co/api/v2/pokemon/pikachu","https://pokeapi.co/docs/v2","game games gaming pokemon anime"],
+["FreeToGame","Games","n","Free-to-play PC and browser games with genre and platform filters.","https://www.freetogame.com/api","https://www.freetogame.com/api/games?platform=pc&category=shooter","https://www.freetogame.com/api-doc","game games gaming free pc browser"],
+["CheapShark","Games","n","PC game deals and price comparison across Steam, Epic and more.","https://www.cheapshark.com/api/1.0","https://www.cheapshark.com/api/1.0/deals?upperPrice=15","https://apidocs.cheapshark.com/","game games gaming deals steam price"],
+["Valorant API","Games","n","Valorant agents, weapons, maps and skins with images.","https://valorant-api.com/v1","https://valorant-api.com/v1/agents?isPlayableCharacter=true","https://dash.valorant-api.com/","game games gaming valorant fps"],
+["Fortnite API","Games","n","Fortnite cosmetics, item shop and news. Stats need a free key.","https://fortnite-api.com/v2","https://fortnite-api.com/v2/cosmetics/new","https://dash.fortnite-api.com/","game games gaming fortnite battle royale"],
+["Genshin API","Games","n","Genshin Impact characters, weapons, artifacts and images.","https://genshin.jmp.blue","https://genshin.jmp.blue/characters","https://genshin.jmp.blue/","game games gaming genshin anime"],
+["Minecraft Server Status","Games","n","Online players, version and MOTD for any Minecraft server.","https://api.mcsrvstat.us/3","https://api.mcsrvstat.us/3/hypixel.net","https://api.mcsrvstat.us/","game games gaming minecraft server"],
+["Chess.com Public","Games","n","Player profiles, stats and game archives from Chess.com.","https://api.chess.com/pub","https://api.chess.com/pub/player/hikaru/stats","https://www.chess.com/news/view/published-data-api","game games chess"],
+["Lichess","Games","n","Open-source chess: users, games, puzzles and live TV.","https://lichess.org/api","https://lichess.org/api/puzzle/daily","https://lichess.org/api","game games chess puzzle"],
+["Deck of Cards","Games","n","Shuffle, draw and manage virtual card decks for card games.","https://deckofcardsapi.com/api","https://deckofcardsapi.com/api/deck/new/draw/?count=2","https://deckofcardsapi.com/","game games cards poker"],
+["Open Trivia DB","Games","n","Thousands of trivia questions for quiz games.","https://opentdb.com/api.php","https://opentdb.com/api.php?amount=10&type=multiple","https://opentdb.com/api_config.php","game games quiz trivia"],
+["Amiibo API","Games","n","Nintendo amiibo figures, series and release dates.","https://www.amiiboapi.com/api","https://www.amiiboapi.com/api/amiibo/?name=mario","https://www.amiiboapi.com/docs/","game games nintendo amiibo"],
+["RAWG","Games","k","The largest video game database: 500k+ games, ratings and screenshots.","https://api.rawg.io/api","https://api.rawg.io/api/games?search=gta&key={KEY}","https://rawg.io/apidocs","game games gaming database"],
+["IGDB","Games","k","Twitch's game database. Uses your free Twitch developer client ID.","https://api.igdb.com/v4","https://api.igdb.com/v4/games","https://api-docs.igdb.com/","game games gaming twitch database"],
+["Steam Web API","Games","k","Steam player profiles, owned games, achievements and news.","https://api.steampowered.com","https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={KEY}&steamids=76561197960435530","https://steamcommunity.com/dev/apikey","game games gaming steam"],
+["Riot Games","Games","k","League of Legends, Valorant and TFT match and player data.","https://developer.riotgames.com","https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/Faker/KR1?api_key={KEY}","https://developer.riotgames.com/","game games gaming league valorant riot"],
+["Clash of Clans","Games","k","Clans, players, wars and leagues from Supercell.","https://api.clashofclans.com/v1","https://api.clashofclans.com/v1/clans?name=india","https://developer.clashofclans.com/","game games gaming clash supercell mobile"],
+// ---------- Movies & TV ----------
+["TVMaze","Movies & TV","n","TV shows, episodes, cast and schedules worldwide.","https://api.tvmaze.com","https://api.tvmaze.com/search/shows?q=friends","https://www.tvmaze.com/api","movie movies tv series shows"],
+["Rick and Morty","Movies & TV","n","Characters, locations and episodes from Rick and Morty.","https://rickandmortyapi.com/api","https://rickandmortyapi.com/api/character/?name=rick","https://rickandmortyapi.com/documentation","movie tv cartoon"],
+["SWAPI (Star Wars)","Movies & TV","n","People, planets, starships and films from Star Wars.","https://swapi.dev/api","https://swapi.dev/api/people/1/","https://swapi.dev/documentation","movie movies star wars"],
+["Harry Potter API","Movies & TV","n","Characters, houses, spells and actors from Harry Potter.","https://hp-api.onrender.com/api","https://hp-api.onrender.com/api/characters/house/gryffindor","https://hp-api.onrender.com/","movie movies harry potter books"],
+["TMDB","Movies & TV","k","The Movie Database: movies, TV, trailers, posters and trending.","https://api.themoviedb.org/3","https://api.themoviedb.org/3/search/movie?query=inception&api_key={KEY}","https://www.themoviedb.org/settings/api","movie movies tv film posters"],
+["OMDb","Movies & TV","k","IMDb-style movie info, ratings and posters. 1,000 free calls a day.","https://www.omdbapi.com","https://www.omdbapi.com/?t=inception&apikey={KEY}","https://www.omdbapi.com/apikey.aspx","movie movies imdb film"],
+["Superhero API","Movies & TV","k","Stats, biography and images for 700+ superheroes and villains.","https://superheroapi.com/api","https://superheroapi.com/api/{KEY}/search/batman","https://superheroapi.com/","movie comics marvel dc superhero"],
+// ---------- Music ----------
+["Deezer","Music","n","Search tracks, albums and artists with 30-second previews.","https://api.deezer.com","https://api.deezer.com/search?q=arijit%20singh","https://developers.deezer.com/api","music songs audio"],
+["iTunes Search","Music","n","Search Apple's catalog of songs, albums, podcasts and apps.","https://itunes.apple.com/search","https://itunes.apple.com/search?term=arijit&media=music&limit=5","https://performance-partners.apple.com/search-api","music songs podcast apple"],
+["Lyrics.ovh","Music","n","Get song lyrics by artist and title.","https://api.lyrics.ovh/v1","https://api.lyrics.ovh/v1/coldplay/yellow","https://lyricsovh.docs.apiary.io/","music lyrics songs"],
+["MusicBrainz","Music","n","Open music encyclopedia: artists, releases and recordings.","https://musicbrainz.org/ws/2","https://musicbrainz.org/ws/2/artist/?query=queen&fmt=json","https://musicbrainz.org/doc/MusicBrainz_API","music artists albums"],
+["Spotify Web API","Music","k","Tracks, playlists, artists and audio features from Spotify.","https://api.spotify.com/v1","https://api.spotify.com/v1/search?q=arijit&type=artist","https://developer.spotify.com/dashboard","music songs playlist spotify"],
+["Last.fm","Music","k","Scrobbles, top charts and similar artists.","https://ws.audioscrobbler.com/2.0","https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=Cher&api_key={KEY}&format=json","https://www.last.fm/api/account/create","music charts artists"],
+// ---------- Weather ----------
+["Open-Meteo","Weather","n","Forecasts, hourly weather and history for any coordinates.","https://api.open-meteo.com/v1","https://api.open-meteo.com/v1/forecast?latitude=28.61&longitude=77.21&current_weather=true","https://open-meteo.com/en/docs","weather forecast climate temperature"],
+["wttr.in","Weather","n","Weather for any city as JSON or plain text.","https://wttr.in","https://wttr.in/Delhi?format=j1","https://github.com/chubin/wttr.in","weather forecast city"],
+["OpenWeatherMap","Weather","k","Current weather, forecasts and air pollution. 1,000 free calls a day.","https://api.openweathermap.org/data/2.5","https://api.openweathermap.org/data/2.5/weather?q=Mumbai&units=metric&appid={KEY}","https://home.openweathermap.org/users/sign_up","weather forecast"],
+["WeatherAPI.com","Weather","k","Weather, astronomy and time zone data with a generous free tier.","https://api.weatherapi.com/v1","https://api.weatherapi.com/v1/current.json?q=London&key={KEY}","https://www.weatherapi.com/signup.aspx","weather forecast astronomy"],
+// ---------- Crypto & Finance ----------
+["CoinGecko","Crypto & Finance","n","Crypto prices, market caps and charts for 10k+ coins.","https://api.coingecko.com/api/v3","https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd,inr","https://docs.coingecko.com/","crypto bitcoin finance money coins"],
+["Frankfurter","Crypto & Finance","n","Currency exchange rates from the European Central Bank.","https://api.frankfurter.app","https://api.frankfurter.app/latest?from=USD&to=INR,EUR","https://www.frankfurter.app/docs/","currency exchange finance money forex"],
+["ExchangeRate-API Open","Crypto & Finance","n","Daily exchange rates for 160 currencies, no sign-up.","https://open.er-api.com/v6","https://open.er-api.com/v6/latest/USD","https://www.exchangerate-api.com/docs/free","currency exchange finance money forex"],
+["Alpha Vantage","Crypto & Finance","k","Stock prices, forex and technical indicators.","https://www.alphavantage.co/query","https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey={KEY}","https://www.alphavantage.co/support/#api-key","stocks finance market money shares"],
+["Finnhub","Crypto & Finance","k","Real-time stocks, company news and earnings.","https://finnhub.io/api/v1","https://finnhub.io/api/v1/quote?symbol=AAPL&token={KEY}","https://finnhub.io/register","stocks finance market news"],
+// ---------- AI ----------
+["Google Gemini","AI","k","Gemini text, vision and chat models with a free tier.","https://generativelanguage.googleapis.com/v1beta","https://generativelanguage.googleapis.com/v1beta/models?key={KEY}","https://aistudio.google.com/app/apikey","ai llm chatbot gemini google"],
+["Groq","AI","k","Very fast open-model inference (Llama, Mixtral) with a free tier.","https://api.groq.com/openai/v1","https://api.groq.com/openai/v1/models","https://console.groq.com/keys","ai llm chatbot fast llama"],
+["Hugging Face Inference","AI","k","Thousands of open models for text, image and audio.","https://api-inference.huggingface.co/models","https://api-inference.huggingface.co/models/gpt2","https://huggingface.co/settings/tokens","ai ml models nlp image"],
+["OpenRouter","AI","k","One API for many AI models, including several free ones.","https://openrouter.ai/api/v1","https://openrouter.ai/api/v1/models","https://openrouter.ai/keys","ai llm chatbot models"],
+// ---------- Images ----------
+["Lorem Picsum","Images","n","Random placeholder photos at any size.","https://picsum.photos","https://picsum.photos/600/400","https://picsum.photos/","images photos placeholder"],
+["Dog CEO","Images","n","Random dog pictures by breed.","https://dog.ceo/api","https://dog.ceo/api/breeds/image/random","https://dog.ceo/dog-api/","images animals dog pets"],
+["TheCatAPI","Images","n","Random cat pictures. A free key unlocks votes and favourites.","https://api.thecatapi.com/v1","https://api.thecatapi.com/v1/images/search","https://thecatapi.com/","images animals cat pets"],
+["DiceBear Avatars","Images","n","Generated SVG avatars from any seed text.","https://api.dicebear.com/9.x","https://api.dicebear.com/9.x/adventurer/svg?seed=rishu","https://www.dicebear.com/how-to-use/http-api/","images avatar profile"],
+["RoboHash","Images","n","Unique robot avatars from any text.","https://robohash.org","https://robohash.org/rishu","https://robohash.org/","images avatar robot"],
+["QR Code Generator","Images","n","Create QR code images from any text or link.","https://api.qrserver.com/v1","https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=hello","https://goqr.me/api/","images qr code tools"],
+["Unsplash","Images","k","Millions of free high-resolution photos.","https://api.unsplash.com","https://api.unsplash.com/search/photos?query=tokyo&client_id={KEY}","https://unsplash.com/developers","images photos wallpaper"],
+["Pexels","Images","k","Free stock photos and videos.","https://api.pexels.com/v1","https://api.pexels.com/v1/search?query=nature","https://www.pexels.com/api/new/","images photos video stock"],
+// ---------- Fun ----------
+["JokeAPI","Fun","n","Programming, pun and general jokes with safe-mode filters.","https://v2.jokeapi.dev","https://v2.jokeapi.dev/joke/Any?safe-mode","https://jokeapi.dev/","fun jokes humor"],
+["Official Joke API","Fun","n","A random setup-and-punchline joke.","https://official-joke-api.appspot.com","https://official-joke-api.appspot.com/random_joke","https://github.com/15Dkatz/official_joke_api","fun jokes humor"],
+["Chuck Norris Jokes","Fun","n","Random Chuck Norris facts by category.","https://api.chucknorris.io","https://api.chucknorris.io/jokes/random","https://api.chucknorris.io/","fun jokes humor"],
+["Advice Slip","Fun","n","A random piece of advice.","https://api.adviceslip.com","https://api.adviceslip.com/advice","https://api.adviceslip.com/","fun advice quotes"],
+["ZenQuotes","Fun","n","Inspirational quotes, random or quote of the day.","https://zenquotes.io/api","https://zenquotes.io/api/random","https://docs.zenquotes.io/","fun quotes motivation"],
+["Bored API","Fun","n","Random activity ideas when you are bored.","https://bored-api.appbrewery.com","https://bored-api.appbrewery.com/random","https://bored-api.appbrewery.com/","fun activity ideas"],
+// ---------- Sports ----------
+["TheSportsDB","Sports","d","Teams, players, events and artwork across many sports.","https://www.thesportsdb.com/api/v1/json","https://www.thesportsdb.com/api/v1/json/{KEY}/searchteams.php?t=Arsenal","https://www.thesportsdb.com/free_sports_api","sports football cricket soccer","3"],
+["Jolpica F1 (Ergast)","Sports","n","Formula 1 results, drivers and standings since 1950.","https://api.jolpi.ca/ergast/f1","https://api.jolpi.ca/ergast/f1/current/driverStandings.json","https://github.com/jolpica/jolpica-f1","sports f1 racing formula"],
+["football-data.org","Sports","k","Football leagues, fixtures and tables. Free tier covers top leagues.","https://api.football-data.org/v4","https://api.football-data.org/v4/competitions/PL/standings","https://www.football-data.org/client/register","sports football soccer premier league"],
+["CricketData","Sports","k","Live cricket scores, matches and player info.","https://api.cricapi.com/v1","https://api.cricapi.com/v1/currentMatches?apikey={KEY}&offset=0","https://cricketdata.org/","sports cricket ipl scores"],
+// ---------- Food ----------
+["TheMealDB","Food","d","Recipes with ingredients, instructions and photos.","https://www.themealdb.com/api/json/v1","https://www.themealdb.com/api/json/v1/{KEY}/search.php?s=biryani","https://www.themealdb.com/api.php","food recipes cooking meals","1"],
+["TheCocktailDB","Food","d","Cocktail and drink recipes with images.","https://www.thecocktaildb.com/api/json/v1","https://www.thecocktaildb.com/api/json/v1/{KEY}/search.php?s=mojito","https://www.thecocktaildb.com/api.php","food drinks cocktails","1"],
+["Open Food Facts","Food","n","Nutrition and ingredients for millions of products by barcode.","https://world.openfoodfacts.org/api/v2","https://world.openfoodfacts.org/api/v2/product/737628064502.json","https://openfoodfacts.github.io/openfoodfacts-server/api/","food nutrition barcode"],
+["Spoonacular","Food","k","Recipes, meal plans and nutrition analysis.","https://api.spoonacular.com","https://api.spoonacular.com/recipes/complexSearch?query=pasta&apiKey={KEY}","https://spoonacular.com/food-api/console","food recipes nutrition"],
+// ---------- Science & Space ----------
+["NASA APIs","Science & Space","d","Astronomy picture of the day, Mars rover photos, asteroids and more.","https://api.nasa.gov","https://api.nasa.gov/planetary/apod?api_key={KEY}","https://api.nasa.gov/","space nasa science astronomy","DEMO_KEY"],
+["SpaceX API","Science & Space","n","Launches, rockets, capsules and Starlink data.","https://api.spacexdata.com/v4","https://api.spacexdata.com/v4/launches/latest","https://github.com/r-spacex/SpaceX-API","space rockets launches science"],
+["Spaceflight News","Science & Space","n","Latest spaceflight news articles and blogs.","https://api.spaceflightnewsapi.net/v4","https://api.spaceflightnewsapi.net/v4/articles/?limit=5","https://api.spaceflightnewsapi.net/v4/docs/","space news science"],
+["ISS Location","Science & Space","n","Where the International Space Station is right now.","https://api.wheretheiss.at/v1","https://api.wheretheiss.at/v1/satellites/25544","https://wheretheiss.at/w/developer","space iss satellite"],
+// ---------- News ----------
+["Hacker News","News","n","Top, new and best stories from Hacker News.","https://hacker-news.firebaseio.com/v0","https://hacker-news.firebaseio.com/v0/topstories.json","https://github.com/HackerNews/API","news tech"],
+["NewsAPI","News","k","Headlines and articles from 80,000+ sources.","https://newsapi.org/v2","https://newsapi.org/v2/top-headlines?country=in&apiKey={KEY}","https://newsapi.org/register","news headlines"],
+["GNews","News","k","Search news articles from around the world.","https://gnews.io/api/v4","https://gnews.io/api/v4/search?q=cricket&lang=en&apikey={KEY}","https://gnews.io/register","news headlines search"],
+["The Guardian","News","k","Guardian articles, sections and tags since 1999.","https://content.guardianapis.com","https://content.guardianapis.com/search?q=football&api-key={KEY}","https://open-platform.theguardian.com/access/","news articles"],
+// ---------- Books & Words ----------
+["Open Library","Books & Words","n","Search books, authors and covers.","https://openlibrary.org","https://openlibrary.org/search.json?q=harry+potter","https://openlibrary.org/developers/api","books library reading"],
+["Google Books","Books & Words","n","Search Google's book catalog. Heavier use needs a free key.","https://www.googleapis.com/books/v1","https://www.googleapis.com/books/v1/volumes?q=atomic+habits","https://developers.google.com/books","books reading google"],
+["Free Dictionary","Books & Words","n","English definitions, phonetics and audio pronunciation.","https://api.dictionaryapi.dev/api/v2","https://api.dictionaryapi.dev/api/v2/entries/en/hello","https://dictionaryapi.dev/","dictionary words english language"],
+["MyMemory Translate","Books & Words","n","Translate text between languages, including Hindi.","https://api.mymemory.translated.net","https://api.mymemory.translated.net/get?q=Hello%20friend&langpair=en|hi","https://mymemory.translated.net/doc/spec.php","translate language hindi"],
+["Quran API","Books & Words","n","Quran chapters and verses with translations.","https://api.alquran.cloud/v1","https://api.alquran.cloud/v1/surah/1/en.asad","https://alquran.cloud/api","books religion"],
+// ---------- Developer & Data ----------
+["JSONPlaceholder","Developer & Data","n","Fake posts, users and todos for testing your app.","https://jsonplaceholder.typicode.com","https://jsonplaceholder.typicode.com/posts/1","https://jsonplaceholder.typicode.com/","developer testing fake data"],
+["GitHub REST","Developer & Data","n","Public repos, users and issues. 60 requests an hour without a key.","https://api.github.com","https://api.github.com/users/octocat","https://docs.github.com/rest","developer github code"],
+["Random User","Developer & Data","n","Random fake user profiles with photos.","https://randomuser.me/api","https://randomuser.me/api/?results=3&nat=in","https://randomuser.me/documentation","developer fake data users"],
+["Agify","Developer & Data","n","Predicts age from a first name.","https://api.agify.io","https://api.agify.io?name=rishu","https://agify.io/","developer names prediction"],
+["ipify","Developer & Data","n","Your public IP address.","https://api.ipify.org","https://api.ipify.org?format=json","https://www.ipify.org/","developer ip network"],
+["ipapi","Developer & Data","n","Location, city and timezone from an IP address.","https://ipapi.co","https://ipapi.co/json/","https://ipapi.co/api/","developer ip location geo"],
+["is.gd Shortener","Developer & Data","n","Shorten any URL.","https://is.gd/create.php","https://is.gd/create.php?format=json&url=https://example.com","https://is.gd/developers.php","developer url shortener tools"],
+// ---------- Places ----------
+["REST Countries","Places","n","Every country's flag, capital, currency and population.","https://restcountries.com/v3.1","https://restcountries.com/v3.1/name/india","https://restcountries.com/","countries geography flags places"],
+["India Post PIN Code","Places","n","Post offices and districts for any Indian PIN code.","https://api.postalpincode.in","https://api.postalpincode.in/pincode/110001","https://www.postalpincode.in/Api-Details","india pincode postal places"],
+["Nominatim (OpenStreetMap)","Places","n","Turn addresses into coordinates and back.","https://nominatim.openstreetmap.org","https://nominatim.openstreetmap.org/search?q=taj+mahal&format=json","https://nominatim.org/release-docs/latest/api/Overview/","maps geocoding location places"],
+["Zippopotam.us","Places","n","City and state from a postal code in 60 countries.","https://api.zippopotam.us","https://api.zippopotam.us/us/90210","https://www.zippopotam.us/","postal zip places"],
+["Geoapify","Places","k","Maps, routing, places search and autocomplete.","https://api.geoapify.com/v1","https://api.geoapify.com/v1/geocode/search?text=Delhi&apiKey={KEY}","https://myprojects.geoapify.com/","maps routing places location"],
+];
+
+
+const AUTH_LABEL = { n: "No key", d: "Public key", k: "Free key" };
+const ORDER = { n: 0, d: 1, k: 2 };
+const DATA = APIS.map((a, i) => ({ id: i, name: a[0], cat: a[1], auth: a[2], desc: a[3], base: a[4], ex: a[5], docs: a[6], tags: a[7].split(" "), demo: a[8] || "" }))
+  .sort((a, b) => ORDER[a.auth] - ORDER[b.auth]);
+const CATS = ["All", ...new Set(DATA.map(d => d.cat))];
+const NOKEY_COUNT = DATA.filter(d => d.auth === "n").length;
+
+const HERO_VIDEO = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_080021_d598092b-c4c2-4e53-8e46-94cf9064cd50.mp4";
+const CAT_VIDEO = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_094631_d30ab262-45ee-4b7d-99f3-5d5848c8ef13.mp4";
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d } catch (e) { return d } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} },
+};
+
+/* ---------- icons ---------- */
+const ArrowUpRight = ({ c = "h-5 w-5" }) => html`<svg class=${c} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>`;
+const Play = ({ c = "h-4 w-4" }) => html`<svg class=${c} viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>`;
+const KeyIcon = ({ c = "h-6 w-6" }) => html`<svg class=${c} viewBox="0 0 24 24" fill="currentColor"><path d="M7 14q-.825 0-1.412-.587T5 12q0-.825.588-1.412T7 10q.825 0 1.413.588T9 12q0 .825-.587 1.413T7 14Zm0 4q-2.5 0-4.25-1.75T1 12q0-2.5 1.75-4.25T7 6q1.675 0 3.038.825T12.2 9H21l3 3-4.5 4.5-2-1.5-2 1.5-2.125-1.5H12.2q-.8 1.35-2.163 2.175T7 18Z"/></svg>`;
+const BoltIcon = ({ c = "h-6 w-6" }) => html`<svg class=${c} viewBox="0 0 24 24" fill="currentColor"><path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21Z"/></svg>`;
+const CopyIcon = ({ c = "h-6 w-6" }) => html`<svg class=${c} viewBox="0 0 24 24" fill="currentColor"><path d="M9 18q-.825 0-1.412-.587T7 16V4q0-.825.588-1.412T9 2h9q.825 0 1.413.588T20 4v12q0 .825-.587 1.413T18 18H9Zm-4 4q-.825 0-1.412-.587T3 20V6h2v14h11v2H5Z"/></svg>`;
+const Clock = () => html`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`;
+const Globe = () => html`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>`;
+const Search = () => html`<svg class="h-5 w-5 shrink-0 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>`;
+
+/* ---------- FadingVideo: rAF-driven crossfade loop ---------- */
+const FADE_MS = 500, FADE_OUT_LEAD = 0.55;
+function FadingVideo({ src, className, style }) {
+  const ref = useRef(null), raf = useRef(0), fadingOut = useRef(false);
+  useEffect(() => {
+    const v = ref.current; if (!v) return;
+    let timer;
+    const fadeTo = (target, duration = FADE_MS) => {
+      cancelAnimationFrame(raf.current);
+      const from = parseFloat(v.style.opacity || "0"), t0 = performance.now();
+      const step = now => {
+        const p = Math.min(1, (now - t0) / duration);
+        v.style.opacity = String(from + (target - from) * p);
+        if (p < 1) raf.current = requestAnimationFrame(step);
+      };
+      raf.current = requestAnimationFrame(step);
+    };
+    const onLoaded = () => { v.style.opacity = "0"; v.play().catch(() => {}); fadeTo(1); };
+    const onTime = () => {
+      const left = v.duration - v.currentTime;
+      if (!fadingOut.current && left <= FADE_OUT_LEAD && left > 0) { fadingOut.current = true; fadeTo(0); }
+    };
+    const onEnded = () => {
+      v.style.opacity = "0";
+      timer = setTimeout(() => { v.currentTime = 0; v.play().catch(() => {}); fadingOut.current = false; fadeTo(1); }, 100);
+    };
+    v.addEventListener("loadeddata", onLoaded);
+    v.addEventListener("timeupdate", onTime);
+    v.addEventListener("ended", onEnded);
+    return () => {
+      cancelAnimationFrame(raf.current); clearTimeout(timer);
+      v.removeEventListener("loadeddata", onLoaded);
+      v.removeEventListener("timeupdate", onTime);
+      v.removeEventListener("ended", onEnded);
+    };
+  }, [src]);
+  return html`<video ref=${ref} src=${src} autoPlay muted playsInline preload="auto" className=${className} style=${{ ...style, opacity: 0 }}></video>`;
+}
+
+/* ---------- Starfield: always-on backdrop under the video ---------- */
+function Starfield() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const c = ref.current, ctx = c.getContext("2d");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w, h, stars = [], id, dpr = Math.min(2, window.devicePixelRatio || 1);
+    const resize = () => {
+      w = c.clientWidth; h = c.clientHeight; c.width = w * dpr; c.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      stars = Array.from({ length: Math.round(w * h / 3200) }, () => ({ x: Math.random() * w, y: Math.random() * h, z: Math.random(), p: Math.random() * 6.28 }));
+    };
+    let shoot = null;
+    const draw = t => {
+      ctx.clearRect(0, 0, w, h);
+      if (!reduce && !shoot && Math.random() < 0.004) shoot = { x: Math.random() * w * 0.8, y: Math.random() * h * 0.4, life: 0 };
+      if (shoot) {
+        const len = 120, k = shoot.life / 60, x = shoot.x + shoot.life * 9, y = shoot.y + shoot.life * 3.2;
+        const g = ctx.createLinearGradient(x, y, x - len, y - len * 0.36);
+        g.addColorStop(0, `rgba(255,255,255,${0.9 * (1 - k)})`); g.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - len, y - len * 0.36); ctx.stroke();
+        if (++shoot.life > 60) shoot = null;
+      }
+      for (const s of stars) {
+        const a = 0.25 + 0.75 * s.z * (0.6 + 0.4 * Math.sin(t / 900 + s.p));
+        ctx.fillStyle = `rgba(255,255,255,${a})`;
+        const r = 0.4 + s.z * 1.1;
+        ctx.beginPath(); ctx.arc(s.x, s.y, r, 0, 6.28); ctx.fill();
+        if (!reduce) { s.y -= 0.03 + s.z * 0.12; if (s.y < -2) { s.y = h + 2; s.x = Math.random() * w; } }
+      }
+      if (!reduce) id = requestAnimationFrame(draw);
+    };
+    resize(); window.addEventListener("resize", resize); id = requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", resize); };
+  }, []);
+  return html`<canvas ref=${ref} class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>`;
+}
+
+/* ---------- BlurText: word-by-word blur-in ---------- */
+function BlurText({ text, className = "" }) {
+  const ref = useRef(null); const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    if (!("IntersectionObserver" in window)) { setSeen(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setSeen(true); io.disconnect(); } }, { threshold: 0.1 });
+    io.observe(el); return () => io.disconnect();
+  }, []);
+  const words = text.split(" ");
+  return html`<p ref=${ref} className=${className} style=${{ display: "flex", flexWrap: "wrap", justifyContent: "center", rowGap: "0.1em" }}>
+    ${words.map((w, i) => html`<${motion.span} key=${i}
+      initial=${{ filter: "blur(10px)", opacity: 0, y: 50 }}
+      animate=${seen ? { filter: ["blur(10px)", "blur(5px)", "blur(0px)"], opacity: [0, 0.5, 1], y: [50, -5, 0] } : undefined}
+      transition=${{ duration: 0.7, times: [0, 0.5, 1], ease: "easeOut", delay: (i * 100) / 1000 }}
+      style=${{ display: "inline-block", marginRight: "0.28em" }}>${w}<//>`)}
+  </p>`;
+}
+const Fade = ({ delay = 0, className = "", children }) => html`<${motion.div} className=${className}
+  initial=${{ filter: "blur(10px)", opacity: 0, y: 20 }} animate=${{ filter: "blur(0px)", opacity: 1, y: 0 }}
+  transition=${{ duration: 0.7, ease: "easeOut", delay }}>${children}<//>`;
+
+/* ---------- toast + copy ---------- */
+let toastFn = () => {};
+function Toast() {
+  const [msg, setMsg] = useState(""); const t = useRef();
+  toastFn = m => { setMsg(m); clearTimeout(t.current); t.current = setTimeout(() => setMsg(""), 1600); };
+  return msg ? html`<div class="fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black shadow-lg" role="status">${msg}</div>` : null;
+}
+async function copyText(text, codeEl) {
+  try { await navigator.clipboard.writeText(text); toastFn("copied to clipboard"); return true; }
+  catch (e) {
+    if (codeEl) { const r = document.createRange(); r.selectNodeContents(codeEl); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+    toastFn("selected. press ctrl+c to copy"); return false;
+  }
+}
+function CopyRow({ label, value }) {
+  const code = useRef(null); const [done, setDone] = useState(false);
+  return html`<div class="min-w-0">
+    <div class="mb-1 font-body text-[10.5px] font-semibold uppercase tracking-[0.14em] text-white/60">${label}</div>
+    <div class="flex min-w-0 items-center gap-2 rounded-xl bg-black/45 py-1 pl-3 pr-1 ring-1 ring-white/10">
+      <code ref=${code} class="scroll-x min-w-0 flex-1 whitespace-nowrap py-1 font-mono text-[12px] text-white/90">${value}</code>
+      <button class=${"shrink-0 rounded-full px-3 py-1 font-body text-xs font-semibold " + (done ? "bg-white/20 text-white" : "bg-white text-black")}
+        onClick=${async () => { if (await copyText(value, code.current)) { setDone(true); setTimeout(() => setDone(false), 1300); } }}>${done ? "Copied" : "Copy"}</button>
+    </div></div>`;
+}
+
+/* ---------- Logo + Navbar ---------- */
+const Logo = ({ dim = "" }) => html`<a href="#top" class=${"liquid-glass flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-heading text-2xl italic text-white" + dim} aria-label="API Hub home">a</a>`;
+function Navbar({ user, onLogout, onJump }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => { const f = () => setScrolled(window.scrollY > 40); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
+  const dim = scrolled ? " solid" : "";
+  const links = user ? [["Home", "#top", null], ["Catalog", "#catalog", ""], ["Anime", "#catalog", "anime"], ["Games", "#catalog", "game"], ["AI", "#catalog", "ai"]] : [];
+  return html`<nav class="fixed left-0 right-0 top-4 z-50 flex items-center justify-between px-4 sm:px-8 lg:px-16">
+    <${Logo} dim=${dim} />
+    ${user && html`<div class=${"liquid-glass hidden items-center gap-1 rounded-full px-1.5 py-1.5 md:flex" + dim}>
+      ${links.map(([t, href, q]) => html`<a key=${t} href=${href} onClick=${() => q !== null && onJump(q)} class="rounded-full px-3 py-2 font-body text-sm font-medium text-white/90 hover:text-white">${t}</a>`)}
+      <a href="#catalog" onClick=${() => onJump("", "k")} class="ml-1 flex items-center gap-1 whitespace-nowrap rounded-full bg-white px-4 py-2 font-body text-sm font-semibold text-black">Get Free Keys <${ArrowUpRight} c="h-4 w-4" /></a>
+    </div>`}
+    ${user ? html`<button onClick=${onLogout} class=${"liquid-glass flex h-12 items-center rounded-full px-4 font-body text-sm font-medium text-white/90" + dim} title=${user.handle}>
+        <span class="mr-2 flex h-7 w-7 items-center justify-center rounded-full bg-white font-heading text-base italic text-black">${(user.name[0] || "u").toLowerCase()}</span>Log out</button>`
+      : html`<div class="h-12 w-12" aria-hidden="true"></div>`}
+  </nav>`;
+}
+
+/* ---------- Accounts: real Firebase login when configured, local preview otherwise ---------- */
+const FB_CFG = window.FIREBASE_CONFIG;
+const LIVE = !!(window.firebase && FB_CFG && FB_CFG.apiKey && !/PASTE/i.test(FB_CFG.apiKey));
+// The hosted build sets FIREBASE_CONFIG; if Firebase then fails to load, show an error instead of silently falling back to preview login.
+const BROKEN = !!(FB_CFG && FB_CFG.apiKey && !/PASTE/i.test(FB_CFG.apiKey) && !window.firebase);
+let fbAuth = null;
+if (LIVE) { try { window.firebase.initializeApp(FB_CFG); fbAuth = window.firebase.auth(); fbAuth.useDeviceLanguage(); } catch (e) { console.error(e); } }
+const fbUser = u => u && ({ id: u.uid, name: u.displayName || (u.email ? u.email.split("@")[0] : "friend"), handle: u.email || u.phoneNumber || "" });
+const FB_ERRORS = {
+  "auth/invalid-email": "That email address doesn't look right.",
+  "auth/email-already-in-use": "An account with this email already exists. Tap Sign in instead.",
+  "auth/weak-password": "Use a password with at least 6 characters.",
+  "auth/invalid-credential": "Email or password is wrong. Try again, or reset your password.",
+  "auth/wrong-password": "Email or password is wrong. Try again, or reset your password.",
+  "auth/user-not-found": "No account with this email. Tap Create account instead.",
+  "auth/too-many-requests": "Too many tries. Wait a few minutes and try again.",
+  "auth/invalid-phone-number": "Enter the number with country code, like +91 98765 43210.",
+  "auth/invalid-verification-code": "That code doesn't match. Check the 6 digits and try again.",
+  "auth/code-expired": "That code expired. Tap Resend to get a new one.",
+  "auth/popup-closed-by-user": "The Google window was closed before sign-in finished.",
+  "auth/unauthorized-domain": "This website's address isn't allowed yet. Add it in Firebase under Authentication, Settings, Authorized domains.",
+  "auth/operation-not-allowed": "This sign-in method is switched off. Turn it on in Firebase under Authentication, Sign-in method.",
+  "auth/billing-not-enabled": "Phone sign-in needs the Firebase Blaze plan for real SMS. Use email or Google for now.",
+  "auth/internal-error": "Couldn't start sign-in. Check that this method is turned on in Firebase, then reload the page.",
+  "auth/captcha-check-failed": "The robot check failed. Reload the page and try again.",
+  "auth/network-request-failed": "No internet connection. Check your network and try again.",
+};
+const fbErr = e => FB_ERRORS[e && e.code] || (e && e.message) || "Something went wrong. Try again.";
+const toE164 = p => { const d = p.replace(/[^\d+]/g, ""); return d.startsWith("+") ? d : d.length === 10 ? "+91" + d : "+" + d; };
+
+function Gate({ onSignIn }) {
+  const [m, setM] = useState("email"), [err, setErr] = useState(""), [info, setInfo] = useState(""), [busy, setBusy] = useState(false);
+  const [otp, setOtp] = useState(null), [confirmRes, setConfirmRes] = useState(null), [isNew, setIsNew] = useState(true);
+  const [f, setF] = useState({ name: "", email: "", pass: "", phone: "", code: "", gmail: "" });
+  const verifier = useRef(null);
+  const up = k => e => setF({ ...f, [k]: e.target.value });
+  const run = async fn => { setErr(""); setInfo(""); setBusy(true); try { await fn(); } catch (e) { setErr(fbErr(e)); } finally { setBusy(false); } };
+
+  const submitLive = () => run(async () => {
+    if (m === "email") {
+      const em = f.email.trim();
+      if (isNew) {
+        const r = await fbAuth.createUserWithEmailAndPassword(em, f.pass);
+        if (f.name.trim()) await r.user.updateProfile({ displayName: f.name.trim() });
+        onSignIn(fbUser(fbAuth.currentUser));
+      } else await fbAuth.signInWithEmailAndPassword(em, f.pass);
+    } else if (m === "phone") {
+      if (!confirmRes) throw { message: "Tap Send code first." };
+      const r = await confirmRes.confirm(f.code.trim());
+      if (f.name.trim() && !r.user.displayName) { await r.user.updateProfile({ displayName: f.name.trim() }); onSignIn(fbUser(fbAuth.currentUser)); }
+    } else {
+      const p = new window.firebase.auth.GoogleAuthProvider();
+      try { await fbAuth.signInWithPopup(p); }
+      catch (e) { if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") await fbAuth.signInWithRedirect(p); else throw e; }
+    }
+  });
+  const sendLive = () => run(async () => {
+    if (f.phone.replace(/\D/g, "").length < 10) throw { message: "Enter a mobile number with at least 10 digits." };
+    // A reCAPTCHA can only render once per element, so every send gets a brand-new host element.
+    try { if (verifier.current) verifier.current.clear(); } catch (x) {}
+    const host = document.getElementById("recaptcha-box"); host.innerHTML = "";
+    const el = document.createElement("div"); el.id = "rc-" + Date.now(); host.appendChild(el);
+    verifier.current = new window.firebase.auth.RecaptchaVerifier(el.id, { size: "invisible" });
+    setConfirmRes(await fbAuth.signInWithPhoneNumber(toE164(f.phone), verifier.current));
+    setInfo("Code sent by SMS to " + toE164(f.phone) + ".");
+  });
+  const resetPass = () => run(async () => {
+    if (!f.email.trim()) throw { message: "Type your email first, then tap Forgot password." };
+    await fbAuth.sendPasswordResetEmail(f.email.trim()); setInfo("Password reset link sent. Check your inbox.");
+  });
+
+  const submitLocal = () => {
+    setErr("");
+    if (m === "email") {
+      const em = f.email.trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return setErr("Enter a valid email address, like you@example.com.");
+      onSignIn({ id: "email:" + em, name: f.name.trim() || em.split("@")[0], handle: em });
+    } else if (m === "phone") {
+      if (!otp) return setErr("Tap Send code first.");
+      if (f.code.trim() !== otp) return setErr("That code doesn't match. Check the 6 digits and try again.");
+      onSignIn({ id: "phone:" + f.phone.replace(/\D/g, ""), name: f.name.trim() || "friend", handle: f.phone.trim() });
+    } else {
+      const em = f.gmail.trim().toLowerCase();
+      if (!/^[^@\s]+@(gmail|googlemail)\.com$/.test(em)) return setErr("Use a Gmail address ending in @gmail.com.");
+      onSignIn({ id: "email:" + em, name: em.split("@")[0], handle: em });
+    }
+  };
+  const sendLocal = () => {
+    if (f.phone.replace(/\D/g, "").length < 10) return setErr("Enter a mobile number with at least 10 digits.");
+    setErr(""); setOtp(String(Math.floor(100000 + Math.random() * 900000)));
+  };
+  const submit = e => { e.preventDefault(); if (BROKEN) return; LIVE ? submitLive() : submitLocal(); };
+  const codeSent = LIVE ? !!confirmRes : !!otp;
+
+  const inp = "w-full rounded-xl bg-white/5 px-4 py-3 font-body text-[15px] text-white ring-1 ring-white/15 outline-none focus:ring-white/60";
+  const lbl = "grid gap-1.5 font-body text-xs font-medium uppercase tracking-[0.12em] text-white/70";
+  const cta = m === "phone" ? "Verify and enter" : m === "google" ? (LIVE ? "Continue with Google" : "Continue with Gmail") : LIVE && !isNew ? "Sign in" : "Create account";
+  return html`<section class="relative flex min-h-screen flex-col overflow-hidden bg-black">
+    <div class="absolute inset-0 z-0"><${Starfield} /></div>
+    <${FadingVideo} src=${HERO_VIDEO} className="absolute left-1/2 top-0 z-0 -translate-x-1/2 object-cover object-top" style=${{ width: "120%", height: "120%" }} />
+    <${Navbar} user=${null} />
+    <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-12 pt-28 text-center">
+      <${Fade} delay=${0.4}><div class="liquid-glass inline-flex items-center gap-2 rounded-full p-1">
+        <span class="rounded-full bg-white px-3 py-1 font-body text-xs font-semibold text-black">Free</span>
+        <span class="pr-3 font-body text-sm text-white/90">${DATA.length} APIs, no-key ones first</span></div><//>
+      <${BlurText} text="Every Free API One Search Away" className="mt-6 max-w-2xl font-heading text-6xl italic leading-[0.8] tracking-[-4px] text-white md:text-7xl lg:text-[5.5rem]" />
+      <${Fade} delay=${0.8}><p class="mx-auto mt-4 max-w-xl font-body text-sm font-light leading-tight text-white md:text-base">Create your free account to search anime, game, weather, AI and ${CATS.length - 5} more categories, and copy any endpoint in one tap.</p><//>
+      <${Fade} delay=${1.1} className="mt-8 w-full max-w-md">
+        <form noValidate onSubmit=${submit} class="liquid-glass-strong readable grid gap-4 rounded-[1.5rem] p-5 text-left sm:p-6">
+          <div class="grid grid-cols-3 gap-1 rounded-full bg-white/5 p-1" role="tablist" aria-label="Sign-up method">
+            ${[["email", "Email"], ["phone", "Mobile"], ["google", LIVE ? "Google" : "Gmail"]].map(([k, t]) => html`<button key=${k} type="button" role="tab" aria-selected=${m === k}
+              onClick=${() => { setM(k); setErr(""); setInfo(""); }} class=${"rounded-full py-2 font-body text-sm font-medium " + (m === k ? "bg-white text-black" : "text-white/80")}>${t}</button>`)}
+          </div>
+          ${m === "email" && html`
+            ${(!LIVE || isNew) && html`<label class=${lbl}>Your name<input id="em-name" class=${inp} value=${f.name} onChange=${up("name")} placeholder="Rishu" autocomplete="name" /></label>`}
+            <label class=${lbl}>Email address<input id="em-email" type="email" class=${inp} value=${f.email} onChange=${up("email")} placeholder="you@example.com" autocomplete="email" /></label>
+            ${LIVE && html`<label class=${lbl}>Password<input id="em-pass" type="password" class=${inp} value=${f.pass} onChange=${up("pass")} placeholder=${isNew ? "At least 6 characters" : "Your password"} autocomplete=${isNew ? "new-password" : "current-password"} /></label>`}`}
+          ${m === "phone" && html`<label class=${lbl}>Your name<input id="ph-name" class=${inp} value=${f.name} onChange=${up("name")} placeholder="Rishu" autocomplete="name" /></label>
+            <div class="flex items-end gap-2"><label class=${lbl + " min-w-0 flex-1"}>Mobile number<input id="ph-num" type="tel" inputmode="tel" class=${inp} value=${f.phone} onChange=${up("phone")} placeholder="+91 98765 43210" autocomplete="tel" /></label>
+              <button type="button" disabled=${busy} onClick=${BROKEN ? () => {} : LIVE ? sendLive : sendLocal} class="liquid-glass shrink-0 rounded-full px-4 py-3 font-body text-sm font-medium text-white">${codeSent ? "Resend" : "Send code"}</button></div>
+            ${!LIVE && otp && html`<div class="rounded-xl bg-white/10 px-3 py-2 font-mono text-xs text-white/90">Preview code (a real site texts this): ${otp}</div>`}
+            ${codeSent && html`<label class=${lbl}>6-digit code<input id="ph-otp" inputmode="numeric" maxlength="6" class=${inp} value=${f.code} onChange=${up("code")} placeholder="••••••" autocomplete="one-time-code" /></label>`}`}
+          ${m === "google" && (LIVE
+            ? html`<p class="font-body text-sm font-light text-white/80">Sign in with your Google account in one tap. A Google window will open.</p>`
+            : html`<label class=${lbl}>Gmail address<input id="gm-email" type="email" class=${inp} value=${f.gmail} onChange=${up("gmail")} placeholder="yourname@gmail.com" autocomplete="email" /></label>`)}
+          ${BROKEN && html`<p class="font-body text-sm text-white" role="alert"><span class="mr-1 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-black">!</span>The login service didn't load. Check your internet and reload the page.</p>`}
+          ${err && html`<p class="font-body text-sm text-white" role="alert"><span class="mr-1 rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-black">!</span>${err}</p>`}
+          ${info && html`<p class="font-body text-sm text-white/90" role="status">${info}</p>`}
+          <button type="submit" disabled=${busy || BROKEN} class="flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 font-body text-sm font-semibold text-black disabled:opacity-60">
+            ${busy ? "Please wait…" : cta} <${ArrowUpRight} />
+          </button>
+          ${LIVE && m === "email" && html`<div class="flex flex-wrap justify-between gap-2 font-body text-sm">
+            <button type="button" onClick=${() => { setIsNew(!isNew); setErr(""); setInfo(""); }} class="text-white underline-offset-4 hover:underline">${isNew ? "Have an account? Sign in" : "New here? Create account"}</button>
+            ${!isNew && html`<button type="button" onClick=${resetPass} class="text-white/70 underline-offset-4 hover:underline">Forgot password?</button>`}
+          </div>`}
+          <div id="recaptcha-box"></div>
+          <p class="font-body text-xs font-light text-white/60">${LIVE
+            ? "Your account is secured by Google Firebase. We never see your password."
+            : "Preview mode: accounts are saved only in this browser. No password is asked for and nothing is sent anywhere."}
+            <span class="ml-1 opacity-60">· build 7${LIVE ? " live" : BROKEN ? " offline" : " preview"}</span></p>
+        </form><//>
+    </div>
+  </section>`;
+}
+
+/* =====================================================================
+   SIGNED-IN SITE: black-and-white "securify" style
+   Readex Pro, neutral-900 pills, giant staggered lowercase words.
+   ===================================================================== */
+const DASH_VIDEO = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_063509_7d167302-4fd4-480b-8260-18ab572333d4.mp4";
+const HubMark = ({ c = "h-5 w-5" }) => html`<svg class=${c} viewBox="0 0 256 256" aria-hidden="true"><path fill="#ffffff" d="M 128 192 L 128 256 L 64.5 256 L 32 223 L 0 192 L 0 128 L 64 128 Z M 256 192 L 256 256 L 192.5 256 L 160 223 L 128 192 L 128 128 L 192 128 Z M 128 64 L 128 128 L 64.5 128 L 32 95 L 0 64 L 0 0 L 64 0 Z M 256 64 L 256 128 L 192.5 128 L 160 95 L 128 64 L 128 0 L 192 0 Z"/></svg>`;
+const Divider = ({ rot, c = "" }) => html`<span class=${"hidden h-px w-24 bg-white/40 md:block " + rot + " " + c} aria-hidden="true"></span>`;
+
+function DashNav({ user, onLogout, onJump }) {
+  const links = [["catalog", ""], ["anime", "anime"], ["games", "game"], ["ai", "ai"]];
+  const [past, setPast] = useState(false);
+  useEffect(() => { const f = () => setPast(window.scrollY > window.innerHeight - 120); f(); window.addEventListener("scroll", f, { passive: true }); return () => window.removeEventListener("scroll", f); }, []);
+  return html`<nav class=${"fixed left-0 right-0 top-0 z-50 flex items-center justify-between gap-4 px-4 pb-3 pt-4 md:px-10 md:pt-6 " + (past ? "bg-black" : "")}>
+    <a href="#top" class="flex items-center gap-2 rounded-full bg-neutral-900/90 py-3 pl-4 pr-6 backdrop-blur">
+      <${HubMark} /><span class="text-sm font-normal tracking-tight text-white">api hub</span></a>
+    <div class="hidden items-center gap-1 rounded-full bg-neutral-900/90 px-3 py-2 backdrop-blur md:flex">
+      ${links.map(([t, q]) => html`<a key=${t} href="#catalog" onClick=${() => onJump(q)} class="rounded-full px-5 py-2 text-sm text-neutral-300 transition-colors hover:text-white">${t}</a>`)}
+    </div>
+    <div class="flex items-center gap-2">
+      <button onClick=${onLogout} title=${"signed in as " + user.handle} class="hidden rounded-full bg-neutral-900/90 px-5 py-3 text-sm text-neutral-300 backdrop-blur transition-colors hover:text-white sm:block">log out</button>
+      <a href="#catalog" onClick=${() => onJump("")} class="whitespace-nowrap rounded-full bg-white px-6 py-3 text-sm font-normal text-black transition-colors hover:bg-neutral-200">browse apis</a>
+    </div>
+  </nav>`;
+}
+
+function DashHero({ user, onLogout }) {
+  const cats = CATS.length - 1;
+  return html`<section id="top" class="relative h-screen min-h-[640px] w-full overflow-hidden bg-black">
+    <div class="absolute inset-0"><${Starfield} /></div>
+    <${FadingVideo} src=${DASH_VIDEO} className="absolute inset-0 h-full w-full object-cover" />
+    <div class="relative h-full w-full">
+      <h1 class="hero-title absolute left-4 top-[18%] text-[14vw] font-medium text-white md:left-10 md:text-[13vw]">every</h1>
+      <h1 class="hero-title absolute right-4 top-[38%] text-[14vw] font-medium text-white md:right-10 md:text-[13vw]">free</h1>
+      <h1 class="hero-title absolute left-[18%] top-[58%] text-[14vw] font-medium text-white md:left-[28%] md:text-[13vw]">api</h1>
+
+      <p class="absolute left-6 top-[46%] max-w-[240px] text-[15px] leading-snug text-white/90 md:left-10">
+        welcome back, ${user.name.toLowerCase()}. search ${DATA.length} free apis, copy any endpoint, and start building. no-key ones come first.</p>
+
+      <div class="absolute right-6 top-[14%] md:right-24">
+        <div class="flex items-center justify-end gap-3"><${Divider} rot="rotate-[20deg]" /><span class="text-4xl font-medium tracking-tight md:text-5xl">+${NOKEY_COUNT}</span></div>
+        <div class="mt-1 text-right text-xs text-white/70 md:text-sm">apis need no key</div>
+      </div>
+
+      <div class="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-b from-transparent to-black"></div>
+
+      <div class="absolute bottom-20 left-6 md:bottom-24 md:left-20">
+        <div class="flex items-center gap-3"><span class="text-4xl font-medium tracking-tight md:text-5xl">+${DATA.length}</span><${Divider} rot="rotate-[-20deg]" /></div>
+        <div class="mt-1 text-xs text-white/70 md:text-sm">free apis listed</div>
+      </div>
+
+      <div class="absolute bottom-16 right-6 md:bottom-20 md:right-20">
+        <div class="flex items-center justify-end gap-3"><${Divider} rot="rotate-[-20deg]" /><span class="text-4xl font-medium tracking-tight md:text-5xl">${cats}</span></div>
+        <div class="mt-1 text-right text-xs text-white/70 md:text-sm">categories</div>
+      </div>
+
+      <button onClick=${onLogout} class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-neutral-900/90 px-5 py-2 text-xs text-neutral-300 backdrop-blur transition-colors hover:text-white sm:hidden">log out</button>
+    </div>
+  </section>`;
+}
+
+function DashCopy({ label, value }) {
+  const code = useRef(null); const [done, setDone] = useState(false);
+  return html`<div class="min-w-0">
+    <div class="mb-1.5 text-[11px] text-white/50">${label}</div>
+    <div class="flex min-w-0 items-center gap-2 rounded-full bg-black py-1 pl-4 pr-1 ring-1 ring-white/10">
+      <code ref=${code} class="scroll-x min-w-0 flex-1 whitespace-nowrap py-1.5 font-mono text-[12px] normal-case text-white/90">${value}</code>
+      <button class=${"shrink-0 rounded-full px-4 py-1.5 text-xs transition-colors " + (done ? "bg-neutral-800 text-white" : "bg-white text-black hover:bg-neutral-200")}
+        onClick=${async () => { if (await copyText(value, code.current)) { setDone(true); setTimeout(() => setDone(false), 1300); } }}>${done ? "copied" : "copy"}</button>
+    </div></div>`;
+}
+
+function DashCard({ d, myKey, setKey, onTag }) {
+  const k = myKey || d.demo;
+  const ex = d.ex.split("{KEY}").join(k ? encodeURIComponent(k) : "YOUR_KEY");
+  const needsKey = d.auth === "k" || d.ex.includes("{KEY}");
+  const badge = d.auth === "n" ? "bg-white text-black" : d.auth === "d" ? "bg-neutral-800 text-white" : "text-white/80 ring-1 ring-white/40";
+  return html`<article class="flex min-w-0 flex-col gap-4 rounded-[1.75rem] bg-neutral-900/90 p-5 backdrop-blur md:p-6">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0"><h3 class="text-2xl font-medium leading-tight tracking-tight text-white">${d.name.toLowerCase()}</h3>
+        <div class="mt-0.5 text-xs text-white/50">${d.cat.toLowerCase()}</div></div>
+      <span class=${"shrink-0 rounded-full px-3 py-1 text-[11px] " + badge}>${AUTH_LABEL[d.auth].toLowerCase()}</span>
+    </div>
+    <p class="text-sm font-light leading-snug text-white/80">${d.desc.toLowerCase()}</p>
+    <${DashCopy} label="endpoint" value=${d.base} />
+    <${DashCopy} label="example request" value=${ex} />
+    ${d.auth === "d" && html`<${DashCopy} label="public test key" value=${d.demo} />`}
+    ${needsKey && html`<label class="grid gap-1.5 text-[11px] text-white/50">${d.auth === "d" ? "your own key (optional)" : "your key"}
+      <input id=${"key-" + d.id} value=${myKey || ""} onChange=${e => setKey(d.id, e.target.value.trim())} placeholder="paste your key to fill the example"
+        class="rounded-full border border-dashed border-white/25 bg-transparent px-4 py-2 font-mono text-xs text-white outline-none focus:border-white/70" /></label>`}
+    <div class="flex flex-wrap gap-1.5">${d.tags.slice(0, 5).map(t => html`<button key=${t} onClick=${() => onTag(t)} class="rounded-full bg-neutral-800 px-3 py-1 text-[11px] text-neutral-300 transition-colors hover:text-white">${t}</button>`)}</div>
+    <div class="mt-auto flex flex-wrap gap-2 pt-1">
+      <a href=${d.auth === "k" ? d.docs : ex} target="_blank" rel="noopener" class="flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm text-black transition-colors hover:bg-neutral-200">${d.auth === "k" ? "get your free key" : "try it now"} <${ArrowUpRight} c="h-4 w-4" /></a>
+      <a href=${d.docs} target="_blank" rel="noopener" class="rounded-full bg-neutral-800 px-5 py-2.5 text-sm text-neutral-300 transition-colors hover:text-white">docs</a>
+    </div>
+  </article>`;
+}
+
+const stem = w => w.toLowerCase().replace(/(ing|es|s)$/, "");
+function matches(d, q) {
+  if (!q) return true;
+  const hay = (d.name + " " + d.cat + " " + d.tags.join(" ") + " " + d.desc).toLowerCase();
+  const stems = hay.split(/[^a-z0-9]+/).map(stem);
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(t => hay.includes(t) || stems.includes(stem(t)));
+}
+
+function DashCatalog({ q, setQ, cat, setCat, auth, setAuth, keys, setKey }) {
+  const qd = q.trim();
+  const base = DATA.filter(d => (auth === "all" || (auth === "n" ? d.auth !== "k" : d.auth === auth)) && matches(d, qd));
+  const list = base.filter(d => cat === "All" || d.cat === cat);
+  const groups = [["n", "works instantly", "no sign-up and no key"], ["d", "public test key", "official shared keys, copy and go"], ["k", "free key required", "sign up free, paste your key, the example fills in"]];
+  const onTag = t => { setQ(t); setCat("All"); document.getElementById("catalog").scrollIntoView({ behavior: "smooth" }); };
+  const pill = on => "shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors " + (on ? "bg-white text-black" : "bg-neutral-900/90 text-neutral-300 hover:text-white");
+  return html`<section id="catalog" class="relative min-h-screen scroll-mt-4 bg-black px-4 pb-20 pt-28 md:px-10">
+    <div class="relative mx-auto max-w-[1400px]">
+      <div class="relative mb-10 min-h-[11rem] md:min-h-[15rem]">
+        <h2 class="hero-title text-[16vw] font-medium text-white md:text-[9vw]">find it</h2>
+        <h2 class="hero-title text-right text-[16vw] font-medium text-white md:-mt-2 md:text-[9vw]">copy it</h2>
+        <p class="mt-4 max-w-[260px] text-[15px] leading-snug text-white/90 md:absolute md:left-0 md:top-[58%] md:mt-0">type what you are building. anime, game, weather, crypto. every card has a copy button.</p>
+      </div>
+
+      <div class="sticky top-[68px] z-20 -mx-4 bg-black px-4 pb-3 pt-2 md:top-[80px] md:-mx-10 md:px-10">
+        <label class="flex items-center gap-3 rounded-full bg-neutral-900/95 py-2 pl-5 pr-2 ring-1 ring-white/10 backdrop-blur focus-within:ring-white/50">
+          <${Search} />
+          <input id="cat-q" type="search" value=${q} onChange=${e => setQ(e.target.value)} placeholder="search anime, game, weather…" aria-label="Search APIs" class="min-w-0 flex-1 bg-transparent py-2 text-base text-white outline-none md:text-lg" />
+          ${q && html`<button onClick=${() => setQ("")} class="shrink-0 rounded-full bg-neutral-800 px-4 py-2 text-xs text-neutral-300 transition-colors hover:text-white">clear</button>`}
+          <span class="hidden shrink-0 rounded-full bg-white px-5 py-2.5 text-sm tabular-nums text-black sm:block">${list.length} of ${DATA.length}</span>
+        </label>
+      </div>
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        ${["anime", "game", "movie", "weather", "crypto", "music", "ai", "cricket"].map(w => html`<button key=${w} onClick=${() => { setQ(w); setCat("All"); }} class=${"rounded-full px-3 py-1 text-xs transition-colors " + (qd === w ? "bg-white text-black" : "text-white/60 ring-1 ring-white/20 hover:text-white")}>${w}</button>`)}
+      </div>
+      <div class="scroll-x mt-4 flex gap-2 pb-1" role="group" aria-label="Categories">
+        ${CATS.map(c => { const n = c === "All" ? base.length : base.filter(d => d.cat === c).length; if (qd && !n && c !== cat) return null;
+          return html`<button key=${c} aria-pressed=${cat === c} onClick=${() => setCat(c)} class=${pill(cat === c)}>${c.toLowerCase()} <span class="ml-1 text-xs opacity-50">${n}</span></button>`; })}
+      </div>
+      <div class="mt-2 flex flex-wrap items-center gap-2" role="group" aria-label="Key filter">
+        ${[["all", "all apis"], ["n", "no key needed"], ["d", "public key"], ["k", "needs free key"]].map(([k, t]) => html`<button key=${k} aria-pressed=${auth === k} onClick=${() => setAuth(k)} class=${pill(auth === k) + " text-xs"}>${t}</button>`)}
+      </div>
+
+      ${list.length === 0 && html`<div class="mt-12 rounded-[1.75rem] bg-neutral-900/90 p-10 text-center text-white/80">no apis match “${qd.toLowerCase()}”. try a broader word like game, music or images, or pick all.</div>`}
+      ${groups.map(([a, h, p]) => { const g = list.filter(d => d.auth === a); if (!g.length) return null;
+        return html`<div key=${a} class="mt-14">
+          <div class="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+            <h3 class="hero-title text-5xl font-medium text-white md:text-6xl">${h}</h3>
+            <div class="flex items-center gap-3"><${Divider} rot="rotate-[-20deg]" /><span class="text-3xl font-medium tracking-tight">${g.length}</span><span class="text-xs text-white/60 md:text-sm">${p}</span></div>
+          </div>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">${g.map(d => html`<${DashCard} key=${d.id} d=${d} myKey=${keys[d.id]} setKey=${setKey} onTag=${onTag} />`)}</div>
+        </div>`; })}
+
+      <footer class="mt-20 grid gap-6 border-t border-white/10 pt-8 text-sm text-white/70 md:grid-cols-[1fr_2fr]">
+        <div class="flex items-center gap-2 text-white"><${HubMark} /><span class="tracking-tight">api hub</span></div>
+        <p class="max-w-[70ch] leading-relaxed">why some keys aren't shown: most api keys are personal. they belong to one account, and sharing them breaks the provider's terms and gets them blocked. so api hub gives you the no-key apis ready to use, the official public test keys, and a direct link to get your own free key for everything else. keys you paste are stored only in this browser, under your account.</p>
+      </footer>
+    </div>
+  </section>`;
+}
+
+/* ---------- App ---------- */
+function App() {
+  const [user, setUser] = useState(() => LIVE ? null : store.get("apihub.session", null));
+  const [ready, setReady] = useState(!LIVE || !fbAuth);
+  useEffect(() => { if (!LIVE || !fbAuth) return; return fbAuth.onAuthStateChanged(u => { setUser(fbUser(u)); setReady(true); }); }, []);
+  const [q, setQ] = useState(""), [cat, setCat] = useState("All"), [auth, setAuth] = useState("all");
+  const [keys, setKeys] = useState({});
+  useEffect(() => { if (user) setKeys((store.get("apihub.keys", {})[user.id]) || {}); }, [user]);
+  const signIn = u => {
+    if (LIVE) { setUser(u); window.scrollTo(0, 0); return; }
+    const users = store.get("apihub.users", {}); users[u.id] = Object.assign(users[u.id] || { created: Date.now() }, u); store.set("apihub.users", users);
+    store.set("apihub.session", u); setUser(u); window.scrollTo(0, 0);
+  };
+  const logout = () => { if (LIVE && fbAuth) fbAuth.signOut(); else store.set("apihub.session", null); setUser(null); window.scrollTo(0, 0); };
+  const setKey = (id, v) => setKeys(prev => {
+    const next = { ...prev }; if (v) next[id] = v; else delete next[id];
+    const all = store.get("apihub.keys", {}); all[user.id] = next; store.set("apihub.keys", all); return next;
+  });
+  const onJump = (term, a) => { if (term !== undefined) setQ(term); setCat("All"); setAuth(a || "all"); };
+  return html`<div class="min-h-screen overflow-x-clip bg-black font-body text-white">
+    ${!ready ? null : user ? html`<div class="dash">
+      <${DashNav} user=${user} onLogout=${logout} onJump=${onJump} />
+      <${DashHero} user=${user} onLogout=${logout} />
+      <${DashCatalog} q=${q} setQ=${setQ} cat=${cat} setCat=${setCat} auth=${auth} setAuth=${setAuth} keys=${keys} setKey=${setKey} />
+    </div>`
+    : html`<${Gate} onSignIn=${signIn} />`}
+    <${Toast} />
+  </div>`;
+}
+
+RD.createRoot(document.getElementById("root")).render(html`<${App} />`);
+})();
+</script>
+
+</body></html>

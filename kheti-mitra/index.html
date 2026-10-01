@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090807">
+<title>Kheti Mitra — Crop Doctor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@200;400;600;700&family=Mukta:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+/* ============ Tokens (cinematic dark in every theme) ============ */
+:root{
+  --bg:#090807; --ink:#ffffff; --muted:rgba(255,255,255,.62); --faint:rgba(255,255,255,.38);
+  --line:rgba(255,255,255,.18); --line-strong:rgba(255,255,255,.48);
+  --glass:rgba(255,255,255,.08); --glass-2:rgba(255,255,255,.14); --glass-border:rgba(255,255,255,.34);
+  --gold:#EBBE5C; --ok:#A7E3AE; --warn:#F2C45A; --bad:#FF907A;
+  --panel:rgba(18,16,14,.72);
+  --edge:clamp(18px,1.95vw,28px);
+  --display:"Anton","Mukta","Arial Narrow",sans-serif;
+  --body:"Inter","Mukta",Arial,sans-serif;
+  --thin:"Inter","Mukta",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1); --ease-out:cubic-bezier(.16,1,.3,1);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#090807;--ink:#ffffff}}
+:root[data-theme="dark"]{--bg:#090807;--ink:#ffffff}
+html[lang="hi"]{--body:"Mukta","Inter",Arial,sans-serif}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 90px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;font-synthesis:none;overflow-x:hidden}
+img,video{max-width:100%;display:block}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+h1,h2,h3,h4,p{margin:0}
+h2{font-size:1.15rem;font-weight:700;letter-spacing:.01em}
+h3{font-size:1.05rem;font-weight:700}
+.muted{color:var(--muted)} .small{font-size:.9rem} .hidden{display:none !important}
+
+/* ============ Background field + shade ============ */
+.bg-canvas,.portal-canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+.bg-canvas{z-index:0}
+.bg-shade{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to bottom,rgba(9,8,7,.25) 0%,transparent 30%,transparent 52%,rgba(0,0,0,.88) 100%)}
+.portal-canvas{z-index:3}
+
+/* ============ Chrome ============ */
+.chrome{position:fixed;z-index:30;transition:opacity .45s ease,filter .45s ease}
+body.is-transitioning .chrome.fade,body.is-transitioning .hero-content,body.is-transitioning .portal-heading,body.is-transitioning .portal-actions{opacity:0;filter:blur(8px);pointer-events:none;transition:opacity .45s ease,filter .45s ease}
+.header{left:var(--edge);right:var(--edge);top:calc(env(safe-area-inset-top,0px) + clamp(16px,3.1vh,28px));display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:none}
+.header > *{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:12px;padding-left:50px;min-height:42px;text-decoration:none;font-weight:700;letter-spacing:.02em}
+.brand small{display:block;font-weight:400;font-size:.78rem;color:var(--muted);letter-spacing:0}
+.header-actions{display:flex;align-items:center;gap:8px}
+.pill-nav{display:flex;align-items:center;height:42px;padding:4px;border:1px solid var(--glass-border);background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:999px}
+.pill-nav button{border:0;background:transparent;color:#fff;padding:0 16px;height:32px;border-radius:999px;cursor:pointer;line-height:1;font-weight:600}
+.pill-nav button[aria-pressed="true"]{background:#fff;color:#000}
+.menu{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border:0;border-radius:999px;background:#fff;color:#000;text-decoration:none;font-weight:600;white-space:nowrap}
+.menu svg{width:16px;height:16px}
+
+.floating-logo{position:fixed;z-index:42;left:50%;top:50%;width:59px;height:58px;transform:translate(-50%,-50%);will-change:left,top,width,height,transform;
+  transition:left 2s var(--ease-out),top 2s var(--ease-out),width 2s var(--ease-out),height 2s var(--ease-out),transform 2s var(--ease-out)}
+.floating-logo.is-docked{left:var(--edge);top:calc(env(safe-area-inset-top,0px) + clamp(16px,3.1vh,28px) + 3px);width:37px;height:36px;transform:none}
+.floating-logo.is-settled{z-index:31}
+
+/* Side list — the "planet list" */
+.side-list{left:var(--edge);top:50%;transform:translateY(-43%);display:flex;flex-direction:column;gap:6px;font-size:15px}
+.side-item{display:flex;align-items:center;gap:0;min-height:22px;border:0;background:none;padding:2px 0;cursor:pointer;color:var(--muted);text-align:left;transition:color .3s}
+.side-item:hover{color:#fff}
+.side-item .num{font-size:11px;color:var(--faint);width:30px;font-variant-numeric:tabular-nums}
+.side-item.active{color:#fff;font-size:17px;font-weight:700;gap:8px}
+.side-item.active::before{content:"";width:14px;height:14px;border-radius:50%;background:#fff;flex:none}
+.side-item.active .num{display:none}
+.side-list.is-switching .side-item{animation:menu-row .58s var(--ease) both}
+.side-list.is-switching .side-item:nth-child(1){animation-delay:.02s}.side-list.is-switching .side-item:nth-child(2){animation-delay:.05s}
+.side-list.is-switching .side-item:nth-child(3){animation-delay:.08s}.side-list.is-switching .side-item:nth-child(4){animation-delay:.11s}
+.side-list.is-switching .side-item:nth-child(5){animation-delay:.14s}
+.side-list.is-switching .side-item.active::before{animation:active-dot .55s var(--ease) .18s both}
+
+/* Mobile dock */
+.dock{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);display:none;justify-content:space-around;padding:6px;border:1px solid var(--glass-border);background:rgba(20,18,16,.62);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-radius:26px}
+.dock button{flex:1;border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer}
+.dock button svg{width:22px;height:22px}
+.dock button.active{background:#fff;color:#000}
+
+/* ============ Preloader ============ */
+.preloader{position:fixed;inset:0;z-index:40;background:#000;transition:opacity 1.2s ease}
+.preloader.is-background{opacity:0;pointer-events:none}
+.preloader-count{position:fixed;z-index:42;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + clamp(22px,3.1vh,28px));display:flex;align-items:flex-end;gap:4px;transform:translateX(-50%);line-height:1}
+.preloader-count > span:first-child{font-family:var(--thin);font-size:64px;font-weight:200;font-variant-numeric:tabular-nums;min-width:2ch;text-align:right}
+.preloader-count .percent{font-size:24px;padding-bottom:6px}
+.preloader-count.is-leaving{animation:preload-count-out .75s var(--ease) both}
+.preload-caption{position:fixed;z-index:42;left:50%;top:calc(50% + 52px);transform:translateX(-50%);font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);white-space:nowrap;transition:opacity .5s}
+body.preload-complete .preload-caption{opacity:0}
+
+/* ============ Views ============ */
+main{position:relative;z-index:4}
+.view{display:none}
+.view.active{display:block}
+.wrap{position:relative;max-width:1040px;margin:0 auto;padding:clamp(110px,15vh,150px) clamp(20px,4vw,48px) 90px}
+@media (min-width:901px){.wrap{margin-left:max(210px,calc((100vw - 1040px)/2));margin-right:auto}}
+.view-head{margin-bottom:30px}
+.eyebrow{font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+.eyebrow b{color:#fff;font-weight:600;letter-spacing:.1em}
+.display{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:0;line-height:.86}
+html[lang="hi"] .display{font-family:"Mukta",var(--display);font-weight:800;text-transform:none;line-height:1}
+.view-head h1{font-size:clamp(64px,11vw,148px);margin:10px 0 0 -4px}
+.view-head p{margin-top:14px;max-width:58ch;color:var(--muted);font-size:1.05rem}
+
+/* Reveal animations */
+body:not(.intro-ready) .header,body:not(.intro-ready) .side-list,body:not(.intro-ready) .dock{opacity:0}
+body.intro-ready .header{animation:reveal-down .9s var(--ease) .1s both}
+body.intro-ready .side-list{animation:reveal-side .9s var(--ease) .65s both}
+body.intro-ready .dock{animation:reveal-up .9s var(--ease) .4s both}
+.rv{opacity:0}
+.content-revealing .rv{animation:fact-rise .72s var(--ease) both}
+.content-revealing .rv-title{animation:title-rise 1.05s var(--ease-out) both}
+.content-revealing .rv:nth-child(1){animation-delay:.1s}.content-revealing .rv:nth-child(2){animation-delay:.22s}
+.content-revealing .rv:nth-child(3){animation-delay:.34s}.content-revealing .rv:nth-child(4){animation-delay:.46s}
+.content-revealing .rv:nth-child(5){animation-delay:.58s}.content-revealing .rv:nth-child(n+6){animation-delay:.7s}
+
+/* ============ Home hero stage ============ */
+.stage{position:relative;height:100vh;height:100svh;min-height:600px}
+.portal-wrap{position:absolute;left:50%;top:48%;width:min(320px,31vw);transform:translate(-50%,-54%)}
+.portal-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:15px;opacity:0}
+.portal-heading strong{font-size:17px;margin-left:8px}
+.mask-revealing .portal-heading{animation:portal-caption .85s var(--ease) both}
+.portal{position:relative;display:block;width:100%;aspect-ratio:320/350;padding:0;border:0;border-radius:90px;background:transparent;cursor:pointer}
+.portal:focus-visible{outline-offset:6px}
+.portal-actions{display:flex;justify-content:center;gap:8px;margin-top:16px;opacity:0}
+.mask-revealing .portal-actions{animation:portal-caption .85s var(--ease) .15s both}
+.hero-content{position:absolute;left:clamp(28px,4vw,58px);right:clamp(28px,3vw,44px);bottom:clamp(24px,3vh,34px);display:flex;justify-content:space-between;align-items:flex-end;gap:40px}
+.hero-title-wrap{min-width:0}
+.hero-greet{font-size:15px;color:var(--muted);margin-bottom:10px;opacity:0}
+.content-revealing .hero-greet{animation:fact-rise .72s var(--ease) .2s both}
+.hero-title{font-size:clamp(110px,16.5vw,250px);margin:0 0 -.04em;transform:translateX(-12px);opacity:0;white-space:nowrap}
+html[lang="hi"] .hero-title{font-size:clamp(84px,12vw,190px)}
+.content-revealing .hero-title{animation:title-rise 1.05s var(--ease-out) both}
+.facts{width:min(447px,34vw);margin:0;font-size:15px}
+.fact{display:grid;grid-template-columns:128px 1fr;gap:18px;padding:9px 0;border-bottom:1px solid var(--line-strong);opacity:0}
+.fact:last-child{border-bottom:0}
+.fact dt{font-weight:700}
+.fact dd{margin:0;color:rgba(255,255,255,.86)}
+.content-revealing .fact{animation:fact-rise .72s var(--ease) both}
+.content-revealing .fact:nth-child(1){animation-delay:.52s}.content-revealing .fact:nth-child(2){animation-delay:.68s}
+.content-revealing .fact:nth-child(3){animation-delay:.84s}.content-revealing .fact:nth-child(4){animation-delay:1s}
+.scroll-cue{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint)}
+.home-below{padding-top:60px}
+
+/* ============ Components ============ */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:clamp(18px,2.4vw,26px);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.stack{display:grid;gap:16px}
+.grid-2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.row-between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border:0;border-radius:999px;background:#fff;color:#000;font-weight:600;cursor:pointer;text-decoration:none;transition:transform .3s var(--ease),opacity .2s}
+.btn:hover{transform:scale(1.03)}
+.btn svg{width:18px;height:18px}
+.btn.ghost,.btn.warm.ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid var(--glass-border);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.btn.warm{background:#fff;color:#000}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:34px;border:1px solid var(--glass-border);background:rgba(255,255,255,.07);color:#fff;border-radius:999px;padding:4px 14px;cursor:pointer;font-size:.9rem;transition:background .2s}
+.chip:hover{background:rgba(255,255,255,.16)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:3px 11px;border-radius:999px;border:1px solid rgba(167,227,174,.5);color:var(--ok);white-space:nowrap}
+.tag.warn{border-color:rgba(242,196,90,.55);color:var(--warn)}
+.tag.bad{border-color:rgba(255,144,122,.6);color:var(--bad)}
+label.field{display:grid;gap:7px;font-weight:600;font-size:.9rem;color:rgba(255,255,255,.86)}
+input[type=text],input[type=tel],input[type=datetime-local],select,textarea{width:100%;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.05);border-radius:14px;padding:12px 14px;font-weight:400;color:#fff;transition:border-color .2s,background .2s}
+input:focus,select:focus,textarea:focus{border-color:#fff;background:rgba(255,255,255,.09);outline:none}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+select option{background:#15130f;color:#fff}
+input[type=datetime-local]{color-scheme:dark}
+textarea{min-height:100px;resize:vertical}
+.note{border:1px solid rgba(242,196,90,.4);background:rgba(242,196,90,.08);padding:12px 16px;border-radius:16px;font-size:.93rem;color:rgba(255,255,255,.9)}
+.empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--line-strong);border-radius:18px}
+.spinner{width:22px;height:22px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;flex:none}
+
+/* Quick cards */
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.quick button{display:grid;gap:4px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;cursor:pointer;color:#fff;transition:border-color .3s,transform .4s var(--ease);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.quick button:hover{border-color:#fff;transform:translateY(-3px)}
+.quick .num{font-size:12px;color:var(--faint);letter-spacing:.1em}
+.quick b{font-size:1.08rem}
+/* Fact-style lists */
+.rows{list-style:none;margin:0;padding:0}
+.rows li{padding:10px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:28px 1fr;gap:10px}
+.rows li:last-child{border-bottom:0}
+.rows li::before{content:counter(r,decimal-leading-zero);counter-increment:r;font-size:12px;color:var(--faint);padding-top:3px}
+.rows{counter-reset:r}
+.scanrow{display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.scanrow:last-child{border-bottom:0}
+.scanrow img{width:54px;height:54px;object-fit:cover;border-radius:16px;flex:none;background:rgba(255,255,255,.06)}
+.profile-form{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-top:14px}
+
+/* Scan */
+.drop{display:grid;place-items:center;gap:14px;text-align:center;min-height:300px;border:1px dashed var(--line-strong);border-radius:32px;background:rgba(255,255,255,.04);padding:24px;transition:background .3s,border-color .3s}
+.drop.drag{background:rgba(235,190,92,.1);border-color:var(--gold)}
+.drop img{max-height:340px;border-radius:22px;object-fit:contain}
+.drop-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.result h3{font-family:var(--display);font-weight:400;font-size:clamp(34px,5vw,58px);line-height:.95;text-transform:uppercase;margin-top:6px}
+html[lang="hi"] .result h3{font-family:"Mukta",var(--display);font-weight:800;text-transform:none;line-height:1.1;font-size:clamp(28px,4vw,44px)}
+.result .head{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+.meter{height:4px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:#fff}
+.result section{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:18px;padding:14px 0;border-top:1px solid var(--line)}
+.result section h4{margin:0;font-size:.95rem;font-weight:700}
+.result section.chem h4{color:var(--warn)}
+.result ul{margin:0;padding-left:1.1em}
+.result li{margin-bottom:4px;color:rgba(255,255,255,.88)}
+
+/* Chat */
+.chat{display:grid;grid-template-rows:auto 1fr auto;height:calc(100vh - 290px);height:calc(100svh - 290px);min-height:440px;border:1px solid var(--line);border-radius:30px;overflow:hidden;background:var(--panel);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.chat-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.chat-log{overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:min(72ch,88%);padding:11px 16px;border-radius:22px;word-wrap:break-word}
+.msg.user{align-self:flex-end;background:#fff;color:#000;border-bottom-right-radius:6px}
+.msg.bot{align-self:flex-start;background:rgba(255,255,255,.07);border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.bot ul{margin:4px 0;padding-left:1.1em}
+.msg.bot p+p{margin-top:6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.composer{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);align-items:flex-end}
+.composer textarea{min-height:48px;max-height:140px;flex:1;border-radius:24px;padding:12px 18px}
+.iconbtn{width:48px;height:48px;border-radius:50%;border:0;display:grid;place-items:center;cursor:pointer;background:#fff;color:#000;flex:none;transition:transform .3s var(--ease)}
+.iconbtn:hover{transform:scale(1.06)}
+.iconbtn.alt{background:rgba(255,255,255,.1);color:#fff;border:1px solid var(--glass-border)}
+.iconbtn.rec{background:var(--bad);color:#000;border:0;animation:pulse 1.2s infinite}
+.iconbtn svg{width:21px;height:21px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:.9rem;cursor:pointer;color:rgba(255,255,255,.86)}
+.toggle input{width:18px;height:18px;accent-color:#fff}
+
+/* Advice */
+.tabs{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border:1px solid var(--glass-border);background:rgba(255,255,255,.08);border-radius:999px;margin-bottom:18px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.tabs button{border:0;background:transparent;color:#fff;border-radius:999px;padding:8px 16px;cursor:pointer;font-weight:600}
+.tabs button[aria-selected="true"]{background:#fff;color:#000}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:20px;display:grid;gap:10px;align-content:start;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);transition:border-color .3s}
+.card:hover{border-color:rgba(255,255,255,.4)}
+.card .use{font-size:.92rem;border-top:1px solid var(--line);padding-top:10px;color:rgba(255,255,255,.86)}
+.card .use b{color:#fff}
+.recipe ol{margin:6px 0 0;padding-left:1.3em}
+.recipe li{margin-bottom:6px;color:rgba(255,255,255,.86)}
+.avoid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.avoid div{border-top:1px solid var(--bad);padding:14px 2px 0;color:rgba(255,255,255,.86)}
+.section-title{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(34px,5vw,56px);line-height:.95;margin:48px 0 18px}
+html[lang="hi"] .section-title{font-family:"Mukta",var(--display);font-weight:800;text-transform:none;font-size:clamp(28px,4vw,40px)}
+
+/* Experts */
+.expert{display:flex;gap:14px;align-items:flex-start}
+.avatar{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;flex:none;background:#fff;color:#000;font-weight:800;font-size:1.2rem}
+.modes{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg label{display:grid;gap:2px;border:1px solid var(--line-strong);border-radius:20px;padding:14px;cursor:pointer;background:rgba(255,255,255,.04);transition:background .2s,border-color .2s}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){border-color:#fff;background:#fff;color:#000}
+.seg label:has(input:checked) .muted{color:rgba(0,0,0,.6)}
+.seg label:has(input:focus-visible){outline:2px solid var(--gold);outline-offset:3px}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumbs > div{position:relative;width:92px;height:92px;border-radius:18px;overflow:hidden;background:#000}
+.thumbs img,.thumbs video{width:100%;height:100%;object-fit:cover}
+.thumbs button{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.7);color:#fff;cursor:pointer;line-height:1}
+.req{border-bottom:1px solid var(--line);padding:12px 0;display:grid;gap:4px}
+.req:last-child{border-bottom:0}
+.helpline{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.helpline b{font-family:var(--display);font-weight:400;font-size:2rem;letter-spacing:.02em}
+
+/* ============ Custom cursor (mouse only) ============ */
+.custom-cursor{display:none}
+html.has-cursor .custom-cursor{display:block;position:fixed;left:0;top:0;z-index:100;width:1px;height:1px;pointer-events:none;opacity:0;transition:opacity .2s ease}
+html.has-cursor .custom-cursor.is-visible{opacity:1}
+html.has-cursor .custom-cursor.is-text{opacity:0}
+html.has-cursor,html.has-cursor body,html.has-cursor button,html.has-cursor a,html.has-cursor label,html.has-cursor .portal{cursor:none !important}
+html.has-cursor input,html.has-cursor textarea,html.has-cursor select{cursor:auto !important}
+.cursor-dot,.cursor-orbit{position:absolute;left:0;top:0;border-radius:50%;transform:translate(-50%,-50%)}
+.cursor-dot{width:12px;height:12px;background:#fff}
+.cursor-orbit{width:36px;height:36px;border:1px solid #fff;background:rgba(255,255,255,.4);transition:transform .3s var(--ease)}
+.custom-cursor.is-enter .cursor-orbit{transform:translate(-50%,-50%) scale(1.16)}
+.cursor-label{position:absolute;top:26px;left:0;transform:translateX(-50%) translateY(-4px);font-size:15px;white-space:nowrap;opacity:0;transition:opacity .2s ease,transform .3s var(--ease)}
+.custom-cursor.is-enter .cursor-label{opacity:1;transform:translateX(-50%) translateY(0)}
+body:not(.preload-complete) .custom-cursor{opacity:0 !important}
+
+/* ============ Keyframes ============ */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,144,122,.5)}70%{box-shadow:0 0 0 12px rgba(255,144,122,0)}100%{box-shadow:0 0 0 0 rgba(255,144,122,0)}}
+@keyframes preload-count-out{to{opacity:0;filter:blur(7px);transform:translate(-50%,-34px)}}
+@keyframes reveal-down{from{opacity:0;filter:blur(8px);transform:translateY(-18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes reveal-up{from{opacity:0;filter:blur(8px);transform:translateY(18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes reveal-side{from{opacity:0;filter:blur(8px);transform:translate(-20px,-43%)}to{opacity:1;filter:blur(0);transform:translate(0,-43%)}}
+@keyframes title-rise{from{opacity:0;filter:blur(12px);transform:translate(-12px,42px)}to{opacity:1;filter:blur(0);transform:translate(-12px,0)}}
+@keyframes fact-rise{from{opacity:0;filter:blur(7px);transform:translateY(18px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes portal-caption{from{opacity:0;filter:blur(7px);transform:translateY(22px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes menu-row{from{opacity:.35;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes active-dot{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+
+/* ============ Responsive ============ */
+@media (max-width:900px){
+  .side-list{display:none}
+  .dock{display:flex}
+  .wrap{padding-bottom:120px}
+  .portal-wrap{width:min(300px,46vw)}
+  .hero-title{font-size:clamp(90px,19vw,170px)}
+  .facts{width:44vw}
+  .fact{grid-template-columns:108px 1fr}
+  .brand-text{display:none}
+  .menu .menu-text{display:none}
+  .menu{width:42px;padding:0;justify-content:center}
+}
+@media (max-width:640px){
+  .stage{height:auto;min-height:0;padding:96px 18px 120px;display:flex;flex-direction:column;align-items:stretch}
+  .portal-wrap{position:relative;left:auto;top:auto;transform:none;width:min(270px,70vw);margin:0 auto}
+  .portal{border-radius:70px}
+  .hero-content{position:relative;left:auto;right:auto;bottom:auto;display:block;margin-top:34px}
+  .hero-title{font-size:clamp(76px,22vw,120px);margin-bottom:18px;white-space:normal}
+  html[lang="hi"] .hero-title{font-size:clamp(60px,17vw,96px)}
+  .facts{width:100%;font-size:14px}
+  .fact{grid-template-columns:96px 1fr;padding:7px 0}
+  .scroll-cue{display:none}
+  .home-below{padding-top:0}
+  .result section{grid-template-columns:1fr;gap:6px}
+  .portal-heading{font-size:14px}
+  .seg{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important}
+}
+
+/* ---- polish ---- */
+.top-fade{position:fixed;left:0;right:0;top:0;height:calc(env(safe-area-inset-top,0px) + 110px);z-index:29;pointer-events:none;background:linear-gradient(to bottom,rgba(9,8,7,.92) 0%,rgba(9,8,7,.6) 55%,rgba(9,8,7,0) 100%);opacity:0;transition:opacity .4s}
+body.scrolled .top-fade{opacity:1}
+.btn{white-space:nowrap}
+.portal-actions{flex-wrap:wrap}
+body:not(.intro-ready) .scroll-cue{opacity:0}
+body.is-transitioning .portal-heading,body.is-transitioning .portal-actions{opacity:0 !important;filter:blur(8px) !important;animation:none !important}
+.hero-title-wrap{flex:1}
+.hero-title{font-size:clamp(90px,12.5vw,210px)}
+.view-head h1{font-size:clamp(56px,9vw,128px)}
+html[lang="hi"] .eyebrow,html[lang="hi"] .preload-caption,html[lang="hi"] .scroll-cue{letter-spacing:0}
+.dock button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@media (max-width:900px){.hero-title{font-size:clamp(84px,17vw,150px)}}
+@media (max-width:640px){.hero-title{font-size:clamp(72px,21vw,116px)}}
+.portal-actions{width:max-content;max-width:92vw;margin-left:50%;transform:translateX(-50%);flex-wrap:nowrap}
+.mask-revealing .portal-actions{animation-name:portal-actions-in}
+@keyframes portal-actions-in{from{opacity:0;filter:blur(7px);transform:translate(-50%,22px)}to{opacity:1;filter:blur(0);transform:translate(-50%,0)}}
+@media (max-width:380px){.portal-actions{flex-wrap:wrap;justify-content:center}}
+/* ---- smaller title + height-aware hero so nothing overlaps ---- */
+.facts{width:min(400px,30vw)}
+@media (max-height:760px){.fact{padding:6px 0;font-size:14px}}
+.portal-wrap{top:44%;width:min(300px,28vw,34vh)}
+.hero-title{font-size:clamp(64px,min(9.5vw,15vh),170px)}
+html[lang="hi"] .hero-title{font-size:clamp(56px,min(8vw,13vh),140px)}
+.hero-greet{margin-bottom:6px}
+@media (max-width:900px){
+  .portal-wrap{width:min(280px,40vw,34vh)}
+  .hero-title{font-size:clamp(60px,min(12vw,14vh),130px)}
+  html[lang="hi"] .hero-title{font-size:clamp(52px,min(10vw,12vh),110px)}
+}
+@media (max-width:640px){
+  .portal-wrap{width:min(250px,64vw)}
+  .hero-title{font-size:clamp(56px,17vw,96px)}
+  html[lang="hi"] .hero-title{font-size:clamp(48px,14vw,80px)}
+}
+/* ---- flow layout for the hero: portal and title can never overlap ---- */
+@media (min-width:641px){
+  .stage{height:auto;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + clamp(84px,12vh,120px)) 0 clamp(26px,3.4vh,38px)}
+  .portal-wrap{position:relative;left:auto;top:auto;transform:none;margin:auto}
+  .hero-content{position:relative;left:auto;right:auto;bottom:auto;margin:28px clamp(28px,3vw,44px) 0 clamp(28px,4vw,58px)}
+}
+@media (max-height:720px){.scroll-cue{display:none}}
+</style>
+</head>
+<body>
+<canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+<div class="bg-shade" aria-hidden="true"></div>
+<canvas id="portal-canvas" class="portal-canvas" aria-hidden="true"></canvas>
+<div class="top-fade" aria-hidden="true"></div>
+
+<!-- Preloader -->
+<div class="preloader" id="preloader" aria-hidden="true"></div>
+<svg class="floating-logo" id="floating-logo" viewBox="0 0 60 58" role="img" aria-label="Kheti Mitra">
+  <circle cx="30" cy="29" r="28" fill="#fff"/>
+  <path d="M30 49C19 43 15 31 20 15c10 1 20 9 19 22-1 7-4 12-9 12z" fill="#090807"/>
+  <path d="M30 49c-2-10-5-21-10-34" stroke="#EBBE5C" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</svg>
+<div class="preload-caption" id="preload-caption" data-i="preload_cap">Preparing your field</div>
+<div class="preloader-count" id="preloader-count" aria-live="polite"><span id="preloader-value">0</span><span class="percent">%</span></div>
+
+<!-- Header -->
+<header class="header chrome">
+  <a class="brand" href="#" data-go="home"><span class="brand-text"><span data-i="brand">Kheti Mitra</span><small data-i="tagline">Crop doctor for farmers</small></span></a>
+  <div class="header-actions">
+    <div class="pill-nav" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="hi" aria-pressed="false">हिं</button>
+    </div>
+    <a class="menu" href="tel:18001801551" aria-label="Kisan Call Centre 1800-180-1551"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span class="menu-text" data-i="helpline_btn">Helpline</span></a>
+  </div>
+</header>
+
+<!-- Desktop side list -->
+<aside class="side-list chrome" id="sideList" aria-label="Sections">
+  <button class="side-item active" data-go="home"><span class="num">01</span><span data-i="nav_home">Home</span></button>
+  <button class="side-item" data-go="scan"><span class="num">02</span><span data-i="nav_scan">Scan leaf</span></button>
+  <button class="side-item" data-go="chat"><span class="num">03</span><span data-i="nav_chat">Assistant</span></button>
+  <button class="side-item" data-go="advice"><span class="num">04</span><span data-i="nav_advice">Organic tips</span></button>
+  <button class="side-item" data-go="experts"><span class="num">05</span><span data-i="nav_experts">Experts</span></button>
+</aside>
+
+<!-- Mobile dock -->
+<nav class="dock chrome" aria-label="Main">
+  <button data-go="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span data-i="dock_home">Home</span></button>
+  <button data-go="scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M12 17c-3-2-4-5-2-9 3 0 5 2 5 5 0 2-1 3-3 4z"/></svg><span data-i="dock_scan">Scan leaf</span></button>
+  <button data-go="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span data-i="dock_chat">Assistant</span></button>
+  <button data-go="advice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V11M12 11C12 6 8 4 4 4c0 5 3 7 8 7zM12 13c0-4 3-6 8-6 0 4-3 6-8 6z"/></svg><span data-i="dock_advice">Organic tips</span></button>
+  <button data-go="experts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 11l2 2 4-4"/></svg><span data-i="dock_experts">Experts</span></button>
+</nav>
+
+<main>
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="stage">
+      <section class="portal-wrap" aria-label="Next">
+        <div class="portal-heading">
+          <span data-i="next_label">Next:</span>
+          <span><span>[02]</span> <strong data-i="next_name">Scan a leaf</strong></span>
+        </div>
+        <button class="portal" id="portal" type="button" aria-label="Scan a leaf"></button>
+        <div class="portal-actions">
+          <button class="btn" data-go="scan" data-cam="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-i="take_photo">Take photo</span></button>
+          <button class="btn ghost" data-go="scan" data-up="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span data-i="upload_photo">Upload photo</span></button>
+        </div>
+      </section>
+
+      <section class="hero-content" aria-live="polite">
+        <div class="hero-title-wrap">
+          <p class="hero-greet" id="greet">Namaste, farmer</p>
+          <h1 class="display hero-title" id="heroTitle">Kheti Mitra</h1>
+        </div>
+        <dl class="facts" id="homeFacts"></dl>
+      </section>
+      <div class="scroll-cue" data-i="scroll">Scroll</div>
+    </div>
+
+    <div class="wrap home-below">
+      <div class="quick">
+        <button data-go="chat"><span class="num">[03]</span><b data-i="q_chat">Ask the assistant</b><span class="muted small" data-i="q_chat_d">Speak or type in Hindi or English</span></button>
+        <button data-go="advice"><span class="num">[04]</span><b data-i="q_advice">Organic fertilizer guide</b><span class="muted small" data-i="q_advice_d">Feed soil without heavy chemicals</span></button>
+        <button data-go="experts"><span class="num">[05]</span><b data-i="q_expert">Talk to a specialist</b><span class="muted small" data-i="q_expert_d">Online call or farm visit</span></button>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="row-between"><h2 data-i="season_h">This season</h2><span class="tag" id="seasonTag"></span></div>
+          <ul class="rows" id="seasonList" style="margin-top:8px"></ul>
+        </div>
+        <div class="panel">
+          <div class="row-between"><h2 data-i="farm_h">My farm</h2><button class="chip" id="editProfile" data-i="edit">Edit</button></div>
+          <p class="muted" id="profileSummary" style="margin-top:10px"></p>
+          <form class="profile-form hidden" id="profileForm">
+            <label class="field"><span data-i="f_name">Your name</span><input type="text" id="pName" autocomplete="name"></label>
+            <label class="field"><span data-i="f_crop">Main crop</span><input type="text" id="pCrop" data-ip="ph_crop"></label>
+            <label class="field"><span data-i="f_place">Village / district</span><input type="text" id="pPlace"></label>
+            <label class="field"><span data-i="f_soil">Soil type</span><select id="pSoil"></select></label>
+            <div style="grid-column:1/-1"><button class="btn" type="submit" data-i="save">Save</button></div>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="row-between"><h2 data-i="recent_h">Recent scans</h2><span class="muted small" id="statLine"></span></div>
+        <div id="recentScans" style="margin-top:6px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCAN -->
+  <section class="view" id="view-scan">
+    <div class="wrap">
+      <header class="view-head">
+        <div class="eyebrow rv"><b>[02]</b><span data-i="nav_scan">Scan leaf</span></div>
+        <h1 class="display rv rv-title" data-i="scan_h">Check a leaf</h1>
+        <p class="rv" data-i="scan_p">Use daylight, keep one leaf in focus, and include both the spots and some healthy part.</p>
+      </header>
+      <div class="stack">
+        <div class="drop" id="drop">
+          <div id="dropEmpty" class="stack" style="justify-items:center">
+            <p class="muted" data-i="drop_p">Take a photo with your camera, or pick one from your gallery.</p>
+            <div class="drop-actions">
+              <button class="btn" id="camBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span data-i="take_photo">Take photo</span></button>
+              <button class="btn ghost" id="upBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span data-i="upload_photo">Upload photo</span></button>
+            </div>
+          </div>
+          <img id="preview" class="hidden" alt="Selected leaf photo">
+        </div>
+        <input type="file" id="camInput" accept="image/*" capture="environment" hidden>
+        <input type="file" id="upInput" accept="image/jpeg,image/png,image/webp" hidden>
+        <div class="grid-2">
+          <label class="field"><span data-i="which_crop">Which crop is this? (optional)</span><input type="text" id="scanCrop" data-ip="ph_crop"></label>
+          <label class="field"><span data-i="symptom_note">Anything else you noticed? (optional)</span><input type="text" id="scanNote" data-ip="ph_note"></label>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="analyzeBtn" disabled><span data-i="analyze">Find the disease</span></button>
+          <button class="btn ghost hidden" id="resetScan" data-i="new_photo">Use another photo</button>
+        </div>
+        <p class="note hidden" id="aiOff" data-i="ai_off">AI isn't connected.</p>
+        <div id="scanOut"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAT -->
+  <section class="view" id="view-chat">
+    <div class="wrap">
+      <header class="view-head">
+        <div class="eyebrow rv"><b>[03]</b><span data-i="nav_chat">Assistant</span></div>
+        <h1 class="display rv rv-title" data-i="chat_h">Farm assistant</h1>
+        <p class="rv" data-i="chat_p">Ask about pests, diseases, fertilizer, irrigation or government schemes. Tap the mic to speak.</p>
+      </header>
+      <div class="chat">
+        <div class="chat-top">
+          <label class="toggle"><input type="checkbox" id="speakToggle"><span data-i="read_aloud">Read answers aloud</span></label>
+          <button class="chip" id="clearChat" data-i="new_chat">New chat</button>
+        </div>
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <form class="composer" id="composer">
+          <button type="button" class="iconbtn alt" id="micBtn" aria-label="Speak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+          <textarea id="chatInput" rows="1" data-ip="ph_chat"></textarea>
+          <button type="submit" class="iconbtn" id="sendBtn" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-2-7z"/></svg></button>
+        </form>
+      </div>
+      <p class="muted small" style="margin-top:12px" data-i="chat_foot">For urgent or large losses, also call Kisan Call Centre 1800-180-1551 (free).</p>
+    </div>
+  </section>
+
+  <!-- ADVICE -->
+  <section class="view" id="view-advice">
+    <div class="wrap">
+      <header class="view-head">
+        <div class="eyebrow rv"><b>[04]</b><span data-i="nav_advice">Organic tips</span></div>
+        <h1 class="display rv rv-title" data-i="adv_title">Feed the soil</h1>
+        <p class="rv" data-i="adv_p">Organic and biological options that build soil health over seasons.</p>
+      </header>
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="fert" aria-selected="true" data-i="tab_fert">Organic fertilizers</button>
+        <button role="tab" data-tab="pest" aria-selected="false" data-i="tab_pest">Natural pest control</button>
+        <button role="tab" data-tab="make" aria-selected="false" data-i="tab_make">Make at home</button>
+        <button role="tab" data-tab="plan" aria-selected="false" data-i="tab_plan">Plan for my crop</button>
+      </div>
+      <div id="tab-fert" class="tabpane"><div class="grid-2" id="fertCards"></div></div>
+      <div id="tab-pest" class="tabpane hidden"><div class="grid-2" id="pestCards"></div></div>
+      <div id="tab-make" class="tabpane hidden"><div class="grid-2" id="recipes"></div></div>
+      <div id="tab-plan" class="tabpane hidden">
+        <div class="panel stack">
+          <div class="grid-2">
+            <label class="field"><span data-i="f_crop">Main crop</span><input type="text" id="planCrop" data-ip="ph_crop"></label>
+            <label class="field"><span data-i="f_soil">Soil type</span><select id="planSoil"></select></label>
+            <label class="field"><span data-i="f_stage">Crop stage</span><select id="planStage"></select></label>
+            <label class="field"><span data-i="f_area">Land (acres)</span><input type="text" id="planArea" inputmode="decimal" value="1"></label>
+          </div>
+          <div><button class="btn" id="planBtn" data-i="make_plan">Make my organic plan</button></div>
+          <div id="planOut"></div>
+        </div>
+      </div>
+      <h2 class="section-title" data-i="avoid_h">Why cut back on heavy chemical use</h2>
+      <div class="avoid" id="avoidList"></div>
+    </div>
+  </section>
+
+  <!-- EXPERTS -->
+  <section class="view" id="view-experts">
+    <div class="wrap">
+      <header class="view-head">
+        <div class="eyebrow rv"><b>[05]</b><span data-i="nav_experts">Experts</span></div>
+        <h1 class="display rv rv-title" data-i="exp_title">Specialists</h1>
+        <p class="rv" data-i="exp_p">Share photos or a short video of the problem.</p>
+      </header>
+      <div class="grid-2" id="expertList"></div>
+
+      <div class="grid-2" style="margin-top:16px;align-items:start">
+        <form class="panel stack" id="reqForm">
+          <h2 data-i="req_h">Ask for help</h2>
+          <div class="seg" role="radiogroup">
+            <label><input type="radio" name="mode" value="online" checked><b data-i="m_online">Online</b><span class="muted small" data-i="m_online_d">Phone or video call</span></label>
+            <label><input type="radio" name="mode" value="offline"><b data-i="m_offline">Field visit</b><span class="muted small" data-i="m_offline_d">Specialist comes to your farm</span></label>
+          </div>
+          <label class="field"><span data-i="f_expert">Type of specialist</span><select id="reqExpert"></select></label>
+          <label class="field"><span data-i="f_problem">Describe the problem</span><textarea id="reqText" data-ip="ph_problem" required></textarea></label>
+          <div class="stack" style="gap:8px">
+            <span style="font-weight:600;font-size:.9rem" data-i="f_media">Photos or video</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button type="button" class="chip" id="reqCam" data-i="add_cam">Take photo</button>
+              <button type="button" class="chip" id="reqVid" data-i="add_vid">Record video</button>
+              <button type="button" class="chip" id="reqFile" data-i="add_file">Choose files</button>
+            </div>
+            <input type="file" id="reqCamIn" accept="image/*" capture="environment" hidden>
+            <input type="file" id="reqVidIn" accept="video/*" capture="environment" hidden>
+            <input type="file" id="reqFileIn" accept="image/*,video/*" multiple hidden>
+            <div class="thumbs" id="reqThumbs"></div>
+          </div>
+          <div class="grid-2">
+            <label class="field"><span data-i="f_phone">Phone number</span><input type="tel" id="reqPhone" inputmode="tel" required></label>
+            <label class="field"><span data-i="f_when">Preferred time</span><input type="datetime-local" id="reqWhen"></label>
+          </div>
+          <label class="field" id="addrWrap"><span data-i="f_place">Village / district</span><input type="text" id="reqPlace"></label>
+          <div><button class="btn" type="submit" data-i="send_req">Send request</button></div>
+          <p class="muted small" id="reqMsg" role="status"></p>
+        </form>
+        <div class="stack">
+          <div class="panel">
+            <h2 data-i="my_req">My requests</h2>
+            <div id="reqList" style="margin-top:6px"></div>
+          </div>
+          <div class="panel helpline">
+            <div><p class="muted small" data-i="kcc">Kisan Call Centre — free, 6 am to 10 pm</p><b>1800-180-1551</b></div>
+            <a class="btn" href="tel:18001801551" data-i="call">Call now</a>
+          </div>
+          <div class="panel"><p class="small muted" data-i="kvk">Your district's Krishi Vigyan Kendra (KVK) also offers free field visits and soil testing.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="custom-cursor" aria-hidden="true"><span class="cursor-orbit"></span><span class="cursor-dot"></span><span class="cursor-label" id="cursorLabel">Scan</span></div>
+<script>
+/* ---------- i18n ---------- */
+const T = {
+en:{brand:"Kheti Mitra",tagline:"Crop doctor for farmers",nav_home:"Home",nav_scan:"Scan leaf",nav_chat:"Assistant",nav_advice:"Organic tips",nav_experts:"Experts",
+hero_p:"Photograph a sick leaf. Get the likely disease, what caused it, and how to treat it — organic options first.",take_photo:"Take photo",upload_photo:"Upload photo",tap_scan:"Tap to scan",
+q_chat:"Ask the assistant",q_chat_d:"Speak or type in Hindi or English",q_advice:"Organic fertilizer guide",q_advice_d:"Feed soil without heavy chemicals",q_expert:"Talk to a specialist",q_expert_d:"Online call or farm visit",
+season_h:"This season",farm_h:"My farm",edit:"Edit",f_name:"Your name",f_crop:"Main crop",f_place:"Village / district",f_soil:"Soil type",save:"Save",recent_h:"Recent scans",
+scan_h:"Check a leaf",scan_p:"Use daylight, keep one leaf in focus, and include both the spots and some healthy part.",drop_p:"Take a photo with your camera, or pick one from your gallery.",
+which_crop:"Which crop is this? (optional)",symptom_note:"Anything else you noticed? (optional)",analyze:"Find the disease",new_photo:"Use another photo",
+ai_off:"AI isn't connected. Start the app with npm start and add your API key (see README). You can still send the photo to a specialist from the Experts page.",ai_local:"AI isn't connected. Start the app with npm start and add your API key (see README). For help now, call Kisan Call Centre 1800-180-1551 (free).",err_key:"The API key is wrong or has expired. Check the key in the .env file and restart.",
+chat_h:"Farm assistant",chat_p:"Ask about pests, diseases, fertilizer, irrigation or government schemes. Tap the mic to speak.",read_aloud:"Read answers aloud",new_chat:"New chat",
+chat_foot:"For urgent or large losses, also call Kisan Call Centre 1800-180-1551 (free).",
+adv_h:"Feed the soil, not just the plant",adv_p:"Organic and biological options that build soil health over seasons. Use chemicals only when a specialist confirms they are needed.",
+tab_fert:"Organic fertilizers",tab_pest:"Natural pest control",tab_make:"Make at home",tab_plan:"Plan for my crop",f_stage:"Crop stage",f_area:"Land (acres)",make_plan:"Make my organic plan",
+avoid_h:"Why cut back on heavy chemical use",exp_h:"Agricultural specialists",exp_p:"Share photos or a short video of the problem. A specialist reviews it and helps you by phone, video call, or a visit to your field.",
+req_h:"Ask for help",m_online:"Online",m_online_d:"Phone or video call",m_offline:"Field visit",m_offline_d:"Specialist comes to your farm",f_expert:"Type of specialist",f_problem:"Describe the problem",
+f_media:"Photos or video",add_cam:"Take photo",add_vid:"Record video",add_file:"Choose files",f_phone:"Phone number",f_when:"Preferred time",send_req:"Send request",my_req:"My requests",
+kcc:"Kisan Call Centre — free, 6 am to 10 pm",call:"Call now",kvk:"Your district's Krishi Vigyan Kendra (KVK) also offers free field visits and soil testing.",
+ph_crop:"e.g. Tomato, Wheat, Paddy",ph_note:"e.g. spreading fast after rain",ph_chat:"Type your question…",ph_problem:"What crop, what you see, since when, how much area is affected",
+greet:"Namaste",greet_farmer:"farmer",no_scans:"No scans yet. Your checked leaves will appear here.",no_req:"No requests yet.",
+stat:(s,r)=>`${s} scans · ${r} open requests`,profile_empty:"Add your crop and location so advice fits your farm.",
+checking:"Checking the leaf… this can take up to a minute.",likely:"Likely problem",conf:"Confidence",severity:"Severity",sev:{low:"Low",medium:"Medium",high:"High"},
+healthy:"Looks healthy",symptoms:"What we see",causes:"Why it happens",organic:"Organic treatment — try first",chem:"Chemical option — only if organic fails",prevent:"Prevention",
+ask_more:"Ask assistant about this",send_expert:"Send to a specialist",not_leaf:"This doesn't look like a crop leaf. Please take a clear photo of one leaf.",
+disclaimer:"This is an AI estimate from one photo. Before spending on chemicals, confirm with a specialist or your KVK.",
+err_generic:"Couldn't finish the check. Try again in a moment.",err_rate:"Too many requests right now. Wait a minute and try again.",err_image:"This photo can't be read. Try a JPG or PNG under 20 MB.",err_denied:"AI help was not allowed, so it's switched off in this view.",
+greet_chat:"Namaste! I'm your farm assistant. Tell me your crop and the problem — you can type or tap the mic and speak.",
+chips:["Yellow leaves on my wheat","Best organic fertilizer for paddy","Whiteflies on cotton — what to do?","How to make Jeevamrut?","PM-Kisan scheme details"],
+thinking:"Thinking…",voice_na:"Voice input isn't available in this browser view. Please type your question.",listening:"Listening… speak now",
+planning:"Preparing your plan…",req_sent:"Request saved. A specialist will contact you on the number given.",req_status:"Waiting for specialist",
+soils:["Loamy","Clay / black soil","Sandy","Red / laterite","Alluvial","Not sure"],stages:["Before sowing","Seedling","Vegetative growth","Flowering","Fruiting / grain filling"],
+seasons:{rabi:"Rabi prep",kharif:"Kharif",zaid:"Zaid",winter:"Rabi growing"},
+remove:"Remove",online_l:"Online",offline_l:"Field visit",video:"video",photos:"photos"},
+hi:{brand:"खेती मित्र",tagline:"किसानों का फसल डॉक्टर",nav_home:"होम",nav_scan:"पत्ती जाँचें",nav_chat:"सहायक",nav_advice:"जैविक सलाह",nav_experts:"विशेषज्ञ",
+hero_p:"बीमार पत्ती की फोटो लें। संभावित रोग, उसका कारण और इलाज जानें — पहले जैविक उपाय।",take_photo:"फोटो खींचें",upload_photo:"फोटो अपलोड करें",tap_scan:"जाँच के लिए दबाएँ",
+q_chat:"सहायक से पूछें",q_chat_d:"हिंदी या अंग्रेज़ी में बोलें या लिखें",q_advice:"जैविक खाद गाइड",q_advice_d:"भारी रसायनों के बिना मिट्टी को पोषण",q_expert:"विशेषज्ञ से बात करें",q_expert_d:"ऑनलाइन कॉल या खेत पर मुलाकात",
+season_h:"इस मौसम में",farm_h:"मेरा खेत",edit:"बदलें",f_name:"आपका नाम",f_crop:"मुख्य फसल",f_place:"गाँव / ज़िला",f_soil:"मिट्टी का प्रकार",save:"सहेजें",recent_h:"हाल की जाँचें",
+scan_h:"पत्ती की जाँच",scan_p:"दिन की रोशनी में फोटो लें, एक पत्ती साफ़ दिखे, और धब्बों के साथ थोड़ा स्वस्थ हिस्सा भी आए।",drop_p:"कैमरे से फोटो लें, या गैलरी से चुनें।",
+which_crop:"यह कौन सी फसल है? (वैकल्पिक)",symptom_note:"और क्या देखा? (वैकल्पिक)",analyze:"रोग पहचानें",new_photo:"दूसरी फोटो लें",
+ai_off:"AI जुड़ा नहीं है। ऐप को npm start से चलाएँ और अपनी API key डालें (README देखें)। आप विशेषज्ञ पेज से फोटो विशेषज्ञ को भेज सकते हैं।",ai_local:"AI जुड़ा नहीं है। ऐप को npm start से चलाएँ और अपनी API key डालें (README देखें)। अभी मदद के लिए किसान कॉल सेंटर 1800-180-1551 (निःशुल्क) पर कॉल करें।",err_key:"API key गलत है या उसकी अवधि खत्म हो गई है। .env फ़ाइल में key जाँचें और दोबारा चालू करें।",
+chat_h:"खेती सहायक",chat_p:"कीट, रोग, खाद, सिंचाई या सरकारी योजनाओं के बारे में पूछें। बोलने के लिए माइक दबाएँ।",read_aloud:"जवाब बोलकर सुनाएँ",new_chat:"नई बातचीत",
+chat_foot:"ज़रूरी या बड़े नुकसान पर किसान कॉल सेंटर 1800-180-1551 (निःशुल्क) पर भी कॉल करें।",
+adv_h:"सिर्फ़ पौधे को नहीं, मिट्टी को खिलाएँ",adv_p:"जैविक और जैव उपाय जो हर मौसम में मिट्टी की सेहत बढ़ाते हैं। रसायन तभी डालें जब विशेषज्ञ ज़रूरी बताएँ।",
+tab_fert:"जैविक खाद",tab_pest:"प्राकृतिक कीट नियंत्रण",tab_make:"घर पर बनाएँ",tab_plan:"मेरी फसल का प्लान",f_stage:"फसल की अवस्था",f_area:"ज़मीन (एकड़)",make_plan:"मेरा जैविक प्लान बनाएँ",
+avoid_h:"रसायनों का ज़्यादा इस्तेमाल क्यों घटाएँ",exp_h:"कृषि विशेषज्ञ",exp_p:"समस्या की फोटो या छोटा वीडियो भेजें। विशेषज्ञ देखकर फोन, वीडियो कॉल या खेत पर आकर मदद करेंगे।",
+req_h:"मदद माँगें",m_online:"ऑनलाइन",m_online_d:"फोन या वीडियो कॉल",m_offline:"खेत पर मुलाकात",m_offline_d:"विशेषज्ञ आपके खेत आएँगे",f_expert:"विशेषज्ञ का प्रकार",f_problem:"समस्या बताएँ",
+f_media:"फोटो या वीडियो",add_cam:"फोटो खींचें",add_vid:"वीडियो बनाएँ",add_file:"फ़ाइलें चुनें",f_phone:"फ़ोन नंबर",f_when:"सुविधाजनक समय",send_req:"अनुरोध भेजें",my_req:"मेरे अनुरोध",
+kcc:"किसान कॉल सेंटर — निःशुल्क, सुबह 6 से रात 10 बजे",call:"अभी कॉल करें",kvk:"आपके ज़िले का कृषि विज्ञान केंद्र (KVK) भी निःशुल्क खेत निरीक्षण और मिट्टी जाँच करता है।",
+ph_crop:"जैसे टमाटर, गेहूँ, धान",ph_note:"जैसे बारिश के बाद तेज़ी से फैल रहा है",ph_chat:"अपना सवाल लिखें…",ph_problem:"कौन सी फसल, क्या दिख रहा है, कब से, कितने क्षेत्र में",
+greet:"नमस्ते",greet_farmer:"किसान भाई",no_scans:"अभी कोई जाँच नहीं। जाँची गई पत्तियाँ यहाँ दिखेंगी।",no_req:"अभी कोई अनुरोध नहीं।",
+stat:(s,r)=>`${s} जाँचें · ${r} खुले अनुरोध`,profile_empty:"अपनी फसल और जगह जोड़ें ताकि सलाह आपके खेत के अनुसार हो।",
+checking:"पत्ती की जाँच हो रही है… इसमें एक मिनट तक लग सकता है।",likely:"संभावित समस्या",conf:"भरोसा",severity:"गंभीरता",sev:{low:"कम",medium:"मध्यम",high:"ज़्यादा"},
+healthy:"स्वस्थ दिख रही है",symptoms:"क्या दिख रहा है",causes:"क्यों होता है",organic:"जैविक इलाज — पहले यह करें",chem:"रासायनिक विकल्प — जैविक से फ़र्क न पड़े तभी",prevent:"बचाव",
+ask_more:"सहायक से इसके बारे में पूछें",send_expert:"विशेषज्ञ को भेजें",not_leaf:"यह फसल की पत्ती नहीं लगती। कृपया एक पत्ती की साफ़ फोटो लें।",
+disclaimer:"यह एक फोटो से AI का अनुमान है। रसायन पर पैसा खर्च करने से पहले विशेषज्ञ या KVK से पुष्टि करें।",
+err_generic:"जाँच पूरी नहीं हो सकी। थोड़ी देर बाद फिर कोशिश करें।",err_rate:"अभी बहुत अनुरोध हैं। एक मिनट रुककर फिर कोशिश करें।",err_image:"यह फोटो पढ़ी नहीं जा सकी। 20 MB से छोटी JPG या PNG आज़माएँ।",err_denied:"AI मदद की अनुमति नहीं मिली, इसलिए यहाँ यह बंद है।",
+greet_chat:"नमस्ते! मैं आपका खेती सहायक हूँ। अपनी फसल और समस्या बताइए — लिखें या माइक दबाकर बोलें।",
+chips:["गेहूँ की पत्तियाँ पीली हो रही हैं","धान के लिए सबसे अच्छी जैविक खाद","कपास पर सफ़ेद मक्खी — क्या करें?","जीवामृत कैसे बनाएँ?","पीएम-किसान योजना की जानकारी"],
+thinking:"सोच रहा हूँ…",voice_na:"इस ब्राउज़र में आवाज़ से इनपुट उपलब्ध नहीं है। कृपया सवाल लिखें।",listening:"सुन रहा हूँ… अब बोलें",
+planning:"आपका प्लान बन रहा है…",req_sent:"अनुरोध सहेजा गया। विशेषज्ञ दिए गए नंबर पर संपर्क करेंगे।",req_status:"विशेषज्ञ का इंतज़ार",
+soils:["दोमट","चिकनी / काली मिट्टी","रेतीली","लाल / लेटराइट","जलोढ़","पता नहीं"],stages:["बुवाई से पहले","अंकुरण","बढ़वार","फूल आना","फल / दाना भरना"],
+seasons:{rabi:"रबी की तैयारी",kharif:"खरीफ़",zaid:"ज़ायद",winter:"रबी फसल"},
+remove:"हटाएँ",online_l:"ऑनलाइन",offline_l:"खेत पर मुलाकात",video:"वीडियो",photos:"फोटो"}
+};
+
+/* ---------- content (bilingual) ---------- */
+const FERT = [
+ {n:{en:"Vermicompost",hi:"वर्मीकम्पोस्ट"},d:{en:"Earthworm-made compost. Adds slow-release nutrients and makes soil soft and water-holding.",hi:"केंचुओं से बनी खाद। धीरे-धीरे पोषक तत्व देती है, मिट्टी भुरभुरी और नमी वाली बनाती है।"},u:{en:"About 1–2 tonnes per acre before sowing; a handful per plant for vegetables.",hi:"बुवाई से पहले लगभग 1–2 टन प्रति एकड़; सब्ज़ियों में प्रति पौधा एक मुट्ठी।"},tag:{en:"All crops",hi:"सभी फसलें"}},
+ {n:{en:"Farmyard manure (FYM)",hi:"गोबर की सड़ी खाद"},d:{en:"Well-rotted cow dung and farm waste. Base food for the soil; never use fresh dung.",hi:"अच्छी तरह सड़ा गोबर और खेत का कचरा। मिट्टी का मूल भोजन; ताज़ा गोबर न डालें।"},u:{en:"4–5 tonnes per acre, mixed in 2–3 weeks before sowing.",hi:"4–5 टन प्रति एकड़, बुवाई से 2–3 हफ़्ते पहले मिलाएँ।"},tag:{en:"All crops",hi:"सभी फसलें"}},
+ {n:{en:"Neem cake",hi:"नीम खली"},d:{en:"Gives nitrogen and also keeps away soil pests like termites and nematodes.",hi:"नाइट्रोजन देती है और दीमक, सूत्रकृमि जैसे मिट्टी के कीटों को दूर रखती है।"},u:{en:"About 100 kg per acre with the last ploughing.",hi:"आख़िरी जुताई के साथ लगभग 100 किलो प्रति एकड़।"},tag:{en:"Pest-prone fields",hi:"कीट वाले खेत"}},
+ {n:{en:"Green manure (Dhaincha, Sunhemp)",hi:"हरी खाद (ढैंचा, सनई)"},d:{en:"Grow, then plough in at flowering. Adds nitrogen and organic matter cheaply.",hi:"उगाकर फूल आने पर जुताई से मिट्टी में दबा दें। सस्ते में नाइट्रोजन और जैविक पदार्थ।"},u:{en:"Sow 15–20 kg seed per acre; plough in after 45–50 days.",hi:"15–20 किलो बीज प्रति एकड़; 45–50 दिन बाद जुताई करें।"},tag:{en:"Before paddy",hi:"धान से पहले"}},
+ {n:{en:"Biofertilizers (Rhizobium, Azotobacter, PSB)",hi:"जैव उर्वरक (राइज़ोबियम, एज़ोटोबैक्टर, पीएसबी)"},d:{en:"Helpful bacteria that fix nitrogen from air and free up locked phosphorus.",hi:"लाभकारी जीवाणु जो हवा से नाइट्रोजन लेते हैं और मिट्टी में फँसा फ़ॉस्फ़ोरस उपलब्ध कराते हैं।"},u:{en:"Seed treatment: about 200 g per 10 kg seed, dry in shade and sow the same day.",hi:"बीज उपचार: लगभग 200 ग्राम प्रति 10 किलो बीज, छाया में सुखाकर उसी दिन बोएँ।"},tag:{en:"Pulses, cereals",hi:"दलहन, अनाज"}},
+ {n:{en:"Mustard or groundnut cake",hi:"सरसों या मूँगफली खली"},d:{en:"Rich in nitrogen; good top-up for vegetables and fruit trees.",hi:"नाइट्रोजन से भरपूर; सब्ज़ियों और फलदार पेड़ों के लिए अच्छी।"},u:{en:"Soak overnight, dilute 1:10 with water and pour near roots.",hi:"रात भर भिगोएँ, 1:10 पानी में घोलकर जड़ों के पास डालें।"},tag:{en:"Vegetables, fruits",hi:"सब्ज़ी, फल"}}
+];
+const PEST = [
+ {n:{en:"Neem oil spray",hi:"नीम तेल छिड़काव"},d:{en:"Stops sucking pests like aphids, whitefly and jassids from feeding and breeding.",hi:"माहू, सफ़ेद मक्खी, हरा तेला जैसे रस चूसने वाले कीटों को रोकता है।"},u:{en:"5 ml neem oil + 1 ml soap per litre water. Spray in the evening every 7–10 days.",hi:"5 मि.ली. नीम तेल + 1 मि.ली. साबुन प्रति लीटर पानी। शाम को हर 7–10 दिन छिड़कें।"},tag:{en:"Sucking pests",hi:"रस चूसक कीट"}},
+ {n:{en:"Trichoderma",hi:"ट्राइकोडर्मा"},d:{en:"A friendly fungus that fights root rot, wilt and damping-off.",hi:"मित्र फफूंद जो जड़ सड़न, उकठा और पौध गलन से बचाती है।"},u:{en:"Seed: 5–10 g per kg. Soil: 1 kg mixed in 50 kg compost per acre.",hi:"बीज: 5–10 ग्राम प्रति किलो। मिट्टी: 1 किलो को 50 किलो खाद में मिलाकर प्रति एकड़।"},tag:{en:"Fungal diseases",hi:"फफूंद रोग"}},
+ {n:{en:"Pseudomonas fluorescens",hi:"स्यूडोमोनास फ़्लोरेसेंस"},d:{en:"Bacteria that protect against blast, blight and leaf spots.",hi:"जीवाणु जो झुलसा, ब्लास्ट और पत्ती धब्बा से बचाते हैं।"},u:{en:"10 g per kg seed, or 5 g per litre as a spray.",hi:"10 ग्राम प्रति किलो बीज, या 5 ग्राम प्रति लीटर छिड़काव।"},tag:{en:"Paddy, vegetables",hi:"धान, सब्ज़ी"}},
+ {n:{en:"Yellow and blue sticky traps",hi:"पीले और नीले चिपचिपे ट्रैप"},d:{en:"Catch flying pests and show you early when numbers rise.",hi:"उड़ने वाले कीट पकड़ते हैं और बढ़ती संख्या का पहले पता देते हैं।"},u:{en:"10–12 traps per acre, just above crop height.",hi:"10–12 ट्रैप प्रति एकड़, फसल से थोड़ा ऊपर।"},tag:{en:"Monitoring",hi:"निगरानी"}},
+ {n:{en:"Pheromone traps",hi:"फेरोमोन ट्रैप"},d:{en:"Attract and trap male moths of borers and bollworms.",hi:"तना छेदक और सुंडी के नर पतंगों को फँसाते हैं।"},u:{en:"5–8 traps per acre; change the lure every 3–4 weeks.",hi:"5–8 ट्रैप प्रति एकड़; ल्योर हर 3–4 हफ़्ते बदलें।"},tag:{en:"Borers, bollworm",hi:"छेदक, सुंडी"}},
+ {n:{en:"Crop rotation & field hygiene",hi:"फसल चक्र और खेत की सफ़ाई"},d:{en:"Pick off sick plant parts and bury or compost them away from the field; rotate crop families.",hi:"रोगी पौधों के हिस्से खेत से दूर गाड़ें या खाद बनाएँ; हर मौसम अलग फसल परिवार लगाएँ।"},u:{en:"Don't grow the same crop family on the same plot back to back.",hi:"एक ही खेत में लगातार एक ही परिवार की फसल न लगाएँ।"},tag:{en:"Prevention",hi:"बचाव"}}
+];
+const RECIPES = [
+ {n:{en:"Jeevamrut (soil booster, 1 acre)",hi:"जीवामृत (मिट्टी पोषक, 1 एकड़)"},steps:{
+  en:["Take 200 litres of water in a drum kept in shade.","Add 10 kg fresh desi cow dung and 5–10 litres cow urine.","Add 2 kg jaggery and 2 kg pulse flour (besan).","Add a handful of soil from your field bund.","Stir clockwise twice a day; ready in 2–7 days.","Give with irrigation water, once or twice a month. Use within 7 days."],
+  hi:["छाया में रखे ड्रम में 200 लीटर पानी लें।","10 किलो ताज़ा देसी गाय का गोबर और 5–10 लीटर गोमूत्र डालें।","2 किलो गुड़ और 2 किलो बेसन डालें।","खेत की मेड़ की एक मुट्ठी मिट्टी डालें।","दिन में दो बार घड़ी की दिशा में हिलाएँ; 2–7 दिन में तैयार।","सिंचाई के पानी के साथ महीने में 1–2 बार दें। 7 दिन में इस्तेमाल करें।"]}},
+ {n:{en:"Neem seed kernel extract (5%)",hi:"नीम बीज अर्क (5%)"},steps:{
+  en:["Crush 5 kg dry neem seed kernels.","Tie in a cloth and soak overnight in 10 litres water.","Squeeze and filter the milky liquid.","Make up to 100 litres with water and add 100 ml soap solution.","Spray in the evening on both sides of the leaves."],
+  hi:["5 किलो सूखी नीम की गिरी कूटें।","कपड़े में बाँधकर 10 लीटर पानी में रात भर भिगोएँ।","निचोड़कर दूधिया घोल छान लें।","पानी मिलाकर 100 लीटर करें और 100 मि.ली. साबुन घोल डालें।","शाम को पत्तियों के दोनों तरफ़ छिड़कें।"]}},
+ {n:{en:"Quick compost pit",hi:"जल्दी बनने वाली कम्पोस्ट"},steps:{
+  en:["Dig a pit about 3 ft deep in a shaded, raised spot.","Layer crop waste, then dung slurry, then a little soil — repeat.","Keep moist like a squeezed sponge, not wet.","Turn the heap every 15 days.","Ready in 60–90 days when dark and earthy-smelling."],
+  hi:["छाया वाली ऊँची जगह पर लगभग 3 फुट गहरा गड्ढा खोदें।","फसल अवशेष, फिर गोबर का घोल, फिर थोड़ी मिट्टी — ऐसे परतें बनाएँ।","निचोड़े स्पंज जैसी नमी रखें, पानी भरा नहीं।","हर 15 दिन में पलटें।","60–90 दिन में गहरे रंग और मिट्टी की महक पर तैयार।"]}}
+];
+const AVOID = [
+ {en:"Too much urea makes plants soft and invites more pests and disease.",hi:"ज़्यादा यूरिया से पौधे कमज़ोर होते हैं और कीट-रोग ज़्यादा लगते हैं।"},
+ {en:"Repeated sprays kill friendly insects like ladybirds and bees.",hi:"बार-बार छिड़काव से लेडीबर्ड और मधुमक्खी जैसे मित्र कीट मरते हैं।"},
+ {en:"Pests become resistant, so the same medicine stops working.",hi:"कीटों में प्रतिरोध बनता है, फिर वही दवा असर नहीं करती।"},
+ {en:"Residues reach food, water and your family's health.",hi:"अवशेष भोजन, पानी और परिवार की सेहत तक पहुँचते हैं।"}
+];
+const EXPERTS = [
+ {k:"path",n:{en:"Plant disease specialist",hi:"पौध रोग विशेषज्ञ"},d:{en:"Leaf spots, blights, wilts, rots, viral curl.",hi:"पत्ती धब्बा, झुलसा, उकठा, सड़न, वायरस।"},m:["online","offline"]},
+ {k:"ento",n:{en:"Insect & pest specialist",hi:"कीट विशेषज्ञ"},d:{en:"Borers, sucking pests, locusts, stored-grain pests.",hi:"छेदक, रस चूसक, टिड्डी, भंडार कीट।"},m:["online","offline"]},
+ {k:"soil",n:{en:"Soil & nutrition specialist",hi:"मिट्टी और पोषण विशेषज्ञ"},d:{en:"Soil test reading, deficiency, organic nutrient plans.",hi:"मिट्टी जाँच, पोषक कमी, जैविक पोषण प्लान।"},m:["online","offline"]},
+ {k:"horti",n:{en:"Horticulture specialist",hi:"बागवानी विशेषज्ञ"},d:{en:"Fruits, vegetables, nursery and orchard care.",hi:"फल, सब्ज़ी, नर्सरी और बाग की देखभाल।"},m:["online","offline"]},
+ {k:"organic",n:{en:"Natural farming guide",hi:"प्राकृतिक खेती मार्गदर्शक"},d:{en:"Switching to organic, certification, home inputs.",hi:"जैविक खेती अपनाना, प्रमाणन, घरेलू इनपुट।"},m:["online"]}
+];
+const SEASON = {
+ rabi:{en:["Prepare fields for wheat, mustard and gram sowing (Oct–Nov).","Get a soil test done now and add compost 2–3 weeks before sowing.","Treat seed with Trichoderma or biofertilizer before sowing."],hi:["गेहूँ, सरसों, चने की बुवाई (अक्टूबर–नवंबर) के लिए खेत तैयार करें।","अभी मिट्टी की जाँच कराएँ, बुवाई से 2–3 हफ़्ते पहले खाद डालें।","बुवाई से पहले बीज को ट्राइकोडर्मा या जैव उर्वरक से उपचारित करें।"]},
+ winter:{en:["Watch wheat for yellow rust stripes on leaves.","Protect crops from frost with light irrigation on cold nights.","Check mustard for aphids; use neem spray early."],hi:["गेहूँ की पत्तियों पर पीले रतुए की धारियाँ देखें।","ठंडी रातों में हल्की सिंचाई से पाले से बचाएँ।","सरसों में माहू देखें; शुरू में ही नीम छिड़कें।"]},
+ zaid:{en:["Summer vegetables and moong need frequent light irrigation.","Mulch with straw to save water.","Deep summer ploughing kills soil pests and weeds."],hi:["गर्मी की सब्ज़ियों और मूँग को बार-बार हल्की सिंचाई दें।","पानी बचाने के लिए पुआल की मल्चिंग करें।","गर्मी की गहरी जुताई से मिट्टी के कीट और खरपतवार मरते हैं।"]},
+ kharif:{en:["Drain standing water to prevent root rot and blast in paddy.","Humid weather spreads fungal leaf spots — scan leaves weekly.","Set pheromone traps in cotton and maize."],hi:["जड़ सड़न और धान के ब्लास्ट से बचने के लिए रुका पानी निकालें।","नमी वाले मौसम में फफूंद धब्बे फैलते हैं — हर हफ़्ते पत्तियाँ जाँचें।","कपास और मक्का में फेरोमोन ट्रैप लगाएँ।"]}
+};
+
+/* ---------- state ---------- */
+const store = {
+  get(k,f){try{const v=localStorage.getItem("km_"+k);return v?JSON.parse(v):f}catch(e){return f}},
+  set(k,v){try{localStorage.setItem("km_"+k,JSON.stringify(v))}catch(e){}}
+};
+let lang = store.get("lang","en");
+let profile = store.get("profile",{name:"",crop:"",place:"",soil:""});
+let scans = store.get("scans",[]);
+let requests = store.get("requests",[]);
+let lastScan = null;
+const t = k => (T[lang][k] ?? T.en[k] ?? k);
+const L = o => o[lang] ?? o.en;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- AI ----------
+   Inside Claude: uses the Claude runtime (window.claude).
+   On your own computer: uses server.js at /api/ai (your API key stays on the server). */
+let sample = null, imgOK = false;
+
+function shrinkImage(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file); const im=new Image();
+    im.onload=()=>{const max=1280;let w=im.width,h=im.height;const k=Math.min(1,max/Math.max(w,h));w=Math.round(w*k);h=Math.round(h*k);
+      const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(im,0,0,w,h);URL.revokeObjectURL(url);
+      res({mediaType:"image/jpeg",data:c.toDataURL("image/jpeg",.85).split(",")[1]});};
+    im.onerror=()=>{URL.revokeObjectURL(url);rej({code:"image_rejected"});};
+    im.src=url;
+  });
+}
+function parseJSONLoose(text){
+  let tx=String(text).trim().replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"");
+  try{return JSON.parse(tx)}catch(_){}
+  const a=tx.indexOf("{"),b=tx.lastIndexOf("}");
+  if(a>=0&&b>a){try{return JSON.parse(tx.slice(a,b+1))}catch(_){}}
+  throw {code:"invalid_json",text};
+}
+function makeLocalSample(){
+  const call = async (input, opts={}, json=false)=>{
+    const turns = typeof input==="string" ? [{role:"user",content:input}] : input;
+    let images=[];
+    if(opts.images){ const arr=[...(opts.images.length!==undefined?opts.images:[opts.images])]; images=await Promise.all(arr.map(shrinkImage)); }
+    let r;
+    try{
+      r = await fetch("/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},signal:opts.signal,body:JSON.stringify({turns,images,json})});
+    }catch(e){ throw {code: e?.name==="AbortError"?"cancelled":"upstream_error"}; }
+    const data = await r.json().catch(()=>({error:"upstream_error"}));
+    if(!r.ok || data.error) throw {code:data.error||"upstream_error",message:data.message};
+    if(opts.onText) opts.onText({text:data.text,delta:data.text});
+    return {text:data.text,truncated:!!data.truncated};
+  };
+  const fn = (input,opts)=>call(input,opts,false);
+  fn.json = async (input,opts)=>parseJSONLoose((await call(input,opts,true)).text);
+  fn.limits = async ()=>({maxPromptBytes:65536,images:{maxCount:4,maxInputBytes:20e6,mediaTypes:["image/jpeg","image/png","image/webp"]}});
+  return fn;
+}
+const aiReady = (async()=>{
+  try{
+    if(window.claude && window.claude.use){
+      sample = await window.claude.use("sample");
+      if(sample){ const lim = await sample.limits().catch(()=>null); imgOK = !!lim?.images; }
+    } else if(location.protocol.startsWith("http")){
+      const h = await fetch("/api/health").then(r=>r.json()).catch(()=>null);
+      if(h && h.ok){ sample = makeLocalSample(); imgOK = true; }
+    }
+  }catch(e){ sample=null }
+  updateAIState();
+})();
+function updateAIState(){
+  $("#aiOff").classList.toggle("hidden", !!(sample && imgOK));
+}
+function errText(e){
+  const c = e?.code;
+  if(c==="rate_limited") return t("err_rate");
+  if(c==="image_rejected") return t("err_image");
+  if(c==="bad_key") return t("err_key");
+  if(c==="no_key") return t("ai_local");
+  if(["not_granted","sampling_disabled","not_declared","capability_disabled","images_unavailable"].includes(c)){ return t("err_denied"); }
+  return t("err_generic");
+}
+const langName = () => lang==="hi" ? "Hindi (Devanagari script, simple words a village farmer understands)" : "simple English";
+const langRule = () => lang==="hi"
+  ? "LANGUAGE RULE (most important): Write EVERY sentence and EVERY text value ONLY in Hindi using Devanagari script (हिंदी). Do not write English sentences. Crop and disease names must also be in Hindi, with the English name in brackets, e.g. \"मृदुरोमिल आसिता (Downy Mildew)\"."
+  : "LANGUAGE RULE: Write everything in simple English.";
+
+/* ---------- language ---------- */
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.lang===lang));
+  document.querySelectorAll("[data-i]").forEach(el=>{const v=t(el.dataset.i); if(typeof v==="string") el.textContent=v;});
+  document.querySelectorAll("[data-ip]").forEach(el=>el.placeholder=t(el.dataset.ip));
+  fillSelect("#pSoil", T[lang].soils, profile.soil);
+  fillSelect("#planSoil", T[lang].soils, profile.soil);
+  fillSelect("#planStage", T[lang].stages);
+  const ex = $("#reqExpert"); const cur = ex.value;
+  ex.innerHTML = EXPERTS.map(x=>`<option value="${x.k}">${esc(L(x.n))}</option>`).join(""); if(cur) ex.value=cur;
+  renderHome(); renderAdvice(); renderExperts(); renderRequests();
+  if(!chatTurns.length) resetChat();
+  if(lastScan) { if(lastScan.lang && lastScan.lang!==lang) translateScan(); else renderResult(lastScan.r); }
+}
+function fillSelect(sel, arr, val){
+  const el=$(sel); const idx = el.selectedIndex;
+  el.innerHTML = arr.map((s,i)=>`<option value="${i}">${esc(s)}</option>`).join("");
+  if(val!==undefined && val!=="") el.value = val; else if(idx>=0) el.selectedIndex = idx;
+}
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>{lang=b.dataset.lang;store.set("lang",lang);applyLang();});
+
+/* ---------- home ---------- */
+function seasonKey(){const m=new Date().getMonth()+1; if(m>=9&&m<=11) return "rabi"; if(m===12||m<=2) return "winter"; if(m<=5) return "zaid"; return "kharif";}
+function renderHome(){
+  $("#greet").textContent = `${t("greet")}, ${profile.name || t("greet_farmer")}`;
+  const sk = seasonKey();
+  $("#seasonTag").textContent = T[lang].seasons[sk];
+  $("#seasonList").innerHTML = SEASON[sk][lang].map(s=>`<li>${esc(s)}</li>`).join("");
+  const soil = profile.soil!=="" && profile.soil!=null ? T[lang].soils[profile.soil] : "";
+  const parts = [profile.crop, profile.place, soil].filter(Boolean);
+  $("#profileSummary").textContent = parts.length ? parts.join(" — ") : t("profile_empty");
+  $("#pName").value=profile.name; $("#pCrop").value=profile.crop; $("#pPlace").value=profile.place;
+  $("#statLine").textContent = T[lang].stat(scans.length, requests.length);
+  const rs = $("#recentScans");
+  rs.innerHTML = scans.length ? scans.slice(0,5).map((s,i)=>`
+    <div class="scanrow"><img src="${s.thumb||""}" alt="">
+      <div style="flex:1"><b>${esc(s.r.disease)}</b><div class="muted small">${esc(s.r.crop||"")} — ${new Date(s.at).toLocaleDateString(lang==="hi"?"hi-IN":"en-IN")}</div></div>
+      <span class="tag ${s.r.severity==="high"?"bad":s.r.severity==="medium"?"warn":""}">${esc(T[lang].sev[s.r.severity]||"")}</span>
+    </div>`).join("") : `<div class="empty">${esc(t("no_scans"))}</div>`;
+  renderHero();
+}
+$("#editProfile").onclick=()=>$("#profileForm").classList.toggle("hidden");
+$("#profileForm").onsubmit=e=>{e.preventDefault();
+  profile={name:$("#pName").value.trim(),crop:$("#pCrop").value.trim(),place:$("#pPlace").value.trim(),soil:$("#pSoil").value};
+  store.set("profile",profile); $("#profileForm").classList.add("hidden"); renderHome();
+  if(!$("#planCrop").value) $("#planCrop").value=profile.crop; if(!$("#reqPlace").value) $("#reqPlace").value=profile.place;
+};
+
+/* ---------- scan ---------- */
+let scanFile=null, scanURL=null;
+$("#camBtn").onclick=()=>$("#camInput").click();
+$("#upBtn").onclick=()=>$("#upInput").click();
+["#camInput","#upInput"].forEach(s=>$(s).onchange=e=>{ if(e.target.files[0]) setScanFile(e.target.files[0]); e.target.value=""; });
+const drop=$("#drop");
+drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("drag")});
+drop.addEventListener("dragleave",()=>drop.classList.remove("drag"));
+drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("drag");const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith("image/")) setScanFile(f);});
+function setScanFile(f){
+  scanFile=f; if(scanURL) URL.revokeObjectURL(scanURL); scanURL=URL.createObjectURL(f);
+  $("#preview").src=scanURL; $("#preview").classList.remove("hidden"); $("#dropEmpty").classList.add("hidden");
+  $("#analyzeBtn").disabled=false; $("#resetScan").classList.remove("hidden"); $("#scanOut").innerHTML="";
+  if(!$("#scanCrop").value && profile.crop) $("#scanCrop").value = profile.crop;
+}
+$("#resetScan").onclick=()=>{scanFile=null;$("#preview").classList.add("hidden");$("#dropEmpty").classList.remove("hidden");$("#analyzeBtn").disabled=true;$("#resetScan").classList.add("hidden");$("#scanOut").innerHTML="";lastScan=null;};
+function makeThumb(url){return new Promise(res=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas");const s=96;c.width=s;c.height=s;const x=c.getContext("2d");const m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);try{res(c.toDataURL("image/jpeg",.6))}catch(e){res("")}};im.onerror=()=>res("");im.src=url;});}
+
+$("#analyzeBtn").onclick=async()=>{
+  await aiReady;
+  const out=$("#scanOut");
+  if(!sample||!imgOK){updateAIState();return;}
+  $("#analyzeBtn").disabled=true;
+  out.innerHTML=`<div class="panel" style="display:flex;gap:12px;align-items:center"><div class="spinner"></div><span>${esc(t("checking"))}</span></div>`;
+  const prompt = `${langRule()}
+
+You are an experienced Indian plant pathologist helping a small farmer. Look at the attached photo of a crop leaf/plant.
+Farmer says crop: "${$("#scanCrop").value||"unknown"}". Farmer's note: "${$("#scanNote").value||"none"}". Location: "${profile.place||"India"}".
+Identify the most likely disease, pest damage or nutrient deficiency. Be honest: if the photo is unclear, lower confidence and say what photo would help. Prefer organic / biological / cultural treatments first (neem, Trichoderma, Pseudomonas, removing infected parts, spacing, drainage). Only list a chemical option if it is commonly recommended in India for this problem, name the active ingredient (not brand) with a typical label dose, and add a safety note. Never invent products.
+${langRule()}
+Reply with only this JSON:
+{"is_plant":true,"crop":"string","disease":"string (or 'Healthy')","healthy":false,"confidence":0-100,"severity":"low|medium|high","symptoms":["..."],"causes":["..."],"organic":["step with dose"],"chemical":["active ingredient, dose, safety"],"prevention":["..."],"see_expert":true}
+If the image is not a plant, return {"is_plant":false}.`;
+  try{
+    const r = await sample.json(prompt,{images:[scanFile]});
+    if(!r || r.is_plant===false){ out.innerHTML=`<p class="note">${esc(t("not_leaf"))}</p>`; lastScan=null; }
+    else{
+      r.severity = ["low","medium","high"].includes(r.severity)?r.severity:"medium";
+      const thumb = await makeThumb(scanURL);
+      lastScan={r,thumb,at:Date.now(),lang};
+      scans.unshift(lastScan); scans=scans.slice(0,20); store.set("scans",scans);
+      renderResult(r); renderHome();
+    }
+  }catch(e){ out.innerHTML=`<p class="note">${esc(errText(e))}</p>`; if(e?.code==="images_unavailable"){imgOK=false;updateAIState();} }
+  finally{ $("#analyzeBtn").disabled=false; }
+};
+async function translateScan(){
+  const target = lang;
+  renderResult(lastScan.r);
+  if(!sample) return;
+  try{
+    const tr = await sample.json(`${langRule()}\n\nTranslate all string values in this JSON into ${langName()}. Keep the same keys, numbers and true/false values. Keep "severity" exactly as it is (low/medium/high). Reply with only the JSON.\n\n${JSON.stringify(lastScan.r)}`);
+    if(tr && typeof tr==="object" && lang===target){ tr.severity=lastScan.r.severity; lastScan.r=tr; lastScan.lang=target; renderResult(tr); }
+  }catch(e){}
+}
+const list = a => Array.isArray(a)&&a.length ? `<ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : "";
+function renderResult(r){
+  const conf=Math.max(0,Math.min(100,Number(r.confidence)||0));
+  $("#scanOut").innerHTML=`
+  <article class="panel result stack">
+    <div class="head">
+      <div><span class="muted small">${esc(r.healthy?t("healthy"):t("likely"))}${r.crop?` — ${esc(r.crop)}`:""}</span><h3>${esc(r.disease)}</h3></div>
+      <span class="tag ${r.severity==="high"?"bad":r.severity==="medium"?"warn":""}">${esc(t("severity"))}: ${esc(T[lang].sev[r.severity])}</span>
+    </div>
+    <div><div class="small muted" style="display:flex;justify-content:space-between"><span>${esc(t("conf"))}</span><span>${conf}%</span></div><div class="meter"><i style="width:${conf}%"></i></div></div>
+    ${r.symptoms?.length?`<section><h4>${esc(t("symptoms"))}</h4>${list(r.symptoms)}</section>`:""}
+    ${r.causes?.length?`<section><h4>${esc(t("causes"))}</h4>${list(r.causes)}</section>`:""}
+    ${r.organic?.length?`<section><h4>${esc(t("organic"))}</h4>${list(r.organic)}</section>`:""}
+    ${r.chemical?.length?`<section class="chem"><h4>${esc(t("chem"))}</h4>${list(r.chemical)}</section>`:""}
+    ${r.prevention?.length?`<section><h4>${esc(t("prevent"))}</h4>${list(r.prevention)}</section>`:""}
+    <p class="note">${esc(t("disclaimer"))}</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="askAbout">${esc(t("ask_more"))}</button>
+      <button class="btn ghost" id="toExpert">${esc(t("send_expert"))}</button>
+    </div>
+  </article>`;
+  $("#askAbout").onclick=()=>{go("chat");$("#chatInput").value = lang==="hi"?`मेरी ${r.crop||"फसल"} में "${r.disease}" बताया गया है। मुझे आगे क्या करना चाहिए?`:`My ${r.crop||"crop"} was checked as "${r.disease}". What should I do next?`;$("#chatInput").focus();};
+  $("#toExpert").onclick=()=>{go("experts");$("#reqExpert").value="path";$("#reqText").value=`${r.crop||""}: ${r.disease} (${conf}%). ${(r.symptoms||[]).join("; ")}`;if(scanFile) addMedia([scanFile]);};
+}
+
+/* ---------- chat ---------- */
+let chatTurns=[], chatCtl=null;
+const RULES = () => `${langRule()}
+
+You are "Kheti Mitra", a trusted farm advisor for Indian farmers, like a caring agriculture officer.
+Rules: Give genuine, practical, safe advice. Prefer organic, biological and low-cost methods first; suggest chemicals only when truly needed, by active ingredient with dose and safety (gloves, mask, waiting period). Never guess product brands or prices. If unsure, say so and suggest a specialist, the local Krishi Vigyan Kendra, or Kisan Call Centre 1800-180-1551. For government schemes, give the general idea and tell them to confirm on the official portal or at their CSC/agriculture office since details change. Keep answers short (under 150 words), use simple steps, and reply in ${langName()}. If the farmer writes in Hindi or Hinglish, answer in Hindi (Devanagari).
+Farmer profile: name ${profile.name||"unknown"}, crop ${profile.crop||"unknown"}, location ${profile.place||"India"}, soil ${profile.soil!==""&&profile.soil!=null?T.en.soils[profile.soil]:"unknown"}.${lastScan?` Latest leaf scan result: ${lastScan.r.disease} on ${lastScan.r.crop||"crop"}.`:""}
+Today is ${new Date().toDateString()}.`;
+function md(s){
+  const lines=esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").split(/\n/);
+  let html="",inList=false;
+  for(const ln of lines){const m=ln.match(/^\s*(?:[-*•]|\d+[.)])\s+(.*)/);
+    if(m){if(!inList){html+="<ul>";inList=true}html+=`<li>${m[1]}</li>`}
+    else{if(inList){html+="</ul>";inList=false} if(ln.trim()) html+=`<p>${ln.replace(/^#+\s*/,"")}</p>`}}
+  if(inList) html+="</ul>"; return html;
+}
+function addMsg(role,html){const d=document.createElement("div");d.className="msg "+role;d.innerHTML=html;$("#chatLog").appendChild(d);$("#chatLog").scrollTop=1e9;return d;}
+function resetChat(){
+  chatCtl?.abort(); chatTurns=[]; $("#chatLog").innerHTML="";
+  addMsg("bot",`<p>${esc(t("greet_chat"))}</p>`);
+  const c=document.createElement("div");c.className="chips";
+  T[lang].chips.forEach(q=>{const b=document.createElement("button");b.className="chip";b.type="button";b.textContent=q;b.onclick=()=>{c.remove();send(q)};c.appendChild(b)});
+  $("#chatLog").appendChild(c);
+}
+$("#clearChat").onclick=resetChat;
+async function send(text){
+  text=text.trim(); if(!text) return;
+  await aiReady;
+  addMsg("user",esc(text));
+  chatTurns.push({role:"user",content:text});
+  const bubble=addMsg("bot",`<p class="muted">${esc(t("thinking"))}</p>`);
+  if(!sample){bubble.innerHTML=`<p>${esc(t("ai_local"))}</p>`;chatTurns.pop();return;}
+  chatCtl=new AbortController();
+  $("#sendBtn").disabled=true;
+  try{
+    const recent = chatTurns.slice(-12);
+    const {text:ans} = await sample([{role:"user",content:RULES()},...recent],{cache:false,signal:chatCtl.signal,modelTier:"default",
+      onText:({text})=>{bubble.innerHTML=md(text);$("#chatLog").scrollTop=1e9;}});
+    chatTurns.push({role:"assistant",content:ans});
+    if($("#speakToggle").checked) speak(ans);
+  }catch(e){
+    if(e?.text) bubble.innerHTML=md(e.text);
+    if(e?.code!=="cancelled") bubble.insertAdjacentHTML("beforeend",`<p class="small muted">${esc(errText(e))}</p>`);
+    chatTurns.pop();
+  }finally{$("#sendBtn").disabled=false;}
+}
+$("#composer").onsubmit=e=>{e.preventDefault();const v=$("#chatInput").value;$("#chatInput").value="";send(v);};
+$("#chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("#composer").requestSubmit();}});
+
+/* voice */
+function speak(txt){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt.replace(/[*#]/g,""));
+    u.lang = lang==="hi"?"hi-IN":"en-IN";
+    const v=speechSynthesis.getVoices().find(v=>v.lang===u.lang)||speechSynthesis.getVoices().find(v=>v.lang.startsWith(lang));
+    if(v) u.voice=v; u.rate=.95; speechSynthesis.speak(u);
+  }catch(e){}
+}
+$("#speakToggle").onchange=e=>{if(!e.target.checked){try{speechSynthesis.cancel()}catch(_){}}};
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null, recOn=false;
+$("#micBtn").onclick=()=>{
+  if(!SR){addMsg("bot",`<p>${esc(t("voice_na"))}</p>`);return;}
+  if(recOn){rec?.stop();return;}
+  try{
+    rec=new SR(); rec.lang= lang==="hi"?"hi-IN":"en-IN"; rec.interimResults=true; rec.maxAlternatives=1;
+    const inp=$("#chatInput"); inp.placeholder=t("listening");
+    rec.onresult=ev=>{let s="";for(const r of ev.results) s+=r[0].transcript; inp.value=s;};
+    rec.onerror=ev=>{ if(ev.error==="not-allowed"||ev.error==="service-not-allowed"||ev.error==="audio-capture") addMsg("bot",`<p>${esc(t("voice_na"))}</p>`); };
+    rec.onend=()=>{recOn=false;$("#micBtn").classList.remove("rec");inp.placeholder=t("ph_chat"); if(inp.value.trim()){ $("#speakToggle").checked=true; $("#composer").requestSubmit(); }};
+    rec.start(); recOn=true; $("#micBtn").classList.add("rec");
+  }catch(e){addMsg("bot",`<p>${esc(t("voice_na"))}</p>`);}
+};
+
+/* ---------- advice ---------- */
+function card(x){return `<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><h3>${esc(L(x.n))}</h3><span class="tag">${esc(L(x.tag))}</span></div><p class="muted">${esc(L(x.d))}</p><p class="use"><b>${lang==="hi"?"कैसे डालें":"How to use"}:</b> ${esc(L(x.u))}</p></div>`;}
+function renderAdvice(){
+  $("#fertCards").innerHTML=FERT.map(card).join("");
+  $("#pestCards").innerHTML=PEST.map(card).join("");
+  $("#recipes").innerHTML=RECIPES.map(r=>`<div class="card recipe"><h3>${esc(L(r.n))}</h3><ol>${r.steps[lang].map(s=>`<li>${esc(s)}</li>`).join("")}</ol></div>`).join("");
+  $("#avoidList").innerHTML=AVOID.map(a=>`<div>${esc(L(a))}</div>`).join("");
+  if(!$("#planCrop").value) $("#planCrop").value=profile.crop||"";
+}
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("[data-tab]").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll(".tabpane").forEach(p=>p.classList.toggle("hidden",p.id!=="tab-"+b.dataset.tab));
+});
+$("#planBtn").onclick=async()=>{
+  await aiReady; const out=$("#planOut");
+  if(!sample){out.innerHTML=`<p class="note">${esc(t("ai_local"))}</p>`;return;}
+  const crop=$("#planCrop").value.trim()||"mixed crops";
+  $("#planBtn").disabled=true;
+  out.innerHTML=`<div style="display:flex;gap:12px;align-items:center"><div class="spinner"></div><span>${esc(t("planning"))}</span></div>`;
+  const p=`${langRule()}
+
+Make a practical ORGANIC nutrient and plant-protection plan for an Indian farmer.
+Crop: ${crop}. Soil: ${T.en.soils[$("#planSoil").value]}. Current stage: ${T.en.stages[$("#planStage").value]}. Land: ${$("#planArea").value||1} acre(s). Location: ${profile.place||"India"}.
+Use only organic/biological inputs (FYM, vermicompost, neem cake, green manure, biofertilizers, Jeevamrut, neem sprays, Trichoderma). Give quantities scaled to the land size and timing by crop stage. Say when a soil test or specialist is needed. No brands. Under 220 words, short headed sections with bullet points. Write in ${langName()}.`;
+  try{
+    await sample(p,{onText:({text})=>{out.innerHTML=`<div class="msg bot" style="max-width:100%">${md(text)}</div>`;}});
+  }catch(e){ out.innerHTML=(e?.text?`<div class="msg bot" style="max-width:100%">${md(e.text)}</div>`:"")+`<p class="note">${esc(errText(e))}</p>`; }
+  finally{$("#planBtn").disabled=false;}
+};
+
+/* ---------- experts ---------- */
+let media=[];
+function renderExperts(){
+  $("#expertList").innerHTML=EXPERTS.map(x=>`<div class="panel expert">
+    <div class="avatar">${esc(L(x.n)[0])}</div>
+    <div style="flex:1"><h3>${esc(L(x.n))}</h3><p class="muted small">${esc(L(x.d))}</p>
+      <div class="modes">${x.m.map(m=>`<span class="tag ${m==="offline"?"warn":""}">${esc(t(m+"_l"))}</span>`).join("")}</div>
+      <button class="chip" style="margin-top:10px" data-pick="${x.k}">${esc(t("req_h"))}</button></div></div>`).join("");
+  document.querySelectorAll("[data-pick]").forEach(b=>b.onclick=()=>{$("#reqExpert").value=b.dataset.pick;$("#reqText").focus();$("#reqForm").scrollIntoView({behavior:"smooth"});});
+}
+function addMedia(files){
+  for(const f of files){ if(media.length>=6) break; if(!/^(image|video)\//.test(f.type)) continue; media.push({f,url:URL.createObjectURL(f)}); }
+  drawThumbs();
+}
+function drawThumbs(){
+  $("#reqThumbs").innerHTML=media.map((m,i)=>`<div>${m.f.type.startsWith("video")?`<video src="${m.url}" muted playsinline></video>`:`<img src="${m.url}" alt="">`}<button type="button" aria-label="${esc(t("remove"))}" data-rm="${i}">×</button></div>`).join("");
+  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{URL.revokeObjectURL(media[b.dataset.rm].url);media.splice(+b.dataset.rm,1);drawThumbs();});
+}
+[["#reqCam","#reqCamIn"],["#reqVid","#reqVidIn"],["#reqFile","#reqFileIn"]].forEach(([b,i])=>{$(b).onclick=()=>$(i).click();$(i).onchange=e=>{addMedia([...e.target.files]);e.target.value="";};});
+document.querySelectorAll('input[name=mode]').forEach(r=>r.onchange=()=>{$("#reqPlace").required = r.value==="offline" && r.checked;});
+$("#reqForm").onsubmit=e=>{
+  e.preventDefault();
+  const mode=document.querySelector('input[name=mode]:checked').value;
+  const nPhotos=media.filter(m=>m.f.type.startsWith("image")).length, nVid=media.length-nPhotos;
+  requests.unshift({id:Date.now(),mode,expert:$("#reqExpert").value,text:$("#reqText").value.trim(),phone:$("#reqPhone").value.trim(),when:$("#reqWhen").value,place:$("#reqPlace").value.trim(),photos:nPhotos,videos:nVid});
+  store.set("requests",requests);
+  media.forEach(m=>URL.revokeObjectURL(m.url)); media=[]; drawThumbs();
+  $("#reqText").value=""; $("#reqMsg").textContent=t("req_sent");
+  renderRequests(); renderHome();
+};
+function renderRequests(){
+  $("#reqList").innerHTML = requests.length ? requests.slice(0,8).map(r=>{
+    const ex=EXPERTS.find(x=>x.k===r.expert);
+    return `<div class="req"><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(ex?L(ex.n):"")}</b><span class="tag ${r.mode==="offline"?"warn":""}">${esc(t(r.mode+"_l"))}</span></div>
+      <p class="small">${esc(r.text.slice(0,140))}</p>
+      <p class="small muted">${r.photos?`${r.photos} ${esc(t("photos"))} `:""}${r.videos?`${r.videos} ${esc(t("video"))} `:""}${r.when?`— ${esc(new Date(r.when).toLocaleString(lang==="hi"?"hi-IN":"en-IN",{dateStyle:"medium",timeStyle:"short"}))}`:""}</p>
+      <p class="small" style="color:var(--soil)">${esc(t("req_status"))}</p></div>`;}).join("")
+    : `<div class="empty">${esc(t("no_req"))}</div>`;
+}
+
+
+/* ================= Cinematic layer ================= */
+Object.assign(T.en,{
+  preload_cap:"Preparing your field", helpline_btn:"Helpline", next_label:"Next:", next_name:"Scan a leaf", scroll:"Scroll",
+  hero_title:"Kheti Mitra", adv_title:"Feed the soil", exp_title:"Specialists", cursor_enter:"Scan",
+  fk_season:"Season:", fk_crop:"Your crop:", fk_scans:"Activity:", fk_help:"Helpline:",
+  add_crop:"Add it under My farm below", help_val:"1800-180-1551, free, 6 am to 10 pm",
+  act_val:(s,r)=>`${s} leaf scans, ${r} specialist requests`,
+  dock_home:"Home",dock_scan:"Scan",dock_chat:"Ask",dock_advice:"Organic",dock_experts:"Experts"
+});
+Object.assign(T.hi,{
+  preload_cap:"आपका खेत तैयार हो रहा है", helpline_btn:"हेल्पलाइन", next_label:"अगला:", next_name:"पत्ती जाँचें", scroll:"नीचे देखें",
+  hero_title:"खेती मित्र", adv_title:"मिट्टी को खिलाएँ", exp_title:"विशेषज्ञ", cursor_enter:"जाँचें",
+  fk_season:"मौसम:", fk_crop:"आपकी फसल:", fk_scans:"गतिविधि:", fk_help:"हेल्पलाइन:",
+  add_crop:"नीचे 'मेरा खेत' में जोड़ें", help_val:"1800-180-1551, निःशुल्क, सुबह 6 से रात 10",
+  act_val:(s,r)=>`${s} पत्ती जाँच, ${r} विशेषज्ञ अनुरोध`,
+  dock_home:"होम",dock_scan:"जाँच",dock_chat:"सहायक",dock_advice:"जैविक",dock_experts:"विशेषज्ञ"
+});
+
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const easeInOut = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+function animateValue(set, dur){
+  return new Promise(res=>{
+    if(reduceMotion){ set(1); return res(); }
+    const t0=performance.now();
+    const step=now=>{ const p=Math.min(1,(now-t0)/dur); set(easeInOut(p)); p<1?requestAnimationFrame(step):res(); };
+    requestAnimationFrame(step);
+  });
+}
+function retrigger(el, cls){ el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+const nextFrame = () => new Promise(r=>requestAnimationFrame(()=>r()));
+
+/* ---------- hero (home facts + title) ---------- */
+function renderHero(){
+  const sk = seasonKey();
+  $("#heroTitle").textContent = t("hero_title");
+  $("#portal").setAttribute("aria-label", t("next_name"));
+  $("#cursorLabel").textContent = t("cursor_enter");
+  const rows = [
+    [t("fk_season"), T[lang].seasons[sk]],
+    [t("fk_crop"), profile.crop || t("add_crop")],
+    [t("fk_scans"), T[lang].act_val(scans.length, requests.length)],
+    [t("fk_help"), t("help_val")]
+  ];
+  $("#homeFacts").innerHTML = rows.map(([k,v])=>`<div class="fact"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("");
+  requestAnimationFrame(fitTitle);
+}
+
+/* ---------- navigation (replaces the old go) ---------- */
+let currentView = "home";
+function go(view){
+  const changed = view !== currentView;
+  currentView = view;
+  document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id==="view-"+view));
+  document.querySelectorAll(".side-item,.dock button").forEach(b=>{
+    const on = b.dataset.go===view;
+    b.classList.toggle("active", on);
+    if(on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+  });
+  window.scrollTo({top:0});
+  if(changed) retrigger($("#sideList"), "is-switching");
+  const el = $("#view-"+view);
+  if(view==="home"){ requestAnimationFrame(fitTitle); if(document.body.classList.contains("intro-ready")) { revealMask(); setTimeout(()=>retrigger(el,"content-revealing"),100); } }
+  else retrigger(el, "content-revealing");
+  fieldDim.target = view==="home" ? .42 : .8;
+}
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
+  if(b.tagName==="A") e.preventDefault();
+  go(b.dataset.go);
+  if(b.dataset.cam) $("#camInput").click();
+  if(b.dataset.up) $("#upInput").click();
+}));
+
+/* ---------- procedural field painter ---------- */
+const bgC = $("#bg-canvas"), bgX = bgC.getContext("2d");
+const pC = $("#portal-canvas"), pX = pC.getContext("2d");
+let W = innerWidth, H = innerHeight;
+const fieldDim = { v:1, target:1 };           // darkness overlay on the background field
+const sun = { rise:0 };                        // 0 = below horizon, 1 = golden hour
+
+function resizeCanvas(){
+  W = innerWidth; H = innerHeight;
+  const d = Math.min(devicePixelRatio||1, 2);
+  for(const [c,x,dd] of [[pC,pX,d],[bgC,bgX,Math.min(d,1.25)]]){
+    c.width = Math.round(W*dd); c.height = Math.round(H*dd);
+    c.style.width = W+"px"; c.style.height = H+"px";
+    x.setTransform(dd,0,0,dd,0,0);
+  }
+}
+
+function paintField(ctx, time, rise, rows){
+  const hz = H*.6;
+  // sky
+  const sky = ctx.createLinearGradient(0,0,0,hz);
+  sky.addColorStop(0, "#131a2e");
+  sky.addColorStop(.55, `rgb(${Math.round(70+120*rise)},${Math.round(52+50*rise)},${Math.round(70-10*rise)})`);
+  sky.addColorStop(1, `rgb(${Math.round(120+126*rise)},${Math.round(80+118*rise)},${Math.round(60+50*rise)})`);
+  ctx.fillStyle = sky; ctx.fillRect(0,0,W,hz+2);
+  // sun
+  const sx = W*.64, sy = hz + 40 - (H*.2+40)*rise, sr = Math.max(28, Math.min(W,H)*.07);
+  const glow = ctx.createRadialGradient(sx,sy,0,sx,sy,sr*7);
+  glow.addColorStop(0,`rgba(255,226,160,${.55*rise+.1})`); glow.addColorStop(1,"rgba(255,200,120,0)");
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,hz+2);
+  ctx.fillStyle = "#fff3d1"; ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
+  // far hills + tree line
+  ctx.fillStyle = "#3a2c33";
+  ctx.beginPath(); ctx.moveTo(0,hz);
+  for(let x=0;x<=W;x+=W/24) ctx.lineTo(x, hz - 18 - 22*Math.sin(x*.004+1.3) - 10*Math.sin(x*.013));
+  ctx.lineTo(W,hz); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#23191c";
+  ctx.beginPath(); ctx.moveTo(0,hz+2);
+  for(let x=0;x<=W;x+=6){ const tree = (Math.sin(x*.05)+Math.sin(x*.023+2))>.9 ? 14+8*Math.sin(x*.3) : 3; ctx.lineTo(x, hz - tree); }
+  ctx.lineTo(W,hz+2); ctx.closePath(); ctx.fill();
+  // ground
+  const g = ctx.createLinearGradient(0,hz,0,H);
+  g.addColorStop(0,"#4a3016"); g.addColorStop(1,"#120b05");
+  ctx.fillStyle = g; ctx.fillRect(0,hz,W,H-hz);
+  // crop rows, back to front
+  const wind = time*.0011;
+  for(let i=1;i<=rows;i++){
+    const f = i/rows, y = hz + (H-hz)*Math.pow(f,1.7);
+    const gap = 5 + 40*Math.pow(f,1.5), hgt = 5 + H*.16*Math.pow(f,1.9);
+    const light = rise;
+    ctx.strokeStyle = `rgba(${Math.round(190+50*light)},${Math.round(140+60*light)},${Math.round(60+30*light)},${.35+.6*f})`;
+    ctx.lineWidth = .6 + 2.6*f;
+    ctx.beginPath();
+    const off = (i*37)%gap;
+    for(let x=-gap+off; x<W+gap; x+=gap){
+      const sway = Math.sin(wind + x*.011 + i*.7) * hgt*.22;
+      ctx.moveTo(x,y);
+      ctx.quadraticCurveTo(x+sway*.35, y-hgt*.55, x+sway, y-hgt);
+    }
+    ctx.stroke();
+    if(f>.45){ // grain heads on the nearer rows
+      ctx.fillStyle = `rgba(${Math.round(225+25*light)},${Math.round(175+45*light)},90,${.5+.5*f})`;
+      ctx.beginPath();
+      for(let x=-gap+off; x<W+gap; x+=gap){
+        const sway = Math.sin(wind + x*.011 + i*.7) * hgt*.22;
+        ctx.moveTo(x+sway+2.2*f, y-hgt);
+        ctx.ellipse(x+sway, y-hgt, 2.2*f+.8, 6*f+1.5, sway*.012, 0, Math.PI*2);
+      }
+      ctx.fill();
+    }
+  }
+}
+function drawShade(ctx){
+  const gr = ctx.createLinearGradient(0,H*.52,0,H);
+  gr.addColorStop(0,"rgba(0,0,0,0)"); gr.addColorStop(1,"rgba(0,0,0,.88)");
+  ctx.fillStyle = gr; ctx.fillRect(0,H*.52,W,H*.48);
+}
+
+/* ---------- portal mask (rounded window with fake 3D) ---------- */
+let rotX=0, rotY=0, tX=0, tY=0, expansion=0, maskScale=0, canvasOpacity=1, busy=false;
+const rowsFor = () => W < 640 ? 16 : 22;
+
+function roundRectPoints(w,h,r){
+  r = Math.min(r, w/2, h/2);
+  const pts=[], arcs=[[w/2-r,-h/2+r,-Math.PI/2,0],[w/2-r,h/2-r,0,Math.PI/2],[-w/2+r,h/2-r,Math.PI/2,Math.PI],[-w/2+r,-h/2+r,Math.PI,Math.PI*1.5]];
+  for(const [cx,cy,a0,a1] of arcs) for(let s=0;s<=10;s++){ const a=a0+(a1-a0)*s/10; pts.push([cx+Math.cos(a)*r, cy+Math.sin(a)*r]); }
+  return pts;
+}
+function project([x,y], rx, ry, cx, cy){
+  const ax=rx*Math.PI/180, ay=ry*Math.PI/180;
+  const xx=x*Math.cos(ay), yy=y*Math.cos(ax), z=x*Math.sin(ay)-y*Math.sin(ax), p=850/(850+z);
+  return [cx+xx*p, cy+yy*p];
+}
+addEventListener("pointermove", e=>{
+  if(busy || e.pointerType!=="mouse" || reduceMotion) return;
+  tY = (e.clientX/innerWidth - .5) * 37.4;
+  tX = (e.clientY/innerHeight - .5) * -33;
+});
+document.documentElement.addEventListener("mouseleave", ()=>{ tX=0; tY=0; });
+
+let last = performance.now(), bgTick = 0;
+function draw(now){
+  const dt = Math.min(40, now-last); last = now;
+  rotX += (tX-rotX)*Math.min(1, dt*.009);
+  rotY += (tY-rotY)*Math.min(1, dt*.009);
+  fieldDim.v += (fieldDim.target - fieldDim.v)*Math.min(1, dt*.004);
+
+  // background field: animate on home, otherwise refresh slowly
+  const homeActive = currentView==="home";
+  if(homeActive || (bgTick++ % 12===0)){
+    paintField(bgX, now, sun.rise*.55, rowsFor()-4);
+    bgX.fillStyle = `rgba(9,8,7,${fieldDim.v})`; bgX.fillRect(0,0,W,H);
+  }
+
+  // portal
+  pX.clearRect(0,0,W,H);
+  const portal = $("#portal");
+  if(homeActive && portal){
+    const r0 = portal.getBoundingClientRect();
+    const visible = r0.bottom > 0 && r0.top < H;
+    if(visible || expansion>0){
+      const e = expansion;
+      const rcx = r0.left + r0.width/2, rcy = r0.top + r0.height/2;
+      const cx = rcx + (W/2 - rcx)*e, cy = rcy + (H/2 - rcy)*e;
+      const baseW = r0.width + (W - r0.width)*e, baseH = r0.height + (H - r0.height)*e;
+      const sc = e ? 1 : maskScale, w = baseW*sc, h = baseH*sc;
+      const radius = parseFloat(getComputedStyle(portal).borderRadius) || 90;
+      const rr = radius*(1-e)*sc, rx = rotX*(1-e), ry = rotY*(1-e);
+      if(w>1 && h>1){
+        const pts = roundRectPoints(w,h,rr).map(p=>project(p,rx,ry,cx,cy));
+        pX.save(); pX.globalAlpha = canvasOpacity;
+        pX.beginPath(); pts.forEach(([x,y],i)=>i?pX.lineTo(x,y):pX.moveTo(x,y)); pX.closePath(); pX.clip();
+        pX.fillStyle = "#030303"; pX.fillRect(0,0,W,H);
+        paintField(pX, now, 1, rowsFor());
+        if(e>0) drawShade(pX);
+        pX.restore();
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+}
+
+function revealMask(){
+  document.body.classList.remove("mask-revealing"); void document.body.offsetWidth; document.body.classList.add("mask-revealing");
+  maskScale = 0;
+  return animateValue(v=>maskScale=v, 1050);
+}
+function revealPlanetContent(){ retrigger($("#view-home"), "content-revealing"); }
+
+async function travel(){
+  if(busy) return;
+  busy = true; tX = 0; tY = 0;
+  try{
+    document.body.classList.add("is-transitioning");
+    await animateValue(v=>expansion=v, 1000);
+    go("scan");
+    document.body.classList.remove("is-transitioning");
+    expansion = 0; maskScale = 1; canvasOpacity = 1;
+  }catch(err){
+    expansion = 0; maskScale = 1; canvasOpacity = 1;
+    document.body.classList.remove("is-transitioning");
+  }
+  busy = false;
+}
+$("#portal").addEventListener("click", travel);
+
+/* ---------- custom cursor ---------- */
+const cursor = document.querySelector(".custom-cursor");
+const fineMouse = matchMedia("(pointer: fine)").matches && !reduceMotion;
+if(fineMouse) document.documentElement.classList.add("has-cursor");
+let cx=-100, cy=-100, ox=-100, oy=-100;
+const orbit = cursor.querySelector(".cursor-orbit"), dot = cursor.querySelector(".cursor-dot"), label = cursor.querySelector(".cursor-label");
+addEventListener("pointermove", e=>{
+  if(e.pointerType!=="mouse") return;
+  cx=e.clientX; cy=e.clientY; cursor.classList.add("is-visible");
+  const tg = e.target;
+  cursor.classList.toggle("is-text", !!(tg.closest && tg.closest("input,textarea,select")));
+});
+document.documentElement.addEventListener("mouseleave", ()=>cursor.classList.remove("is-visible"));
+$("#portal").addEventListener("pointerenter", ()=>cursor.classList.add("is-enter"));
+$("#portal").addEventListener("pointerleave", ()=>cursor.classList.remove("is-enter"));
+function cursorLoop(){
+  ox += (cx-ox)*.2; oy += (cy-oy)*.2;
+  cursor.style.transform = `translate3d(${ox}px,${oy}px,0)`;
+  requestAnimationFrame(cursorLoop);
+}
+
+/* ---------- preloader (sunrise over the field) ---------- */
+let startedExperience = false;
+function startExperience(){
+  if(startedExperience) return; startedExperience = true;
+  document.body.classList.add("intro-ready");
+  retrigger($("#sideList"), "is-switching");
+  revealMask().then(()=>{});
+  setTimeout(revealPlanetContent, 850);
+}
+function runPreloader(){
+  const valueEl = $("#preloader-value"), count = $("#preloader-count"), logo = $("#floating-logo"), pre = $("#preloader");
+  let seen = false; try{ seen = sessionStorage.getItem("km_intro")==="1"; }catch(_){}
+  const DURATION = (reduceMotion || seen) ? 0 : 2600;
+  let done = false;
+  const finish = ()=>{
+    if(done) return; done = true;
+    valueEl.textContent = "100";
+    count.classList.add("is-leaving");
+    logo.classList.add("is-docked");
+    pre.classList.add("is-background");
+    document.body.classList.add("preload-complete");
+    try{ sessionStorage.setItem("km_intro","1"); }catch(_){}
+    animateValue(v=>sun.rise = .55 + .45*v, 1400);
+    startExperience();
+    setTimeout(()=>count.remove(), 750);
+    setTimeout(()=>logo.classList.add("is-settled"), 2000);
+  };
+  if(!DURATION){ sun.rise = 1; pre.style.transition="none"; logo.style.transition="none"; finish(); return; }
+  pre.style.background = "transparent";
+  fieldDim.v = 1; fieldDim.target = .42;
+  const t0 = performance.now();
+  const tick = now=>{
+    const p = Math.min(1,(now-t0)/DURATION);
+    valueEl.textContent = Math.round(p*100);
+    sun.rise = .55*p;
+    fieldDim.target = 1 - .58*p;
+    p<1 ? requestAnimationFrame(tick) : finish();
+  };
+  requestAnimationFrame(tick);
+}
+
+/* keep the giant title from running into the facts */
+function fitTitle(){
+  const h = $("#heroTitle"), wrap = h.closest(".hero-content"), facts = $("#homeFacts");
+  h.style.fontSize = "";
+  if(!wrap || innerWidth <= 640) return;
+  const avail = wrap.clientWidth - facts.offsetWidth - 40;
+  const need = h.scrollWidth;
+  if(need > avail && avail > 0){
+    const cur = parseFloat(getComputedStyle(h).fontSize);
+    h.style.fontSize = Math.max(60, Math.floor(cur * avail / need)) + "px";
+  }
+}
+addEventListener("resize", ()=>{ resizeCanvas(); fitTitle(); });
+addEventListener("scroll", ()=>document.body.classList.toggle("scrolled", scrollY>24), {passive:true});
+
+/* ---------- boot ---------- */
+$("#reqPlace").value=profile.place||"";
+resizeCanvas();
+applyLang();
+requestAnimationFrame(draw);
+if(fineMouse) requestAnimationFrame(cursorLoop);
+runPreloader();
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
+</script>
+</body>
+</html>

@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multi-Agent Research Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: question bar on top, agent pipeline as a live rail, then the report with its claim ledger beside it */
+:root{
+  color-scheme:dark;
+  --bg:#0C0C0C;
+  --panel:#141416;
+  --panel-2:#1B1C20;
+  --line:rgba(215,226,234,.14);
+  --fg:#D7E2EA;
+  --muted:#8C98A4;
+  --accent:#4C7DFF;
+  --ok:#3DDC84;
+  --warn:#F2B84B;
+  --bad:#FF6B6B;
+  --display:'Kanit',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:36px 56px;display:flex;flex-direction:column;gap:28px}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{margin:6px 0 10px;font-family:var(--display);font-weight:900;text-transform:uppercase;line-height:.95;letter-spacing:-.02em;font-size:clamp(2.3rem,6.4vw,4.6rem);background:linear-gradient(180deg,#646973,#BBCCD7);-webkit-background-clip:text;background-clip:text;color:transparent;text-wrap:balance}
+.lede{margin:0;max-width:64ch;color:var(--muted)}
+.ask{display:flex;flex-direction:column;gap:12px}
+.bar{display:flex;gap:10px;flex-wrap:wrap}
+#q{flex:1 1 380px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:16px;color:var(--fg);font:inherit;font-size:1.05rem;padding:16px 18px;resize:vertical;min-height:58px}
+#q:focus{outline:none;border-color:var(--accent)}
+.btn{font:inherit;font-weight:600;border:0;border-radius:14px;padding:0 24px;min-height:58px;cursor:pointer;color:#fff;background:var(--accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--fg)}
+.btn:focus-visible,.chip:focus-visible,#q:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:.86rem;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.opts{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem;color:var(--muted);align-items:center}
+.opts select{font:inherit;background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+
+/* pipeline rail */
+.rail{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.agent{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative}
+.agent .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.agent .n{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.agent h3{margin:0;font-family:var(--display);font-weight:700;font-size:1.15rem;text-transform:uppercase;letter-spacing:.02em}
+.agent p{margin:0;font-size:.86rem;color:var(--muted)}
+.agent .st{font-family:var(--mono);font-size:.72rem;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.agent[data-s="work"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.agent[data-s="work"] .st{color:#fff;background:var(--accent);border-color:var(--accent)}
+.agent[data-s="work"] .st::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;margin-right:6px;animation:blink 1s infinite}
+.agent[data-s="done"] .st{color:#06200f;background:var(--ok);border-color:var(--ok)}
+.agent[data-s="fail"] .st{color:#2b0000;background:var(--bad);border-color:var(--bad)}
+.agent .sub{font-family:var(--mono);font-size:.74rem;color:var(--fg);opacity:.85;min-height:1.2em;overflow-wrap:anywhere}
+@keyframes blink{50%{opacity:.25}}
+@media (max-width:900px){.rail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.rail{grid-template-columns:1fr}}
+
+.log{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px 18px;font-family:var(--mono);font-size:.8rem;color:var(--muted);max-height:190px;overflow:auto}
+.log div{padding:2px 0}
+.log b{color:var(--fg);font-weight:500}
+.log .e{color:var(--bad)}
+
+/* output */
+.out{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.out{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px;min-width:0}
+.card h2{margin:0 0 4px;font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:1.3rem;letter-spacing:.02em}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
+.pill{font-family:var(--mono);font-size:.74rem;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.pill.ok{color:#06200f;background:var(--ok);border-color:var(--ok)}
+.pill.warn{color:#2a1a00;background:var(--warn);border-color:var(--warn)}
+.report{max-width:70ch}
+.report h1,.report h2,.report h3{font-family:var(--display);text-transform:none;background:none;color:var(--fg);-webkit-background-clip:initial;letter-spacing:0;line-height:1.2}
+.report h1{font-size:1.6rem;margin:0 0 12px}
+.report h2{font-size:1.25rem;margin:22px 0 8px}
+.report h3{font-size:1.05rem;margin:16px 0 6px}
+.report p{margin:0 0 12px}
+.report ul{margin:0 0 12px;padding-left:1.2em}
+.report li{margin:4px 0}
+.cite{display:inline-block;font-family:var(--mono);font-size:.72rem;padding:0 6px;border-radius:6px;margin:0 1px;vertical-align:1px;border:1px solid var(--line);color:var(--fg);cursor:default}
+.cite.s-consistent{border-color:var(--ok);color:var(--ok)}
+.cite.s-uncertain{border-color:var(--warn);color:var(--warn)}
+.cite.s-conflict{border-color:var(--bad);color:var(--bad)}
+.empty{color:var(--muted);border:1px dashed var(--line);border-radius:16px;padding:22px}
+.empty ol{margin:10px 0 0;padding-left:1.2em}
+.ledger{display:flex;flex-direction:column;gap:10px;max-height:760px;overflow:auto}
+.claim{border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:12px;padding:10px 12px;font-size:.9rem;background:var(--panel-2)}
+.claim.s-consistent{border-left-color:var(--ok)}
+.claim.s-uncertain{border-left-color:var(--warn)}
+.claim.s-conflict{border-left-color:var(--bad)}
+.claim .h{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-bottom:4px}
+.critic{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;font-size:.9rem;color:var(--muted)}
+.critic ul{margin:6px 0 0;padding-left:1.2em}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.note{font-size:.85rem;color:var(--muted);max-width:80ch}
+.err{background:rgba(255,107,107,.12);border:1px solid var(--bad);border-radius:14px;padding:12px 16px}
+@media (prefers-reduced-motion:reduce){.agent .st::before{animation:none}}
+</style>
+<script>
+/* Rishu AI server bridge: when this page is not running inside Claude,
+   send AI requests to this site's own /api/ai (the API key stays on the server). */
+(function(){
+  if (window.claude && window.claude.use) return;
+  function parseLoose(t){
+    var s=String(t||"").trim().replace(/^```(?:json)?\s*/i,"").replace(/```\s*$/,"");
+    try{return JSON.parse(s)}catch(_){}
+    var a=s.indexOf("{"),b=s.lastIndexOf("}");
+    if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1))}catch(_){}}
+    throw {code:"invalid_json",text:t};
+  }
+  async function call(input,opts,json){
+    opts=opts||{};
+    var turns = typeof input==="string" ? [{role:"user",content:input}] : input;
+    var r;
+    try{
+      r = await fetch("/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},signal:opts.signal,body:JSON.stringify({turns:turns,images:[],json:!!json})});
+    }catch(e){ throw {code: e && e.name==="AbortError" ? "cancelled" : "upstream_error"}; }
+    var data = await r.json().catch(function(){return {error:"upstream_error"}});
+    if(!r.ok || data.error) throw {code:data.error||"upstream_error",message:data.message};
+    if(opts.onText) opts.onText({text:data.text,delta:data.text});
+    return {text:data.text,truncated:!!data.truncated};
+  }
+  var sample = function(input,opts){ return call(input,opts,false); };
+  sample.json = async function(input,opts){ var r = await call(input,opts,true); return parseLoose(r.text); };
+  sample.limits = async function(){ return {maxPromptBytes:65536,images:null}; };
+  var healthy = fetch("/api/health").then(function(r){return r.json()}).then(function(h){return !!(h&&h.ok)}).catch(function(){return false});
+  window.claude = { use: async function(name){ if(name!=="sample") return null; return (await healthy) ? sample : null; } };
+})();
+</script>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Rishu Raj · LangGraph project · web demo</div>
+    <h1>Multi-Agent Research Assistant</h1>
+    <p class="lede">Ask one question. A Planner splits it into sub-tasks, Researchers work on them in parallel, a Fact-checker cross-checks every claim, a Writer drafts the report, and a Critic sends it back until each point is backed by a checked claim.</p>
+  </header>
+
+  <section class="ask" aria-label="Ask a research question">
+    <div class="bar">
+      <label for="q" style="position:absolute;left:-9999px">Research question</label>
+      <textarea id="q" rows="1" placeholder="e.g. How does India's UPI compare with other real-time payment systems?"></textarea>
+      <button class="btn" id="go" type="button">Run agents</button>
+      <button class="btn ghost" id="stop" type="button" hidden>Stop</button>
+    </div>
+    <div class="chips" id="chips">
+      <button class="chip" type="button">Pros and cons of Python vs Java for beginners</button>
+      <button class="chip" type="button">How does UPI work and why did it grow so fast in India?</button>
+      <button class="chip" type="button">Organic vs chemical farming: yield, cost and soil health</button>
+      <button class="chip" type="button">What skills does an entry-level data analyst need?</button>
+    </div>
+    <div class="opts">
+      <label for="depth">Depth</label>
+      <select id="depth">
+        <option value="3">Quick · 3 sub-tasks</option>
+        <option value="4" selected>Standard · 4 sub-tasks</option>
+        <option value="5">Deep · 5 sub-tasks</option>
+      </select>
+      <label for="revs">Critic revisions</label>
+      <select id="revs">
+        <option value="0">0</option>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="rail" id="rail" aria-label="Agent pipeline">
+    <div class="agent" data-a="planner" data-s="idle"><div class="top"><span class="n">01</span><span class="st">idle</span></div><h3>Planner</h3><p>Splits the question into focused sub-tasks.</p><div class="sub"></div></div>
+    <div class="agent" data-a="research" data-s="idle"><div class="top"><span class="n">02</span><span class="st">idle</span></div><h3>Researchers</h3><p>One per sub-task, in parallel. Each returns claims with a confidence level.</p><div class="sub"></div></div>
+    <div class="agent" data-a="checker" data-s="idle"><div class="top"><span class="n">03</span><span class="st">idle</span></div><h3>Fact-checker</h3><p>Merges duplicates and marks each claim consistent, uncertain or conflicting.</p><div class="sub"></div></div>
+    <div class="agent" data-a="writer" data-s="idle"><div class="top"><span class="n">04</span><span class="st">idle</span></div><h3>Writer</h3><p>Writes the report and cites a claim id after every fact.</p><div class="sub"></div></div>
+    <div class="agent" data-a="critic" data-s="idle"><div class="top"><span class="n">05</span><span class="st">idle</span></div><h3>Critic</h3><p>Checks citations and coverage. Sends the draft back if something is off.</p><div class="sub"></div></div>
+  </section>
+
+  <div class="log" id="log" aria-live="polite"><div>Waiting for a question. Pick an example above or type your own.</div></div>
+  <div class="err" id="err" hidden></div>
+
+  <section class="out">
+    <article class="card">
+      <h2>Report</h2>
+      <div class="meta" id="meta"></div>
+      <div class="report" id="report">
+        <div class="empty">
+          The finished report appears here, with a claim id like <span class="cite s-consistent">C3</span> after each fact. Green ids are claims the Fact-checker found consistent, amber ones are uncertain, red ones conflict.
+          <ol>
+            <li>Type a question or pick an example.</li>
+            <li>Press <b>Run agents</b> and allow Claude when asked.</li>
+            <li>Watch each agent work in the pipeline above.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="critic" id="critic" hidden></div>
+      <div class="tools" id="tools" hidden>
+        <button class="btn ghost" id="copy" type="button" style="min-height:44px">Copy report</button>
+        <button class="btn ghost" id="dl" type="button" style="min-height:44px">Download .md</button>
+        <span class="note" id="toolMsg"></span>
+      </div>
+    </article>
+    <aside class="card">
+      <h2>Claim ledger</h2>
+      <p class="note" style="margin:4px 0 14px">Every claim the Researchers returned, after fact-checking.</p>
+      <div class="ledger" id="ledger"><div class="empty">No claims yet.</div></div>
+    </aside>
+  </section>
+
+  <p class="note">This web demo runs every agent on the model's own knowledge, so it has no live web search and no source links. The full Python version (LangGraph, FastAPI, Streamlit) adds Search and Reader agents that pull real pages through Tavily, and only marks a claim verified when two separate websites agree. Check important facts before relying on them.</p>
+</div>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s);};
+  var q=$('#q'), go=$('#go'), stop=$('#stop'), logEl=$('#log'), errEl=$('#err');
+  var sample=null, downloads=null, ctl=null, running=false, lastMd='';
+
+  (async function(){
+    try{ sample = window.claude ? await window.claude.use('sample') : null; }catch(e){ sample=null; }
+    try{ downloads = window.claude ? await window.claude.use('downloads') : null; }catch(e){ downloads=null; }
+    if(!sample){ log('Claude is not available in this view. The AI server is not reachable right now. Try again in a minute.', true); }
+  })();
+
+  var ERR={not_granted:'Running the agents needs permission to use Claude. Reload the page and choose Allow.',rate_limited:'Too many requests right now. Wait a minute and try again.',prompt_too_large:'The question or research got too long. Try a shorter question or Quick depth.',session_expired:'Your session expired. Reload the page and try again.',sampling_disabled:'AI features are turned off for this account.'};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function time(){return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+  function log(msg,isErr){var d=document.createElement('div');if(isErr)d.className='e';d.innerHTML='<b>'+time()+'</b> '+esc(msg);logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+  function agent(a,state,sub){var el=document.querySelector('.agent[data-a="'+a+'"]');el.setAttribute('data-s',state);el.querySelector('.st').textContent={idle:'idle',work:'working',done:'done',fail:'failed'}[state];if(sub!==undefined)el.querySelector('.sub').textContent=sub;}
+  function resetRail(){['planner','research','checker','writer','critic'].forEach(function(a){agent(a,'idle','');});}
+  function showErr(e){var code=e&&e.code||'unknown';errEl.textContent=(ERR[code]||'Something went wrong while the agents were working. Try again.')+' (Error: '+code+')';errEl.hidden=false;}
+
+  function parseLoose(t){t=String(t||'').replace(/```(?:json)?/gi,'');var a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<=a)return null;try{return JSON.parse(t.slice(a,b+1));}catch(e){return null;}}
+  async function askJSON(prompt,tier){
+    try{ return await sample.json(prompt,{signal:ctl.signal,modelTier:tier||'default'}); }
+    catch(e){ if(e&&e.code==='invalid_json'&&e.text){var r=parseLoose(e.text);if(r)return r;} throw e; }
+  }
+
+  /* ---------- markdown ---------- */
+  var CLAIMS={};
+  function inline(s){
+    s=esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    return s.replace(/\[(C\d+(?:\s*,\s*C\d+)*)\]/g,function(m,ids){
+      return ids.split(/\s*,\s*/).map(function(id){var c=CLAIMS[id];var st=c?c.status:'missing';return '<span class="cite s-'+st+'" title="'+esc(c?c.text:'Unknown claim id')+'">'+id+'</span>';}).join('');
+    });
+  }
+  function md(text){
+    var out=[],list=false;
+    String(text).split(/\n/).forEach(function(line){
+      var l=line.trim(), m;
+      if(/^[-*•]\s+/.test(l)){ if(!list){out.push('<ul>');list=true;} out.push('<li>'+inline(l.replace(/^[-*•]\s+/,''))+'</li>'); return; }
+      if(list){out.push('</ul>');list=false;}
+      if(!l)return;
+      if((m=l.match(/^(#{1,3})\s+(.*)/))){var n=m[1].length;out.push('<h'+n+'>'+inline(m[2])+'</h'+n+'>');return;}
+      out.push('<p>'+inline(l)+'</p>');
+    });
+    if(list)out.push('</ul>');
+    return out.join('');
+  }
+
+  function renderLedger(claims){
+    var box=$('#ledger');
+    if(!claims.length){box.innerHTML='<div class="empty">No claims came back.</div>';return;}
+    box.innerHTML=claims.map(function(c){
+      return '<div class="claim s-'+esc(c.status)+'"><div class="h"><span>'+esc(c.id)+'</span><span>'+esc(c.status)+'</span><span>'+esc(c.subtask||'')+'</span></div>'+esc(c.text)+(c.note?'<div class="note" style="margin-top:4px">'+esc(c.note)+'</div>':'')+'</div>';
+    }).join('');
+  }
+
+  function codeCheck(report,claims){
+    var ids={};claims.forEach(function(c){ids[c.id]=1;});
+    var issues=[],used={};
+    (report.match(/\[(C\d+(?:\s*,\s*C\d+)*)\]/g)||[]).forEach(function(g){g.replace(/[\[\]]/g,'').split(/\s*,\s*/).forEach(function(id){used[id]=1;if(!ids[id])issues.push('Cites '+id+', which is not in the claim ledger.');});});
+    if(!Object.keys(used).length)issues.push('The report cites no claims at all.');
+    return issues;
+  }
+
+  /* ---------- the run ---------- */
+  async function run(){
+    var question=q.value.trim();
+    if(!question){q.focus();return;}
+    if(!sample){log('The AI server is not reachable right now. Try again in a minute.',true);return;}
+    running=true;go.disabled=true;stop.hidden=false;errEl.hidden=true;
+    ctl=new AbortController();CLAIMS={};lastMd='';
+    resetRail();logEl.innerHTML='';
+    $('#report').innerHTML='<p class="note">The agents are working. The report appears here when the Writer finishes.</p>';
+    $('#ledger').innerHTML='<div class="empty">Waiting for the Researchers.</div>';
+    $('#meta').innerHTML='';$('#critic').hidden=true;$('#tools').hidden=true;
+    var depth=+$('#depth').value, maxRev=+$('#revs').value;
+    log('Question received: '+question);
+
+    try{
+      /* 1. Planner */
+      agent('planner','work','Thinking…');
+      log('Planner is splitting the question into sub-tasks.');
+      var plan;
+      try{
+        plan=await askJSON('You are the Planner agent in a research team. Split the research question below into '+depth+' focused, non-overlapping sub-tasks that together answer it fully.\n\nQUESTION: '+question+'\n\nReply with only JSON: {"subtasks":[{"title":"short title, max 6 words","question":"one precise research question"}]}','quick');
+      }catch(e){ if(e&&e.code==='cancelled')throw e; plan=null; }
+      var subs=(plan&&Array.isArray(plan.subtasks)?plan.subtasks:[]).filter(function(s){return s&&s.question;}).slice(0,depth);
+      if(!subs.length){subs=[{title:'Whole question',question:question}];log('Planner failed, so the whole question becomes one sub-task.',true);}
+      agent('planner','done',subs.length+' sub-tasks');
+      subs.forEach(function(s,i){log('Sub-task '+(i+1)+': '+(s.title||s.question));});
+
+      /* 2. Researchers in parallel */
+      agent('research','work','0 of '+subs.length+' finished');
+      var finished=0;
+      var results=await Promise.all(subs.map(function(s,i){
+        return askJSON('You are a Researcher agent. Answer this sub-task of a larger research question using only facts you are confident about.\n\nMAIN QUESTION: '+question+'\nSUB-TASK: '+s.question+'\n\nRULES\n- Return 4 to 6 short, specific, self-contained factual claims.\n- Give a year or time frame with any number, and never invent statistics.\n- confidence: "high" only for well-established facts; "medium" if details may have changed; "low" if you are unsure.\n- Put caveats in "note".\n\nReply with only JSON: {"claims":[{"text":"","confidence":"high|medium|low","note":""}]}','quick')
+          .then(function(r){finished++;agent('research','work',finished+' of '+subs.length+' finished');log('Researcher '+(i+1)+' returned '+((r&&r.claims)||[]).length+' claims.');return {sub:s,claims:(r&&Array.isArray(r.claims))?r.claims:[]};})
+          .catch(function(e){if(e&&e.code==='cancelled')throw e;finished++;log('Researcher '+(i+1)+' failed ('+(e&&e.code||'error')+'). Continuing without it.',true);return {sub:s,claims:[]};});
+      }));
+      var raw=[];results.forEach(function(r){r.claims.forEach(function(c){if(c&&c.text)raw.push({text:String(c.text),confidence:c.confidence||'medium',note:c.note||'',subtask:r.sub.title||''});});});
+      if(!raw.length)throw {code:'no_claims'};
+      agent('research','done',raw.length+' claims');
+
+      /* 3. Fact-checker */
+      agent('checker','work','Cross-checking…');
+      log('Fact-checker is cross-checking '+raw.length+' claims.');
+      var checked;
+      try{
+        checked=await askJSON('You are the Fact-checker agent. Below are claims from several Researchers (numbered). Merge claims that say the same thing. Keep claims that give DIFFERENT numbers for the same thing separate and mark them "conflict". Mark a claim "consistent" when it is well-established and nothing contradicts it, "uncertain" when the researcher had low/medium confidence or it may be outdated. Fix nothing silently: if a claim looks wrong, mark it "uncertain" and explain in note.\n\nCLAIMS:\n'+raw.map(function(c,i){return (i+1)+'. ['+c.subtask+'] ('+c.confidence+') '+c.text+(c.note?' — note: '+c.note:'');}).join('\n')+'\n\nReply with only JSON: {"claims":[{"text":"","status":"consistent|uncertain|conflict","subtask":"","note":""}]}','default');
+      }catch(e){ if(e&&e.code==='cancelled')throw e; checked=null; log('Fact-checker failed, so claims keep the Researchers\' confidence.',true); }
+      var claims=(checked&&Array.isArray(checked.claims)&&checked.claims.length?checked.claims:raw.map(function(c){return {text:c.text,status:c.confidence==='high'?'consistent':'uncertain',subtask:c.subtask,note:c.note};}))
+        .filter(function(c){return c&&c.text;})
+        .map(function(c,i){var st=/^(consistent|uncertain|conflict)$/.test(c.status)?c.status:'uncertain';return {id:'C'+(i+1),text:String(c.text),status:st,subtask:c.subtask||'',note:c.note||''};});
+      claims.forEach(function(c){CLAIMS[c.id]=c;});
+      renderLedger(claims);
+      var cnt={consistent:0,uncertain:0,conflict:0};claims.forEach(function(c){cnt[c.status]++;});
+      agent('checker','done',cnt.consistent+' ok · '+cnt.uncertain+' uncertain · '+cnt.conflict+' conflict');
+      log('Fact-checker kept '+claims.length+' claims: '+cnt.consistent+' consistent, '+cnt.uncertain+' uncertain, '+cnt.conflict+' in conflict.');
+
+      /* 4-5. Writer + Critic loop */
+      var ledgerText=claims.map(function(c){return '['+c.id+'] ('+c.status+') '+c.text;}).join('\n');
+      var feedback='', draft='', approved=false, rev=0, issues=[];
+      while(true){
+        agent('writer','work',rev?'Revision '+rev:'Drafting…');
+        log(rev?'Writer is revising the draft (revision '+rev+').':'Writer is drafting the report.');
+        var wp='You are the Writer agent. Write a clear research report in Markdown answering the question, using ONLY the checked claims below.\n\nQUESTION: '+question+'\n\nCHECKED CLAIMS:\n'+ledgerText+'\n\nRULES\n- Start with "# " and a title, then "## Summary" (3-4 sentences), then one "## " section per theme, then "## Gaps and caveats".\n- After every factual sentence, cite the claim ids it rests on in square brackets, e.g. [C3] or [C2, C5]. Use only ids from the list.\n- Say "(uncertain)" next to facts that rest only on uncertain claims, and describe conflicts openly instead of picking a side.\n- Do not add facts that are not in the claims. No sources section.\n- Keep it under 550 words; use short paragraphs and bullet lists.'+(feedback?'\n\nTHE CRITIC REJECTED YOUR PREVIOUS DRAFT. Fix these issues:\n'+feedback+'\n\nPREVIOUS DRAFT:\n'+draft:'');
+        var first=true;
+        var res=await sample(wp,{signal:ctl.signal,modelTier:'default',onText:function(ev){if(first){first=false;agent('writer','work','Writing…');}$('#report').innerHTML=md(ev.text);}});
+        draft=res.text;
+        $('#report').innerHTML=md(draft);
+        agent('writer','done',rev?'Revised '+rev+'×':'Draft ready');
+
+        agent('critic','work','Reviewing…');
+        log('Critic is reviewing the draft.');
+        issues=codeCheck(draft,claims);
+        try{
+          var cr=await askJSON('You are the Critic agent. Review the draft report against the question and the checked claims.\n\nQUESTION: '+question+'\n\nCHECKED CLAIMS:\n'+ledgerText+'\n\nDRAFT:\n'+draft+'\n\nFlag only real problems: a part of the question left unanswered, a fact with no claim id, a fact not supported by its cited claim, an uncertain or conflicting claim presented as certain, or a hidden conflict.\n\nReply with only JSON: {"approved":true|false,"issues":["short, specific issue"]}','default');
+          if(cr&&Array.isArray(cr.issues))issues=issues.concat(cr.issues.filter(Boolean).map(String));
+          approved=!!(cr&&cr.approved)&&!issues.length;
+        }catch(e){ if(e&&e.code==='cancelled')throw e; log('Critic model failed, so only the code checks ran.',true); approved=!issues.length; }
+        if(approved){agent('critic','done','Approved');log('Critic approved the report.');break;}
+        if(rev>=maxRev){agent('critic','done','Not approved · '+issues.length+' issues');log('Critic still found '+issues.length+' issue(s), and the revision limit is reached.',true);break;}
+        rev++;feedback=issues.map(function(x){return '- '+x;}).join('\n');
+        agent('critic','done',issues.length+' issues → Writer');
+        log('Critic sent the draft back with '+issues.length+' issue(s).');
+      }
+
+      lastMd=draft;
+      $('#meta').innerHTML='<span class="pill '+(approved?'ok':'warn')+'">'+(approved?'Critic approved':'Not approved')+'</span><span class="pill">'+subs.length+' sub-tasks</span><span class="pill">'+claims.length+' claims</span><span class="pill">'+rev+' revision'+(rev===1?'':'s')+'</span>';
+      var cEl=$('#critic');
+      if(issues.length){cEl.innerHTML='<b style="color:var(--fg)">Critic\'s remaining notes</b><ul>'+issues.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>';cEl.hidden=false;}
+      $('#tools').hidden=false;$('#toolMsg').textContent='';
+      log('Done.');
+    }catch(e){
+      if(e&&e.code==='cancelled'){log('Stopped.',true);}
+      else if(e&&e.code==='no_claims'){log('No Researcher returned any claims.',true);errEl.textContent='No Researcher returned claims for this question. Try rephrasing it or pick Quick depth.';errEl.hidden=false;}
+      else{log('Stopped because of an error ('+(e&&e.code||'unknown')+').',true);showErr(e);}
+      document.querySelectorAll('.agent[data-s="work"]').forEach(function(el){agent(el.getAttribute('data-a'),'fail');});
+    }finally{
+      running=false;go.disabled=false;stop.hidden=true;
+    }
+  }
+
+  go.addEventListener('click',run);
+  stop.addEventListener('click',function(){if(ctl)ctl.abort();});
+  q.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!running)run();}});
+  $('#chips').addEventListener('click',function(e){if(e.target.classList.contains('chip')&&!running){q.value=e.target.textContent;run();}});
+
+  $('#copy').addEventListener('click',function(){
+    var m=$('#toolMsg');
+    try{navigator.clipboard.writeText(lastMd).then(function(){m.textContent='Copied.';},function(){m.textContent='Copy is blocked here. Select the report text and copy it.';});}
+    catch(e){m.textContent='Copy is blocked here. Select the report text and copy it.';}
+  });
+  $('#dl').addEventListener('click',async function(){
+    var m=$('#toolMsg');
+    if(!downloads){try{var b=new Blob([lastMd],{type:'text/markdown'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='research-report.md';document.body.appendChild(a);a.click();a.remove();m.textContent='Saved research-report.md';}catch(e){m.textContent='Download did not work here. Use Copy report instead.';}return;}
+    try{await downloads.save({filename:'research-report.md',data:lastMd});m.textContent='Saved research-report.md';}
+    catch(e){m.textContent=(e&&e.code==='cancelled')?'':'The download did not go through. Use Copy report instead.';}
+  });
+})();
+</script>
+</body>
+</html>
